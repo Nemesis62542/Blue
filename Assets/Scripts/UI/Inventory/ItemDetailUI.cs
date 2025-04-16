@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using NFPS.Item;
+using Blue.Item;
 
-namespace NFPS.UI.Inventory
+namespace Blue.UI.Inventory
 {
     public class ItemDetailUI : MonoBehaviour
     {

@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using NFPS.Item;
-using NFPS.Input;
-using NFPS.Inventory;
-using NFPS.UI.Common;
-using NFPS.UI.Inventory;
+using Blue.Item;
+using Blue.Input;
+using Blue.Inventory;
+using Blue.UI.Common;
+using Blue.UI.Inventory;
 
-namespace NFPS.UI.QuickSlot
+namespace Blue.UI.QuickSlot
 {
     public class QuickSlotSelectHandler : MonoBehaviour
     {

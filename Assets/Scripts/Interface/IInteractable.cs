@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.Object
+namespace Blue.Object
 {
     public interface IInteractable
     {

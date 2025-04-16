@@ -1,7 +1,7 @@
-using NFPS.Attack;
-using NFPS.Interface;
+using Blue.Attack;
+using Blue.Interface;
 
-namespace NFPS.Entity
+namespace Blue.Entity
 {
     public abstract class BaseEntityModel : ILivingEntity
     {

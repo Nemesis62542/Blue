@@ -1,8 +1,8 @@
-using NFPS.Entity;
-using NFPS.Inventory;
+using Blue.Entity;
+using Blue.Inventory;
 using UnityEngine;
 
-namespace NFPS.Player
+namespace Blue.Player
 {
     public class PlayerModel : BaseEntityModel
     {

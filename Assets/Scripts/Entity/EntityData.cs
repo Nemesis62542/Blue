@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace NFPS.Entity
+namespace Blue.Entity
 {
-    [CreateAssetMenu(fileName = "EntityData", menuName = "NFPS/ScriptableObject/EntityData")]
+    [CreateAssetMenu(fileName = "EntityData", menuName = "Blue/ScriptableObject/EntityData")]
     public class EntityData : ScriptableObject
     {
         [SerializeField] private string entityName;

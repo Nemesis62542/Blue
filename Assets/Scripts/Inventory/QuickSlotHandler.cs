@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using NFPS.Item;
+using Blue.Item;
 using UnityEngine;
 
-namespace NFPS.Inventory
+namespace Blue.Inventory
 {
     public class QuickSlotHandler
     {

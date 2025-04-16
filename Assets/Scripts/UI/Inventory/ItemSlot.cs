@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using NFPS.Item;
+using Blue.Item;
 using UnityEngine.EventSystems;
 
-namespace NFPS.UI.Inventory
+namespace Blue.UI.Inventory
 {
     public class ItemSlot : MonoBehaviour
     {

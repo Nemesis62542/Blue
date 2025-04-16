@@ -1,8 +1,8 @@
-using NFPS.Inventory;
-using NFPS.Item;
+using Blue.Inventory;
+using Blue.Item;
 using UnityEngine;
 
-namespace NFPS.Object
+namespace Blue.Object
 {
     public class ItemObject : MonoBehaviour, IInteractable
     {

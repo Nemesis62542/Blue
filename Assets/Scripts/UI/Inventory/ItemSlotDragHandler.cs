@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using NFPS.Item;
+using Blue.Item;
 
-namespace NFPS.UI.Inventory
+namespace Blue.UI.Inventory
 {
     public class ItemSlotDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace NFPS.UI.Setting
+namespace Blue.UI.Setting
 {
     public class SettingsView : MonoBehaviour
     {

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using NFPS.Inventory;
+using Blue.Inventory;
 
-namespace NFPS.UI.QuickSlot
+namespace Blue.UI.QuickSlot
 {
     public class QuickSlotClickHandler : MonoBehaviour, IPointerClickHandler
     {

@@ -1,8 +1,8 @@
-using NFPS.Audio;
+using Blue.Audio;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace NFPS.UI.Setting
+namespace Blue.UI.Setting
 {
     public class SettingsController : MonoBehaviour
     {

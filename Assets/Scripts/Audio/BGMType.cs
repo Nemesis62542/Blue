@@ -1,4 +1,4 @@
-namespace NFPS.Audio
+namespace Blue.Audio
 {
     public enum BGMType
     {

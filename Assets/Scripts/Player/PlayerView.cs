@@ -1,6 +1,6 @@
-using NFPS.Entity;
+using Blue.Entity;
 
-namespace NFPS.Player
+namespace Blue.Player
 {
     public class PlayerView : BaseEntityView
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace NFPS.Audio
+namespace Blue.Audio
 {
     public class BGMPlayer : MonoBehaviour
     {

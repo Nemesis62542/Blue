@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.Entity
+namespace Blue.Entity
 {
     public abstract class BaseEntityView : MonoBehaviour
     {

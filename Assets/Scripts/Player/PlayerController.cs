@@ -1,15 +1,15 @@
-using NFPS.Attack;
-using NFPS.Entity;
-using NFPS.Input;
-using NFPS.Interface;
-using NFPS.Inventory;
-using NFPS.Object;
-using NFPS.UI;
-using NFPS.UI.Screen;
+using Blue.Attack;
+using Blue.Entity;
+using Blue.Input;
+using Blue.Interface;
+using Blue.Inventory;
+using Blue.Object;
+using Blue.UI;
+using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace NFPS.Player
+namespace Blue.Player
 {
 [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable

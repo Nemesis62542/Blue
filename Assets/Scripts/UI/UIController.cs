@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using NFPS.UI.Screen;
+using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace NFPS.UI
+namespace Blue.UI
 {
     public class UIController : MonoBehaviour
     {

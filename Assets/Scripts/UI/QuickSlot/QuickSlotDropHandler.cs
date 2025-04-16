@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using NFPS.Inventory;
-using NFPS.UI.Inventory;
+using Blue.Inventory;
+using Blue.UI.Inventory;
 
-namespace NFPS.UI.QuickSlot
+namespace Blue.UI.QuickSlot
 {
     public class QuickSlotDropHandler : MonoBehaviour, IDropHandler
     {

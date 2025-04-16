@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
-using NFPS.Item;
+using Blue.Item;
 
-namespace NFPS.Inventory
+namespace Blue.Inventory
 {
     public class InventoryItem
     {

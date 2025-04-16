@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.Attack
+namespace Blue.Attack
 {
     public enum AttackType
     {

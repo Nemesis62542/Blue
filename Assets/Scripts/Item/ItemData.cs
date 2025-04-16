@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NFPS.Item
+namespace Blue.Item
 {
-    [CreateAssetMenu(fileName = "NewItem", menuName = "NFPS/ScriptableObject/ItemData")]
+    [CreateAssetMenu(fileName = "NewItem", menuName = "Blue/ScriptableObject/ItemData")]
     public class ItemData : ScriptableObject
     {
         [SerializeField] private string itemName;    // アイテムの名前

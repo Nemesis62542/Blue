@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.Entity
+namespace Blue.Entity
 {
     public class Status
     {

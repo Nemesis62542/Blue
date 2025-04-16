@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using NFPS.Item;
-using NFPS.UI.Common;
-using NFPS.Input;
-using NFPS.UI.QuickSlot;
+using Blue.Item;
+using Blue.UI.Common;
+using Blue.Input;
+using Blue.UI.QuickSlot;
 
-namespace NFPS.UI.Inventory
+namespace Blue.UI.Inventory
 {
     public class InventoryItemSelectHandler : MonoBehaviour
     {

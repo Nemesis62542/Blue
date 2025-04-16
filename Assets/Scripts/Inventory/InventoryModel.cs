@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
-using NFPS.Item;
+using Blue.Item;
 
-namespace NFPS.Inventory
+namespace Blue.Inventory
 {
     public class InventoryModel
     {

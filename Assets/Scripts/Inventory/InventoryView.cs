@@ -1,12 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
-using NFPS.Item;
-using NFPS.Input;
-using NFPS.UI.Common;
-using NFPS.UI.Inventory;
-using NFPS.UI.QuickSlot;
+using Blue.Item;
+using Blue.Input;
+using Blue.UI.Common;
+using Blue.UI.Inventory;
+using Blue.UI.QuickSlot;
 
-namespace NFPS.Inventory
+namespace Blue.Inventory
 {
     public class InventoryView : MonoBehaviour
     {

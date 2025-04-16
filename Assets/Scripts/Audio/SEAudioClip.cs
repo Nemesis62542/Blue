@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace NFPS.Audio
+namespace Blue.Audio
 {
-    [CreateAssetMenu(fileName = "SEAudioClip", menuName = "NFPS/ScriptableObject/SEAudioClip")]
+    [CreateAssetMenu(fileName = "SEAudioClip", menuName = "Blue/ScriptableObject/SEAudioClip")]
     public class SEAudioClip : ScriptableObject
     {
         [System.Serializable]
