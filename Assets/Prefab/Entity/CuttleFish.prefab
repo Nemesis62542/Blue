@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.979
+      value: 0.965
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.z
@@ -70,6 +70,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1888090129187062961}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7213503143768511219}
   m_SourcePrefab: {fileID: 100100000, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
 --- !u!1 &1566385464481461660 stripped
 GameObject:
@@ -89,6 +92,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 1888090129187062961}
+  threatSizeThreshold: 1
+  rotationSpeed: 5
 --- !u!114 &1888090129187062961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,6 +110,27 @@ MonoBehaviour:
   animator: {fileID: 5194646258707150172}
   dimEmissionColor: {r: 0, g: 0.1872549, b: 0.11764706, a: 1}
   brightEmissionColor: {r: 0, g: 2.9960785, b: 1.882353, a: 1}
+--- !u!135 &7213503143768511219
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566385464481461660}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!137 &4433025667461854889 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2664098864995057252, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}

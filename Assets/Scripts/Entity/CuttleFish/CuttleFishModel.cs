@@ -2,6 +2,20 @@ namespace Blue.Entity
 {
     public class CuttleFishModel : BaseEntityModel
     {
-        // 今後、必要に応じて追加
+        public enum CuttleFishState
+        {
+            Dim,
+            Bright,
+            Intimidate,
+        }
+
+        private CuttleFishState currentState = CuttleFishState.Dim;
+
+        public CuttleFishState CurrentState => currentState;
+
+        public void SetState(CuttleFishState state)
+        {
+            currentState = state;
+        }
     }
 }

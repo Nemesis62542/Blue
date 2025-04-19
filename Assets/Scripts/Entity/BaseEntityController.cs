@@ -16,11 +16,5 @@ namespace Blue.Entity
                 Debug.LogError($"{name} : Viewが設定されていません");
             }
         }
-
-        protected virtual void OnDead()
-        {
-            Debug.Log($"{name} は倒れた！");
-            Destroy(gameObject);
-        }
     }
 }

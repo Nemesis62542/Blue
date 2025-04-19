@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 namespace Blue.Player
 {
 [RequireComponent(typeof(Rigidbody))]
-    public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable
+    public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable, ILivingEntity
     {
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
@@ -34,6 +34,8 @@ namespace Blue.Player
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
+
+        public Status Status => model.Status;
 
         protected override void Awake()
         {
@@ -162,7 +164,7 @@ namespace Blue.Player
             if (model.IsDead) OnDead();
         }
 
-        protected override void OnDead()
+        public void OnDead()
         {
             Debug.Log("PlayerController: 死亡処理実行");
             inputHandler.DisableInput();

@@ -48,31 +48,36 @@ namespace Blue.Entity
             }
         }
 
-        public void SetEmissionToDim()
+        public void SetEmissionColorDim(float duration = 1f)
         {
-            SetEmissionColor(dimEmissionColor);
+            TweenEmissionColor(dimEmissionColor, duration);
         }
 
-        public void SetEmissionToBright()
+        public void SetEmissionColorBright(float duration = 1f)
         {
-            SetEmissionColor(brightEmissionColor);
+            TweenEmissionColor(brightEmissionColor, duration);
         }
 
-        public void TweenEmissionColor(Color targetColor, float duration)
+        public void TweenEmissionColor(Color color, float duration)
         {
             if (!cachedMaterial.HasProperty("_EmissionColor")) return;
 
             Color start_color = cachedMaterial.GetColor("_EmissionColor");
-            Debug.Log($"[Tween Start] from: {start_color} → to: {targetColor}");
 
             emissionTween?.Kill();
 
             float t = 0f;
-            emissionTween = DOTween.To(() => t, x => {
+            emissionTween = DOTween.To(() => t, x =>
+            {
                 t = x;
-                Color lerped = Color.Lerp(start_color, targetColor, t);
+                Color lerped = Color.Lerp(start_color, color, t);
                 cachedMaterial.SetColor("_EmissionColor", lerped);
             }, 1f, duration).SetEase(Ease.Linear);
+        }
+        
+        public void SetAnimatorIntimidate(bool is_intimidate)
+        {
+            animator.SetBool("Intimidate", is_intimidate);
         }
     }
 }
