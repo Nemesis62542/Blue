@@ -15,3 +15,4 @@ MonoBehaviour:
   entityName: "\u30D7\u30EC\u30A4\u30E4\u30FC"
   hp: 100
   attackPower: 1
+  size: 2

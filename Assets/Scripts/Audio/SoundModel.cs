@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace NFPS.Audio
+namespace Blue.Audio
 {
     public class SoundModel
     {

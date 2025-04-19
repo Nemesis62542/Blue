@@ -1,18 +1,18 @@
-using NFPS.Attack;
-using NFPS.Entity;
-using NFPS.Input;
-using NFPS.Interface;
-using NFPS.Inventory;
-using NFPS.Object;
-using NFPS.UI;
-using NFPS.UI.Screen;
+using Blue.Attack;
+using Blue.Entity;
+using Blue.Input;
+using Blue.Interface;
+using Blue.Inventory;
+using Blue.Object;
+using Blue.UI;
+using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace NFPS.Player
+namespace Blue.Player
 {
 [RequireComponent(typeof(Rigidbody))]
-    public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable
+    public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable, ILivingEntity
     {
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
@@ -34,6 +34,8 @@ namespace NFPS.Player
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
+
+        public Status Status => model.Status;
 
         protected override void Awake()
         {
@@ -162,7 +164,7 @@ namespace NFPS.Player
             if (model.IsDead) OnDead();
         }
 
-        protected override void OnDead()
+        public void OnDead()
         {
             Debug.Log("PlayerController: 死亡処理実行");
             inputHandler.DisableInput();

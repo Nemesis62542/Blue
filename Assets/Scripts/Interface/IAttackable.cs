@@ -1,6 +1,6 @@
-using NFPS.Attack;
+using Blue.Attack;
 
-namespace NFPS.Interface
+namespace Blue.Interface
 {
     public interface IAttackable
     {

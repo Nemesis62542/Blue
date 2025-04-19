@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.Entity
+namespace Blue.Entity
 {
     public abstract class BaseEntityController<TModel, TView> : MonoBehaviour
         where TModel : BaseEntityModel
@@ -15,12 +15,6 @@ namespace NFPS.Entity
             {
                 Debug.LogError($"{name} : Viewが設定されていません");
             }
-        }
-
-        protected virtual void OnDead()
-        {
-            Debug.Log($"{name} は倒れた！");
-            Destroy(gameObject);
         }
     }
 }

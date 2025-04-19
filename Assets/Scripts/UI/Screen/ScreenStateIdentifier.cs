@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.UI.Screen
+namespace Blue.UI.Screen
 {
     public class ScreenStateIdentifier : MonoBehaviour
     {

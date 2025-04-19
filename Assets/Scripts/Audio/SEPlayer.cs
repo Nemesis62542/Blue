@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NFPS.Audio
+namespace Blue.Audio
 {
     public class SEPlayer : MonoBehaviour
     {

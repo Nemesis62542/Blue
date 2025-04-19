@@ -1,7 +1,7 @@
-using NFPS.Attack;
-using NFPS.Entity;
+using Blue.Attack;
+using Blue.Entity;
 
-namespace NFPS.Interface
+namespace Blue.Interface
 {
     public interface ILivingEntity
     {

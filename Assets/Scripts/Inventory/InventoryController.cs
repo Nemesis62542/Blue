@@ -1,7 +1,7 @@
-using NFPS.Input;
+using Blue.Input;
 using UnityEngine;
 
-namespace NFPS.Inventory
+namespace Blue.Inventory
 {
     public class InventoryController : MonoBehaviour
     {

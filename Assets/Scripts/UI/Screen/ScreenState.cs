@@ -1,4 +1,4 @@
-namespace NFPS.UI.Screen
+namespace Blue.UI.Screen
 {
     public enum ScreenState
     {

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace NFPS.Input
+namespace Blue.Input
 {
     public enum InputMapType
     {

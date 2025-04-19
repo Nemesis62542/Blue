@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace NFPS.UI.Common
+namespace Blue.UI.Common
 {
     public class UISelectableNavigator : MonoBehaviour
     {

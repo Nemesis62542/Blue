@@ -1,4 +1,4 @@
-namespace NFPS.Inventory
+namespace Blue.Inventory
 {
     public interface IInventoryHolder
     {
