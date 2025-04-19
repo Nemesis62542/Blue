@@ -9,6 +9,7 @@ namespace Blue.Entity
         [SerializeField] private Animator animator;
         [SerializeField, ColorUsage(false, true)] private Color dimEmissionColor;
         [SerializeField, ColorUsage(false, true)] private Color brightEmissionColor;
+        [SerializeField] private ParticleSystem inkEffect;
 
         private Material cachedMaterial;
         private Tween emissionTween;
@@ -74,10 +75,15 @@ namespace Blue.Entity
                 cachedMaterial.SetColor("_EmissionColor", lerped);
             }, 1f, duration).SetEase(Ease.Linear);
         }
-        
+
         public void SetAnimatorIntimidate(bool is_intimidate)
         {
             animator.SetBool("Intimidate", is_intimidate);
+        }
+        
+        public void PlayInkEffect()
+        {
+            if (!inkEffect.isPlaying) inkEffect.Play();
         }
     }
 }

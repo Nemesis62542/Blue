@@ -7,7 +7,10 @@ namespace Blue.Entity
     {
         [SerializeField] private float threatSizeThreshold = 1.0f;
         [SerializeField] private float rotationSpeed = 5f;
+        [SerializeField] private float inkTriggerDistance = 1.5f;
+        [SerializeField] private float inkTriggerTime = 10.0f;
         private ILivingEntity threateningEntity;
+        private float intimidateTimer = 0f;
 
         protected override void Awake()
         {
@@ -20,13 +23,29 @@ namespace Blue.Entity
             {
                 Vector3 targetPosition = target.transform.position;
                 targetPosition.y = transform.position.y;
-
                 Vector3 direction = (targetPosition - transform.position).normalized;
                 if (direction.sqrMagnitude > 0.01f)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
                 }
+
+                CheckSpitInkTrigger(target);
+            }
+        }
+
+        private void CheckSpitInkTrigger(MonoBehaviour target)
+        {
+            float distance = Vector3.Distance(transform.position, target.transform.position);
+            if (distance < inkTriggerDistance)
+            {
+                SpitInk();
+            }
+
+            intimidateTimer += Time.deltaTime;
+            if (intimidateTimer >= inkTriggerTime)
+            {
+                SpitInk();
             }
         }
 
@@ -49,7 +68,7 @@ namespace Blue.Entity
                     break;
             }
         }
-        
+
         private void OnTriggerEnter(Collider other)
         {
             if (threateningEntity != null) return;
@@ -61,6 +80,13 @@ namespace Blue.Entity
                     threateningEntity = entity;
                     SetState(CuttleFishModel.CuttleFishState.Intimidate);
                     view.SetAnimatorIntimidate(true);
+                    if (entity.Status.Size >= threatSizeThreshold)
+                    {
+                        threateningEntity = entity;
+                        SetState(CuttleFishModel.CuttleFishState.Intimidate);
+                        view.SetAnimatorIntimidate(true);
+                        intimidateTimer = 0f;
+                    }
                 }
             }
         }
@@ -75,6 +101,15 @@ namespace Blue.Entity
                 SetState(CuttleFishModel.CuttleFishState.Dim);
                 view.SetAnimatorIntimidate(false);
             }
+        }
+        
+        public void SpitInk()
+        {
+            if (model.CurrentState != CuttleFishModel.CuttleFishState.Intimidate) return;
+
+            view.PlayInkEffect();
+
+            // 必要なら、逃走トリガー・速度アップなどをここに入れる
         }
     }
 }
