@@ -15,6 +15,7 @@ namespace Blue.Entity
         protected override void Awake()
         {
             model = new CuttleFishModel();
+            model.Initialize(data);
         }
 
         private void Update()
