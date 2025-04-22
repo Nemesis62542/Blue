@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 58ed0bb1fe2302c478e97cdc174f9c09
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/DemoSceneProfile.asset
+  uploadId: 683562

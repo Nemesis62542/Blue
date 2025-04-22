@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d8df29360632ec34fb13575df0473ca8
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/Prefabs/HologramDisplay.prefab
+  uploadId: 683562

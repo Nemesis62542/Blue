@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9991232d4d3de414fb9e632d64d54aab
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/Materials/UberHologram_World.mat
+  uploadId: 683562
