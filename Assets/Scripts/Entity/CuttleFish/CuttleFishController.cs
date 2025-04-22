@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class CuttleFishController : BaseEntityController<CuttleFishModel, CuttleFishView>
+    public class CuttleFishController : BaseEntityController<CuttleFishModel, CuttleFishView>, IScannable
     {
         [SerializeField] private float threatSizeThreshold = 1.0f;
         [SerializeField] private float rotationSpeed = 5f;
@@ -11,6 +11,9 @@ namespace Blue.Entity
         [SerializeField] private float inkTriggerTime = 10.0f;
         private ILivingEntity threateningEntity;
         private float intimidateTimer = 0f;
+
+        public string DisplayName => model.Status.Name;
+        public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
 
         protected override void Awake()
         {
@@ -111,6 +114,16 @@ namespace Blue.Entity
             view.PlayInkEffect();
 
             // 必要なら、逃走トリガー・速度アップなどをここに入れる
+        }
+
+        public void OnScanStart()
+        {
+            
+        }
+
+        public void OnScanEnd()
+        {
+            
         }
     }
 }

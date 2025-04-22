@@ -4995,8 +4995,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 1888090129187062961}
+  data: {fileID: 11400000, guid: 744773d9cc1ce5a40899b70f03eb5313, type: 2}
   threatSizeThreshold: 1
   rotationSpeed: 5
+  inkTriggerDistance: 1.5
+  inkTriggerTime: 10
 --- !u!114 &1888090129187062961
 MonoBehaviour:
   m_ObjectHideFlags: 0
