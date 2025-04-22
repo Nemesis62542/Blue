@@ -118,12 +118,12 @@ namespace Blue.Entity
 
         public void OnScanStart()
         {
-            
+            Debug.Log("A");
         }
 
         public void OnScanEnd()
         {
-            
+            Debug.Log("B");
         }
     }
 }

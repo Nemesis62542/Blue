@@ -17,9 +17,9 @@ namespace Blue.Player
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
         [SerializeField] private UIController uiController;
+        [SerializeField] private ScannerController scannerController;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
-        [SerializeField] private EntityData data;
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpStrength = 5f;
@@ -27,10 +27,13 @@ namespace Blue.Player
         [SerializeField] private float controllerLookSensitivity = 200f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
+        [SerializeField] private float scanHoldThreshold = 0.5f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
+        private float scanHoldStartTime;
+        private bool isScanning;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -46,7 +49,8 @@ namespace Blue.Player
             model.Initialize(data);
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
-            inputHandler.OnInteractEvent += InteractObject;
+            inputHandler.OnInteractPressEvent += HandleScanPress;
+            inputHandler.OnInteractReleaseEvent += HandleScanRelease;
             inputHandler.OnAttackEvent += Attack;
             inputHandler.OnInventoryToggleEvent += ToggleInventory;
             inputHandler.OnPauseToggleEvent += TogglePause;
@@ -58,7 +62,8 @@ namespace Blue.Player
 
         private void OnDestroy()
         {
-            inputHandler.OnInteractEvent -= InteractObject;
+            inputHandler.OnInteractPressEvent -= HandleScanPress;
+            inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
             inputHandler.OnAttackEvent -= Attack;
             inputHandler.OnInventoryToggleEvent -= ToggleInventory;
             inputHandler.OnPauseToggleEvent -= TogglePause;
@@ -136,6 +141,29 @@ namespace Blue.Player
             else
             {
                 UseSelectedItem();
+            }
+        }
+
+        private void HandleScanPress()
+        {
+            scanHoldStartTime = Time.time;
+            isScanning = true;
+        }
+
+        private void HandleScanRelease()
+        {
+            isScanning = false;
+            float holdDuration = Time.time - scanHoldStartTime;
+
+            if (holdDuration >= scanHoldThreshold)
+            {
+                // 長押し → スキャン実行
+                scannerController.Scan(camTransform.position, camTransform.forward);
+            }
+            else
+            {
+                // 短押し → 通常のアクション
+                InteractObject();
             }
         }
 
