@@ -43,9 +43,10 @@ namespace Blue.UI
                 return;
             }
 
-            Vector3 world_pos = target.position + Vector3.up * 1.5f;
+            Vector3 world_pos = target.position + Vector3.up;
             transform.position = world_pos;
-            transform.rotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);
+
+            transform.forward = mainCamera.transform.forward;
         }
 
         public void Deactivate()
