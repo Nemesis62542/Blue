@@ -17,9 +17,9 @@ namespace Blue.Player
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
         [SerializeField] private UIController uiController;
+        [SerializeField] private ScannerController scannerController;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
-        [SerializeField] private EntityData data;
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpStrength = 5f;
@@ -27,10 +27,13 @@ namespace Blue.Player
         [SerializeField] private float controllerLookSensitivity = 200f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
+        [SerializeField] private float scanHoldThreshold = 0.5f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
+        private float scanHoldStartTime;
+        private bool isScanning;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -46,7 +49,8 @@ namespace Blue.Player
             model.Initialize(data);
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
-            inputHandler.OnInteractEvent += InteractObject;
+            inputHandler.OnInteractPressEvent += HandleScanPress;
+            inputHandler.OnInteractReleaseEvent += HandleScanRelease;
             inputHandler.OnAttackEvent += Attack;
             inputHandler.OnInventoryToggleEvent += ToggleInventory;
             inputHandler.OnPauseToggleEvent += TogglePause;
@@ -58,7 +62,8 @@ namespace Blue.Player
 
         private void OnDestroy()
         {
-            inputHandler.OnInteractEvent -= InteractObject;
+            inputHandler.OnInteractPressEvent -= HandleScanPress;
+            inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
             inputHandler.OnAttackEvent -= Attack;
             inputHandler.OnInventoryToggleEvent -= ToggleInventory;
             inputHandler.OnPauseToggleEvent -= TogglePause;
@@ -139,6 +144,27 @@ namespace Blue.Player
             }
         }
 
+        private void HandleScanPress()
+        {
+            scanHoldStartTime = Time.time;
+            isScanning = true;
+        }
+
+        private void HandleScanRelease()
+        {
+            isScanning = false;
+            float hold_duration = Time.time - scanHoldStartTime;
+
+            if (hold_duration >= scanHoldThreshold)
+            {
+                scannerController.Scan(camTransform.position, camTransform.forward);
+            }
+            else
+            {
+                InteractObject();
+            }
+        }
+
         private void Attack()
         {
             InventoryItem item = QuickSlot.CurrentInventoryItem;
@@ -186,7 +212,7 @@ namespace Blue.Player
             }
             else
             {
-                if(uiController.CurrentScreenState == ScreenState.None) OpenInventory();
+                if(uiController.CurrentScreenState == ScreenState.Ingame) OpenInventory();
             }
         }
 
@@ -198,7 +224,7 @@ namespace Blue.Player
             }
             else
             {
-                if(uiController.CurrentScreenState == ScreenState.None) OpenPause();
+                if(uiController.CurrentScreenState == ScreenState.Ingame) OpenPause();
             }
         }
 

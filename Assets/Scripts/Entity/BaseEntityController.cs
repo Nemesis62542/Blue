@@ -7,6 +7,7 @@ namespace Blue.Entity
         where TView : BaseEntityView
     {
         [SerializeField] protected TView view;
+        [SerializeField] protected EntityData data;
         protected TModel model;
 
         protected virtual void Awake()

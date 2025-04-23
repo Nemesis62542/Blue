@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 46d105d640adf9040a5b97871784afc0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/Materials/Barrier.mat
+  uploadId: 683562

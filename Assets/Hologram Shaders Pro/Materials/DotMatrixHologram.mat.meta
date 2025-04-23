@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 01198d460e29a31449cd93962e384988
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/Materials/DotMatrixHologram.mat
+  uploadId: 683562

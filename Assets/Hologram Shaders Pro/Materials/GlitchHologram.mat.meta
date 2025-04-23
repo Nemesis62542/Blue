@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 412c34ac6f4bfa847974390d2850c1ae
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/Materials/GlitchHologram.mat
+  uploadId: 683562
