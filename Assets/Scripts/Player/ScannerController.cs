@@ -34,7 +34,6 @@ namespace Blue.Player
                     scannedObjects.Add(scannable);
                     scanTimers[scannable] = 0f;
 
-                    // 🔽 ここでUI表示を追加
                     scanUIController.ShowScanUI(((MonoBehaviour)scannable).transform, scannable.DisplayName, scanDisplayDuration);
                 }
                 else

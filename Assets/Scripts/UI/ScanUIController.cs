@@ -7,6 +7,7 @@ namespace Blue.UI
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
         [SerializeField] private float defaultDisplayDuration = 3.0f;
+        [SerializeField] private Transform scanUIParent;
 
         private readonly List<ScanUIElement> activeElements = new List<ScanUIElement>();
 
@@ -38,7 +39,7 @@ namespace Blue.UI
                 }
             }
 
-            ScanUIElement new_element = Instantiate(scanUIPrefab, transform);
+            ScanUIElement new_element = Instantiate(scanUIPrefab, scanUIParent);
             activeElements.Add(new_element);
             return new_element;
         }
