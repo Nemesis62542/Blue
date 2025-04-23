@@ -16,6 +16,7 @@ namespace Blue.UI
         private void Awake()
         {
             InitializeScreenDictionary();
+            ShowScreen(ScreenState.Ingame);
         }
 
         private void InitializeScreenDictionary()
@@ -33,11 +34,7 @@ namespace Blue.UI
 
         public void ShowScreen(ScreenState state)
         {
-            if (currentScreenState != ScreenState.None)
-            {
-                SetScreenVisible(GetCanvasGroup(currentScreenState), false);
-            }
-
+            SetScreenVisible(GetCanvasGroup(currentScreenState), false);
             currentScreenState = state;
 
             if (screenDictionary.TryGetValue(state, out CanvasGroup screen))
@@ -50,12 +47,12 @@ namespace Blue.UI
                 currentScreenState = ScreenState.None;
                 ShowCursor(false);
             }
+            Debug.Log(currentScreenState);
         }
 
         public void HideCurrentScreen()
         {
-            SetScreenVisible(GetCanvasGroup(currentScreenState), false);
-            currentScreenState = ScreenState.None;
+            ShowScreen(ScreenState.Ingame);
             ShowCursor(false); 
         }
 

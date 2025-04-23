@@ -153,16 +153,14 @@ namespace Blue.Player
         private void HandleScanRelease()
         {
             isScanning = false;
-            float holdDuration = Time.time - scanHoldStartTime;
+            float hold_duration = Time.time - scanHoldStartTime;
 
-            if (holdDuration >= scanHoldThreshold)
+            if (hold_duration >= scanHoldThreshold)
             {
-                // 長押し → スキャン実行
                 scannerController.Scan(camTransform.position, camTransform.forward);
             }
             else
             {
-                // 短押し → 通常のアクション
                 InteractObject();
             }
         }
@@ -214,7 +212,7 @@ namespace Blue.Player
             }
             else
             {
-                if(uiController.CurrentScreenState == ScreenState.None) OpenInventory();
+                if(uiController.CurrentScreenState == ScreenState.Ingame) OpenInventory();
             }
         }
 
@@ -226,7 +224,7 @@ namespace Blue.Player
             }
             else
             {
-                if(uiController.CurrentScreenState == ScreenState.None) OpenPause();
+                if(uiController.CurrentScreenState == ScreenState.Ingame) OpenPause();
             }
         }
 
