@@ -1181,34 +1181,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CuttleFish
       objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: ShapeModule.angle
-      value: 35
-      objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: SizeModule.enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: CollisionModule.m_Dampen.scalar
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[0].value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[1].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[1].inSlope
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2128378392646408254, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[1].outSlope
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 2231318022993276710, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.07
@@ -1248,18 +1220,6 @@ PrefabInstance:
     - target: {fileID: 2231318022993276710, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5219309683840727317, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: inkTriggerCollider
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5219309683840727317, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: threatDetectionCollider
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7213503143768511219, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
-      propertyPath: m_Radius
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

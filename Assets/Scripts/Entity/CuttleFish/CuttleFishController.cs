@@ -118,12 +118,12 @@ namespace Blue.Entity
 
         public void OnScanStart()
         {
-            Debug.Log("A");
+            view.EnableHighlight();
         }
 
         public void OnScanEnd()
         {
-            Debug.Log("B");
+            view.DisableHighlight();
         }
     }
 }
