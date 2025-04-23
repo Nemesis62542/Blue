@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Blue.UI.Screen;
 using UnityEngine;
 
 namespace Blue.UI
@@ -6,10 +7,17 @@ namespace Blue.UI
     public class ScanUIController : MonoBehaviour
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
-        [SerializeField] private float defaultDisplayDuration = 3.0f;
+        [SerializeField] private UIController uiController;
         [SerializeField] private Transform scanUIParent;
+        [SerializeField] private float defaultDisplayDuration = 3.0f;
 
         private readonly List<ScanUIElement> activeElements = new List<ScanUIElement>();
+
+        private void Start()
+        {
+            uiController.OnScreenStateChanged += HandleScreenChange;
+            HandleScreenChange(uiController.CurrentScreenState);
+        }
 
         public void ShowScanUI(Transform target, string displayName, float duration = -1f)
         {
@@ -27,6 +35,11 @@ namespace Blue.UI
                     element.gameObject.SetActive(false);
                 }
             }
+        }
+
+        private void HandleScreenChange(ScreenState state)
+        {
+            scanUIParent.gameObject.SetActive(state == ScreenState.Ingame);
         }
 
         private ScanUIElement GetAvailableElement()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blue.UI.Screen;
 using UnityEngine;
@@ -9,9 +10,10 @@ namespace Blue.UI
     {
         [SerializeField] private List<CanvasGroup> screenCanvasGroups;
         private Dictionary<ScreenState, CanvasGroup> screenDictionary;
-
         private ScreenState currentScreenState = ScreenState.None;
+
         public ScreenState CurrentScreenState => currentScreenState;
+        public event Action<ScreenState> OnScreenStateChanged;
 
         private void Awake()
         {
@@ -36,6 +38,7 @@ namespace Blue.UI
         {
             SetScreenVisible(GetCanvasGroup(currentScreenState), false);
             currentScreenState = state;
+            OnScreenStateChanged?.Invoke(state);
 
             if (screenDictionary.TryGetValue(state, out CanvasGroup screen))
             {
@@ -44,10 +47,9 @@ namespace Blue.UI
             }
             else
             {
-                currentScreenState = ScreenState.None;
+                currentScreenState = ScreenState.Ingame;
                 ShowCursor(false);
             }
-            Debug.Log(currentScreenState);
         }
 
         public void HideCurrentScreen()
