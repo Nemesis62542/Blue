@@ -1,3 +1,4 @@
+using Blue.Entity.Common;
 using Blue.Interface;
 using UnityEngine;
 
@@ -9,6 +10,10 @@ namespace Blue.Entity
         [SerializeField] private float rotationSpeed = 5f;
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
+        [SerializeField] private float escapeDistance = 5.0f;
+
+        [SerializeField] private SwimMover swimMover = new SwimMover();
+
         private ILivingEntity threateningEntity;
         private float intimidateTimer = 0f;
 
@@ -19,19 +24,28 @@ namespace Blue.Entity
         {
             model = new CuttleFishModel();
             model.Initialize(data);
+
+            swimMover.Initialize(transform);
         }
 
         private void Update()
         {
+            swimMover.UpdateMove();
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
+            {
+                Vector3 randomDestination = transform.position + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+                swimMover.MoveTo(randomDestination);
+            }
+
             if (model.CurrentState == CuttleFishModel.CuttleFishState.Intimidate && threateningEntity is MonoBehaviour target)
             {
-                Vector3 targetPosition = target.transform.position;
-                targetPosition.y = transform.position.y;
-                Vector3 direction = (targetPosition - transform.position).normalized;
+                Vector3 target_position = target.transform.position;
+                target_position.y = transform.position.y;
+                Vector3 direction = (target_position - transform.position).normalized;
                 if (direction.sqrMagnitude > 0.01f)
                 {
-                    Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
+                    Quaternion target_rotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, target_rotation, 5f * Time.deltaTime);
                 }
 
                 CheckSpitInkTrigger(target);
@@ -113,7 +127,9 @@ namespace Blue.Entity
 
             view.PlayInkEffect();
 
-            // 必要なら、逃走トリガー・速度アップなどをここに入れる
+            Vector3 backDirection = -transform.forward;
+            Vector3 escapeDestination = transform.position + backDirection * escapeDistance;
+            swimMover.MoveTo(escapeDestination);
         }
 
         public void OnScanStart()
