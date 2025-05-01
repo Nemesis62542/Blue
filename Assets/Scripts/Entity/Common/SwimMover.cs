@@ -58,5 +58,18 @@ namespace Blue.Entity.Common
             Vector3 move = direction * current_speed * Time.deltaTime;
             targetTransform.position += move;
         }
+
+        public void MoveToRandomPosition(Vector3 center, float radius)
+        {
+            Vector3 destination = GetRandomDestination(center, radius);
+            MoveTo(destination);
+        }
+
+        private Vector3 GetRandomDestination(Vector3 center, float radius)
+        {
+            Vector2 random_circle = Random.insideUnitCircle * radius;
+            Vector3 random_offset = new Vector3(random_circle.x, 0f, random_circle.y);
+            return center + random_offset;
+        }
     }
 }

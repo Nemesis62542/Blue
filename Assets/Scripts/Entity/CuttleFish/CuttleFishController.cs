@@ -11,11 +11,15 @@ namespace Blue.Entity
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
         [SerializeField] private float escapeDistance = 5.0f;
+        [SerializeField] private float wanderRadius = 3.0f;
+        [SerializeField] private float wanderInterval = 2.0f;
 
         [SerializeField] private SwimMover swimMover = new SwimMover();
 
         private ILivingEntity threateningEntity;
         private float intimidateTimer = 0f;
+        private float wanderTimer = 0f;
+        private bool isWandering = true;
 
         public string DisplayName => model.Status.Name;
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
@@ -49,6 +53,24 @@ namespace Blue.Entity
                 }
 
                 CheckSpitInkTrigger(target);
+            }
+
+            if (isWandering)
+            {
+                if (!swimMover.IsMoving)
+                {
+                    wanderTimer += Time.deltaTime;
+
+                    if (wanderTimer >= wanderInterval)
+                    {
+                        swimMover.MoveToRandomPosition(transform.position, wanderRadius);
+                        wanderTimer = 0f;
+                    }
+                }
+                else
+                {
+                    wanderTimer = 0f;
+                }
             }
         }
 
