@@ -536,6 +536,7 @@ MonoBehaviour:
   camTransform: {fileID: 330585546}
   uiController: {fileID: 136449595}
   scannerController: {fileID: 818240701}
+  playerStatusView: {fileID: 1660057732}
   inventoryController: {fileID: 596343740}
   moveSpeed: 5
   jumpStrength: 5
@@ -947,7 +948,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5296547887548432377, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00033936038
+      value: 0.000036251276
+      objectReference: {fileID: 0}
+    - target: {fileID: 6207670710628531346, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6207670710628531346, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6447195099834822910, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_Name
@@ -1011,23 +1020,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -17
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -460
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 530
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107563338939500507, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107563338939500507, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8295584269408688194, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_Pivot.x
@@ -1138,6 +1155,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+--- !u!114 &1660057732 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3398406362642345405, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+  m_PrefabInstance: {fileID: 1660057731}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 346d027c86d4b3243aab9e5b0d333d8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2067587391
 GameObject:
   m_ObjectHideFlags: 0
