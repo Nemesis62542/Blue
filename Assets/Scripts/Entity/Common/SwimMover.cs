@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Blue.Entity.Common
@@ -11,6 +12,7 @@ namespace Blue.Entity.Common
         [SerializeField] private float slowDownDistance = 2.0f;
 
         private Vector3 destination;
+        private Action onMoveComplete;
         private bool isMoving = false;
 
         public bool IsMoving => isMoving;
@@ -20,10 +22,11 @@ namespace Blue.Entity.Common
             targetTransform = target;
         }
 
-        public void MoveTo(Vector3 new_destination)
+        public void MoveTo(Vector3 new_destination, Action on_complete = null)
         {
             destination = new_destination;
             isMoving = true;
+            onMoveComplete = on_complete;
         }
 
         public void Stop()
@@ -44,6 +47,8 @@ namespace Blue.Entity.Common
             if (distance_to_destination <= arrivalDistance)
             {
                 Stop();
+                onMoveComplete?.Invoke();
+                onMoveComplete = null;
                 return;
             }
 
@@ -59,15 +64,15 @@ namespace Blue.Entity.Common
             targetTransform.position += move;
         }
 
-        public void MoveToRandomPosition(Vector3 center, float radius)
+        public void MoveToRandomPosition(Vector3 center, float radius, Action on_complete = null)
         {
             Vector3 destination = GetRandomDestination(center, radius);
-            MoveTo(destination);
+            MoveTo(destination, on_complete);
         }
 
         private Vector3 GetRandomDestination(Vector3 center, float radius)
         {
-            Vector2 random_circle = Random.insideUnitCircle * radius;
+            Vector2 random_circle = UnityEngine.Random.insideUnitCircle * radius;
             Vector3 random_offset = new Vector3(random_circle.x, 0f, random_circle.y);
             return center + random_offset;
         }
