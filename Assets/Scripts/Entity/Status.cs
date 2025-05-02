@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Blue.Entity
@@ -10,18 +11,21 @@ namespace Blue.Entity
         public float Size { get; private set; }
         public int HP { get; private set; }
 
+        public event Action<float, float> OnHPChanged;
+
         public Status(EntityData data)
         {
             Name = data.EntityName;
             MaxHp = data.HP;
             AttackPower = data.AttackPower;
-            HP = MaxHp;
             Size = data.Size;
+            HP = MaxHp;
         }
 
         public void Damage(int power)
         {
             HP = Mathf.Max(0, HP - power);
+            OnHPChanged?.Invoke(HP, MaxHp);
         }
 
         public bool IsDead => HP <= 0;
