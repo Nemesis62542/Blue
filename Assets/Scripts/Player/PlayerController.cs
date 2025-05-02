@@ -49,6 +49,7 @@ namespace Blue.Player
 
             model.Initialize(data);
             model.Status.OnHPChanged += HandleHPChanged;
+            model.OnOxygenChanged += HandleOxygenChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
             inputHandler.OnInteractPressEvent += HandleScanPress;
@@ -65,6 +66,7 @@ namespace Blue.Player
         private void OnDestroy()
         {
             model.Status.OnHPChanged -= HandleHPChanged;
+            model.OnOxygenChanged -= HandleOxygenChanged;
 
             inputHandler.OnInteractPressEvent -= HandleScanPress;
             inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
@@ -173,6 +175,12 @@ namespace Blue.Player
         {
             float ratio = current / max;
             playerStatusView.SetHPRatio(ratio);
+        }
+
+        private void HandleOxygenChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetOxygenRatio(ratio);
         }
 
         private void Attack()
