@@ -63,7 +63,20 @@ namespace Blue.Entity
 
                     if (wanderTimer >= wanderInterval)
                     {
-                        swimMover.MoveToRandomPosition(transform.position, wanderRadius);
+                        Vector3 randomPos = transform.position;
+                        swimMover.MoveToRandomPosition(randomPos, wanderRadius, () =>
+                        {
+                            view.SetAnimatorSwim(false);
+                        });
+
+                        Vector3 target_position = swimMover.Destination;
+                        Vector3 back_dir = (transform.position - target_position).normalized;
+                        if (back_dir.sqrMagnitude > 0.01f)
+                        {
+                            transform.rotation = Quaternion.LookRotation(back_dir);
+                        }
+
+                        view.SetAnimatorSwim(true);
                         wanderTimer = 0f;
                     }
                 }
@@ -94,6 +107,8 @@ namespace Blue.Entity
             if (model.CurrentState == state) return;
 
             model.SetState(state);
+            isWandering = state == CuttleFishModel.CuttleFishState.Dim;
+            view.SetAnimatorSwim(false);
 
             switch (state)
             {
@@ -101,8 +116,6 @@ namespace Blue.Entity
                     view.SetEmissionColorDim(0.2f);
                     break;
                 case CuttleFishModel.CuttleFishState.Bright:
-                    view.SetEmissionColorBright(0.2f);
-                    break;
                 case CuttleFishModel.CuttleFishState.Intimidate:
                     view.SetEmissionColorBright(0.2f);
                     break;
@@ -151,7 +164,8 @@ namespace Blue.Entity
 
             Vector3 backDirection = -transform.forward;
             Vector3 escapeDestination = transform.position + backDirection * escapeDistance;
-            swimMover.MoveTo(escapeDestination);
+            view.SetAnimatorSwim(true);
+            swimMover.MoveTo(escapeDestination, () => view.SetAnimatorSwim(false));
         }
 
         public void OnScanStart()

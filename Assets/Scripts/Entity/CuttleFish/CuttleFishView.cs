@@ -86,6 +86,11 @@ namespace Blue.Entity
         {
             animator.SetBool("Intimidate", is_intimidate);
         }
+
+        public void SetAnimatorSwim(bool is_swim)
+        {
+            animator.SetBool("Swim", is_swim);
+        }
         
         public void PlayInkEffect()
         {

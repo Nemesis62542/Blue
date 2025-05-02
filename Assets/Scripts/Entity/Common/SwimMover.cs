@@ -15,6 +15,7 @@ namespace Blue.Entity.Common
         private Action onMoveComplete;
         private bool isMoving = false;
 
+        public Vector3 Destination => destination;
         public bool IsMoving => isMoving;
 
         public void Initialize(Transform target)
