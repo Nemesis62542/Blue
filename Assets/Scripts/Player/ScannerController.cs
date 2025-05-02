@@ -11,7 +11,7 @@ namespace Blue.Player
         [SerializeField] private float scanRadius = 6f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private float scanDisplayDuration = 3f;
-        [SerializeField] private ScanUIController scanUIController; // ← 追加
+        [SerializeField] private ScannerView scanUIController;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
         private readonly Dictionary<IScannable, float> scanTimers = new Dictionary<IScannable, float>();

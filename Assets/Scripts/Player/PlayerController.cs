@@ -18,6 +18,7 @@ namespace Blue.Player
         [SerializeField] private Transform camTransform;
         [SerializeField] private UIController uiController;
         [SerializeField] private ScannerController scannerController;
+        [SerializeField] private PlayerStatusView playerStatusView;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
         [Header("プレイヤーの操作に関する値")]
@@ -47,6 +48,8 @@ namespace Blue.Player
             model = new PlayerModel();
 
             model.Initialize(data);
+            model.Status.OnHPChanged += HandleHPChanged;
+            model.OnOxygenChanged += HandleOxygenChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
             inputHandler.OnInteractPressEvent += HandleScanPress;
@@ -62,6 +65,9 @@ namespace Blue.Player
 
         private void OnDestroy()
         {
+            model.Status.OnHPChanged -= HandleHPChanged;
+            model.OnOxygenChanged -= HandleOxygenChanged;
+
             inputHandler.OnInteractPressEvent -= HandleScanPress;
             inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
             inputHandler.OnAttackEvent -= Attack;
@@ -163,6 +169,18 @@ namespace Blue.Player
             {
                 InteractObject();
             }
+        }
+
+        private void HandleHPChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetHPRatio(ratio);
+        }
+
+        private void HandleOxygenChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetOxygenRatio(ratio);
         }
 
         private void Attack()

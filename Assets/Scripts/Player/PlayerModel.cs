@@ -1,3 +1,4 @@
+using System;
 using Blue.Entity;
 using Blue.Inventory;
 using UnityEngine;
@@ -8,15 +9,42 @@ namespace Blue.Player
     {
         private InventoryModel inventory = new InventoryModel();
         private QuickSlotHandler quickSlotHandler;
+        private int maxOxygen = 100;
+        private int oxygen;
 
         public InventoryModel Inventory => inventory;
         public QuickSlotHandler QuickSlot => quickSlotHandler;
+        public int MaxOxygen => maxOxygen;
+        public int Oxygen => oxygen;
+
+        public event Action<float, float> OnOxygenChanged;
 
         public override void Initialize(EntityData data)
         {
             base.Initialize(data);
 
             quickSlotHandler = new QuickSlotHandler(inventory);
+            oxygen = maxOxygen;
+        }
+
+        public void ConsumeOxygen(int amount)
+        {
+            SetOxygen(oxygen - amount);
+        }
+
+        public void RefillOxygen(int amount)
+        {
+            SetOxygen(oxygen + amount);
+        }
+
+        private void SetOxygen(int value)
+        {
+            int clamped = Mathf.Clamp(value, 0, maxOxygen);
+            if (oxygen != clamped)
+            {
+                oxygen = clamped;
+                OnOxygenChanged?.Invoke(oxygen, maxOxygen);
+            }
         }
     }
 }

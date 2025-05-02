@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Blue.UI
 {
-    public class ScanUIController : MonoBehaviour
+    public class ScannerView : MonoBehaviour
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
         [SerializeField] private UIController uiController;
