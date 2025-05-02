@@ -11,11 +11,15 @@ namespace Blue.Entity
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
         [SerializeField] private float escapeDistance = 5.0f;
+        [SerializeField] private float wanderRadius = 3.0f;
+        [SerializeField] private float wanderInterval = 2.0f;
 
         [SerializeField] private SwimMover swimMover = new SwimMover();
 
         private ILivingEntity threateningEntity;
         private float intimidateTimer = 0f;
+        private float wanderTimer = 0f;
+        private bool isWandering = true;
 
         public string DisplayName => model.Status.Name;
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
@@ -50,6 +54,37 @@ namespace Blue.Entity
 
                 CheckSpitInkTrigger(target);
             }
+
+            if (isWandering)
+            {
+                if (!swimMover.IsMoving)
+                {
+                    wanderTimer += Time.deltaTime;
+
+                    if (wanderTimer >= wanderInterval)
+                    {
+                        Vector3 randomPos = transform.position;
+                        swimMover.MoveToRandomPosition(randomPos, wanderRadius, () =>
+                        {
+                            view.SetAnimatorSwim(false);
+                        });
+
+                        Vector3 target_position = swimMover.Destination;
+                        Vector3 back_dir = (transform.position - target_position).normalized;
+                        if (back_dir.sqrMagnitude > 0.01f)
+                        {
+                            transform.rotation = Quaternion.LookRotation(back_dir);
+                        }
+
+                        view.SetAnimatorSwim(true);
+                        wanderTimer = 0f;
+                    }
+                }
+                else
+                {
+                    wanderTimer = 0f;
+                }
+            }
         }
 
         private void CheckSpitInkTrigger(MonoBehaviour target)
@@ -72,6 +107,8 @@ namespace Blue.Entity
             if (model.CurrentState == state) return;
 
             model.SetState(state);
+            isWandering = state == CuttleFishModel.CuttleFishState.Dim;
+            view.SetAnimatorSwim(false);
 
             switch (state)
             {
@@ -79,8 +116,6 @@ namespace Blue.Entity
                     view.SetEmissionColorDim(0.2f);
                     break;
                 case CuttleFishModel.CuttleFishState.Bright:
-                    view.SetEmissionColorBright(0.2f);
-                    break;
                 case CuttleFishModel.CuttleFishState.Intimidate:
                     view.SetEmissionColorBright(0.2f);
                     break;
@@ -129,7 +164,8 @@ namespace Blue.Entity
 
             Vector3 backDirection = -transform.forward;
             Vector3 escapeDestination = transform.position + backDirection * escapeDistance;
-            swimMover.MoveTo(escapeDestination);
+            view.SetAnimatorSwim(true);
+            swimMover.MoveTo(escapeDestination, () => view.SetAnimatorSwim(false));
         }
 
         public void OnScanStart()
