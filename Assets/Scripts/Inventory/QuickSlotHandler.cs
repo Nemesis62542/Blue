@@ -29,6 +29,9 @@ namespace Blue.Inventory
             if (IsValidSlot(index))
             {
                 quickSlots[index] = item;
+
+                if (index == currentSlotIndex) OnQuickSlotChanged?.Invoke(index, item);
+
                 OnQuickSlotUpdated?.Invoke();
             }
         }
@@ -97,9 +100,10 @@ namespace Blue.Inventory
 
         public void SelectSlot(int index)
         {
-            if (IsValidSlot(index) && GetItem(index) != null)
+            if (IsValidSlot(index))
             {
                 currentSlotIndex = index;
+                Debug.Log($"クイックスロット{index}を選択");
                 OnQuickSlotChanged?.Invoke(index, GetItem(index));
             }
         }
