@@ -35,11 +35,6 @@ namespace Blue.Entity
         private void Update()
         {
             swimMover.UpdateMove();
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                Vector3 randomDestination = transform.position + new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
-                swimMover.MoveTo(randomDestination);
-            }
 
             if (model.CurrentState == CuttleFishModel.CuttleFishState.Intimidate && threateningEntity is MonoBehaviour target)
             {

@@ -3,6 +3,7 @@ using Blue.Entity;
 using Blue.Input;
 using Blue.Interface;
 using Blue.Inventory;
+using Blue.Item;
 using Blue.Object;
 using Blue.UI;
 using Blue.UI.Screen;
@@ -11,7 +12,7 @@ using UnityEngine.InputSystem;
 
 namespace Blue.Player
 {
-[RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable, ILivingEntity
     {
         [SerializeField] private Rigidbody rb;
@@ -57,7 +58,9 @@ namespace Blue.Player
             inputHandler.OnAttackEvent += Attack;
             inputHandler.OnInventoryToggleEvent += ToggleInventory;
             inputHandler.OnPauseToggleEvent += TogglePause;
-            inputHandler.OnQuickSlotUseEvent += QuickSlot.SelectSlot;
+            inputHandler.OnQuickSlotChangeEvent += QuickSlot.SelectSlot;
+
+            QuickSlot.OnQuickSlotChanged += HandleSlotChanged;
 
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(InputMapType.Player);
@@ -73,8 +76,10 @@ namespace Blue.Player
             inputHandler.OnAttackEvent -= Attack;
             inputHandler.OnInventoryToggleEvent -= ToggleInventory;
             inputHandler.OnPauseToggleEvent -= TogglePause;
-            inputHandler.OnQuickSlotUseEvent -= QuickSlot.SelectSlot;
+            inputHandler.OnQuickSlotChangeEvent -= QuickSlot.SelectSlot;
             inputHandler.Dispose();
+
+            QuickSlot.OnQuickSlotChanged -= HandleSlotChanged;
 
             inputHandler.SetInputMap(InputMapType.None);
         }
@@ -230,7 +235,7 @@ namespace Blue.Player
             }
             else
             {
-                if(uiController.CurrentScreenState == ScreenState.Ingame) OpenInventory();
+                if (uiController.CurrentScreenState == ScreenState.Ingame) OpenInventory();
             }
         }
 
@@ -242,7 +247,7 @@ namespace Blue.Player
             }
             else
             {
-                if(uiController.CurrentScreenState == ScreenState.Ingame) OpenPause();
+                if (uiController.CurrentScreenState == ScreenState.Ingame) OpenPause();
             }
         }
 
@@ -268,6 +273,11 @@ namespace Blue.Player
         private void UseSelectedItem()
         {
             QuickSlot.Use(QuickSlot.CurrentSlotIndex);
+        }
+        
+        private void HandleSlotChanged(int index, ItemData item)
+        {
+            view.ShowHeldItem(item);
         }
     }
 }

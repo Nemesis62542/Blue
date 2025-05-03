@@ -26,7 +26,7 @@ namespace Blue.Input
         public event Action OnAttackEvent;
         public event Action OnInventoryToggleEvent;
         public event Action OnPauseToggleEvent;
-        public event Action<int> OnQuickSlotUseEvent;
+        public event Action<int> OnQuickSlotChangeEvent;
         public event Action OnInteractPressEvent;
         public event Action OnInteractReleaseEvent;
 
@@ -125,22 +125,22 @@ namespace Blue.Input
 
         private void OnQuickSlot1(InputAction.CallbackContext context)
         {
-            OnQuickSlotUseEvent?.Invoke(0);
+            OnQuickSlotChangeEvent?.Invoke(0);
         }
 
         private void OnQuickSlot2(InputAction.CallbackContext context)
         {
-            OnQuickSlotUseEvent?.Invoke(1);
+            OnQuickSlotChangeEvent?.Invoke(1);
         }
 
         private void OnQuickSlot3(InputAction.CallbackContext context)
         {
-            OnQuickSlotUseEvent?.Invoke(2);
+            OnQuickSlotChangeEvent?.Invoke(2);
         }
 
         private void OnQuickSlot4(InputAction.CallbackContext context)
         {
-            OnQuickSlotUseEvent?.Invoke(3);
+            OnQuickSlotChangeEvent?.Invoke(3);
         }
 
         public void ResetJumpFlag()

@@ -16,7 +16,7 @@ namespace Blue.Inventory
         public InventoryItem CurrentInventoryItem => GetInventoryItem(currentSlotIndex);
         public int CurrentSlotIndex => currentSlotIndex;
 
-        public event Action<int, ItemData> OnQuickSlotItemUsed;
+        public event Action<int, ItemData> OnQuickSlotChanged;
         public event Action OnQuickSlotUpdated;
 
         public QuickSlotHandler(InventoryModel inventory)
@@ -29,6 +29,9 @@ namespace Blue.Inventory
             if (IsValidSlot(index))
             {
                 quickSlots[index] = item;
+
+                if (index == currentSlotIndex) OnQuickSlotChanged?.Invoke(index, item);
+
                 OnQuickSlotUpdated?.Invoke();
             }
         }
@@ -38,7 +41,7 @@ namespace Blue.Inventory
             if (IsValidSlot(index))
             {
                 quickSlots[index] = null;
-                OnQuickSlotItemUsed?.Invoke(index, null);
+                OnQuickSlotChanged?.Invoke(index, null);
                 OnQuickSlotUpdated?.Invoke();
             }
         }
@@ -69,7 +72,7 @@ namespace Blue.Inventory
                     break;
             }
 
-            OnQuickSlotItemUsed?.Invoke(index, item);
+            OnQuickSlotChanged?.Invoke(index, item);
         }
 
         public InventoryItem GetInventoryItem(int index)
@@ -97,10 +100,11 @@ namespace Blue.Inventory
 
         public void SelectSlot(int index)
         {
-            if (IsValidSlot(index) && GetItem(index) != null)
+            if (IsValidSlot(index))
             {
                 currentSlotIndex = index;
-                OnQuickSlotItemUsed?.Invoke(index, GetItem(index));
+                Debug.Log($"クイックスロット{index}を選択");
+                OnQuickSlotChanged?.Invoke(index, GetItem(index));
             }
         }
 
