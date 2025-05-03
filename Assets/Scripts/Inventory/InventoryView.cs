@@ -28,7 +28,7 @@ namespace Blue.Inventory
             this.model = model; 
             quickSlotHandler = quick_slot_handler;
 
-            quickSlotHandler.OnQuickSlotItemUsed += UpdateQuickSlotUI;
+            quickSlotHandler.OnQuickSlotChanged += UpdateQuickSlotUI;
             quickSlotHandler.OnQuickSlotUpdated += RefreshQuickSlotUI;
 
             quickSlotSelectHandler.SetQuickSlotHandler(quickSlotHandler);
@@ -40,7 +40,7 @@ namespace Blue.Inventory
         {
             if (quickSlotHandler == null) return;
 
-            quickSlotHandler.OnQuickSlotItemUsed -= UpdateQuickSlotUI;
+            quickSlotHandler.OnQuickSlotChanged -= UpdateQuickSlotUI;
             quickSlotHandler.OnQuickSlotUpdated -= RefreshQuickSlotUI;
         }
 
