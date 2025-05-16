@@ -1,0 +1,9 @@
+namespace Blue.Entity
+{
+    public class #NAME#Model : BaseEntityModel
+    {
+        public #NAME#Model(int hp, int attack) : base(hp, attack)
+        {
+        }
+    }
+}

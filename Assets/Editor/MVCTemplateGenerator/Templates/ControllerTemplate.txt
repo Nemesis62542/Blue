@@ -1,0 +1,12 @@
+using UnityEngine;
+
+namespace Blue.Entity
+{
+    public class #NAME#Controller : BaseEntityController<#NAME#Model, #NAME#View>
+    {
+        protected override void Awake()
+        {
+            // Init logic here
+        }
+    }
+}
