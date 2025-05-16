@@ -30,7 +30,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseEmissionTexture:
-        m_Texture: {fileID: 2800000, guid: c1f5552f1e441524baf4b25ba860dfd3, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -146,7 +146,7 @@ Material:
     - _BaseEmissionColor: {r: 0.036620364, g: 0.74901956, b: 0, a: 0.019607844}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _FresnelColor: {r: 0, g: 31.999996, b: 0.7027968, a: 1}
+    - _FresnelColor: {r: 0, g: 5.992157, b: 0.13160217, a: 1}
     - _ScanlineDirection: {r: 0, g: 1, b: 0, a: 0}
     - _ScanlineMinMaxAlpha: {r: 0, g: 1, b: 0, a: 0}
     - _ScanlineVelocity: {r: 0, g: 0.01, b: 0, a: 0}
