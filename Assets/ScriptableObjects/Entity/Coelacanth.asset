@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: Coelacanth
   m_EditorClassIdentifier: 
-  entityName: 
-  hp: 0
+  entityName: "\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30BA"
+  hp: 10
   attackPower: 0
-  size: 0
+  size: 2
