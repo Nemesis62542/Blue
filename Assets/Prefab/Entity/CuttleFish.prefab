@@ -5003,6 +5003,14 @@ MonoBehaviour:
   rotationSpeed: 5
   inkTriggerDistance: 1.5
   inkTriggerTime: 10
+  escapeDistance: 5
+  wanderRadius: 3
+  wanderInterval: 2
+  swimMover:
+    targetTransform: {fileID: 0}
+    moveSpeed: 3
+    arrivalDistance: 0.5
+    slowDownDistance: 2
 --- !u!114 &1888090129187062961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5034,7 +5042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRenderer: {fileID: 4433025667461854889}
-  highlightMaterial: {fileID: 2100000, guid: 9c6c9482051b46d41bba9a5eca9f29ec, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: bf435557a5b5db14a9f03c678a8d9afe, type: 2}
 --- !u!135 &7213503143768511219
 SphereCollider:
   m_ObjectHideFlags: 0
