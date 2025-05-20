@@ -7,50 +7,25 @@ namespace Blue.UI
     {
         [SerializeField] private TextMeshProUGUI nameText;
         private Transform target;
-        private Camera mainCamera;
-        private float lifetime;
+        private float lifeTime;
         private float elapsed;
 
-        public bool IsActive => target != null && elapsed < lifetime;
+        public Transform Target => target;
 
-        public void Initialize(Transform target, string displayName, float duration)
+        public void Initialize(Transform target, string display_name, float duration)
         {
             this.target = target;
-            lifetime = duration;
+            lifeTime = duration;
             elapsed = 0f;
 
-            if (mainCamera == null)
-            {
-                mainCamera = Camera.main;
-            }
-
-            nameText.text = displayName;
+            nameText.text = display_name;
             gameObject.SetActive(true);
         }
 
-        private void Update()
+        public void IncreaseElapsed()
         {
-            if (target == null || mainCamera == null)
-            {
-                Deactivate();
-                return;
-            }
-
             elapsed += Time.deltaTime;
-            if (elapsed >= lifetime)
-            {
-                Deactivate();
-                return;
-            }
-
-            Vector3 viewport_position = Camera.main.WorldToViewportPoint(target.position);
-            Vector3 screen_position = new Vector3(
-                viewport_position.x * UnityEngine.Screen.width,
-                viewport_position.y * UnityEngine.Screen.height,
-                0
-            );
-
-            transform.position = screen_position;
+            if (elapsed >= lifeTime) Deactivate();
         }
 
         public void Deactivate()
