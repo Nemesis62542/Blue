@@ -1057,7 +1057,7 @@ MonoBehaviour:
   scanRadius: 6
   fieldOfViewAngle: 60
   scanDisplayDuration: 3
-  scanUIController: {fileID: 1366810937}
+  scannerView: {fileID: 1366810937}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
