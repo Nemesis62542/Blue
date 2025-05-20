@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,7 @@ namespace Blue.UI
         [SerializeField] private Slider oxygenSlider;
         [SerializeField] private Slider hpSliderShadow;
         [SerializeField] private Slider oxygenSliderShadow;
+        [SerializeField] private TextMeshProUGUI depth;
 
         public void SetHPRatio(float ratio)
         {
@@ -20,6 +22,11 @@ namespace Blue.UI
         {
             oxygenSlider.value = Mathf.Clamp01(ratio);
             oxygenSliderShadow.value = oxygenSlider.value;
+        }
+
+        public void SetDepth(float depth)
+        {
+            this.depth.text = $"depth : {depth:F1}m";
         }
     }
 }
