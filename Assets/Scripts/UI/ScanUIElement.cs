@@ -13,9 +13,9 @@ namespace Blue.UI
 
         public bool IsActive => target != null && elapsed < lifetime;
 
-        public void Initialize(Transform newTarget, string displayName, float duration)
+        public void Initialize(Transform target, string displayName, float duration)
         {
-            target = newTarget;
+            this.target = target;
             lifetime = duration;
             elapsed = 0f;
 
@@ -43,17 +43,20 @@ namespace Blue.UI
                 return;
             }
 
-            Vector3 world_pos = target.position + Vector3.up;
-            transform.position = world_pos;
+            Vector3 viewport_position = Camera.main.WorldToViewportPoint(target.position);
+            Vector3 screen_position = new Vector3(
+                viewport_position.x * UnityEngine.Screen.width,
+                viewport_position.y * UnityEngine.Screen.height,
+                0
+            );
 
-            transform.forward = mainCamera.transform.forward;
+            transform.position = screen_position;
         }
 
         public void Deactivate()
         {
-            target = null;
             elapsed = 0f;
-            gameObject.SetActive(false);
+            Destroy(gameObject);
         }
     }
 }

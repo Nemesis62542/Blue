@@ -8,16 +8,9 @@ namespace Blue.UI
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
         [SerializeField] private UIController uiController;
-        [SerializeField] private Transform scanUIParent;
         [SerializeField] private float defaultDisplayDuration = 3.0f;
 
         private readonly List<ScanUIElement> activeElements = new List<ScanUIElement>();
-
-        private void Start()
-        {
-            uiController.OnScreenStateChanged += HandleScreenChange;
-            HandleScreenChange(uiController.CurrentScreenState);
-        }
 
         public void ShowScanUI(Transform target, string displayName, float duration = -1f)
         {
@@ -37,11 +30,6 @@ namespace Blue.UI
             }
         }
 
-        private void HandleScreenChange(ScreenState state)
-        {
-            scanUIParent.gameObject.SetActive(state == ScreenState.Ingame);
-        }
-
         private ScanUIElement GetAvailableElement()
         {
             foreach (ScanUIElement element in activeElements)
@@ -52,7 +40,7 @@ namespace Blue.UI
                 }
             }
 
-            ScanUIElement new_element = Instantiate(scanUIPrefab, scanUIParent);
+            ScanUIElement new_element = Instantiate(scanUIPrefab, transform);
             activeElements.Add(new_element);
             return new_element;
         }

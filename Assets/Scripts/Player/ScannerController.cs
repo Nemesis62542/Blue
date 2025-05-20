@@ -11,7 +11,7 @@ namespace Blue.Player
         [SerializeField] private float scanRadius = 6f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private float scanDisplayDuration = 3f;
-        [SerializeField] private ScannerView scanUIController;
+        [SerializeField] private ScannerView scannerView;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
         private readonly Dictionary<IScannable, float> scanTimers = new Dictionary<IScannable, float>();
@@ -22,7 +22,7 @@ namespace Blue.Player
 
             foreach (Collider hit in hits)
             {
-                if (!hit.TryGetComponent<IScannable>(out IScannable scannable)) continue;
+                if (!hit.TryGetComponent(out IScannable scannable)) continue;
 
                 Vector3 direction = (hit.transform.position - origin).normalized;
                 float angle = Vector3.Angle(forward, direction);
@@ -34,7 +34,9 @@ namespace Blue.Player
                     scannedObjects.Add(scannable);
                     scanTimers[scannable] = 0f;
 
-                    scanUIController.ShowScanUI(((MonoBehaviour)scannable).transform, scannable.DisplayName, scanDisplayDuration);
+                    Transform target_position = ((MonoBehaviour)scannable).transform;
+
+                    scannerView.ShowScanUI(target_position, scannable.DisplayName, scanDisplayDuration);
                 }
                 else
                 {
