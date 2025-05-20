@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5000001
+      value: -3.6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -48,6 +48,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3081994679161391779, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -3081994679161391779, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -3081994679161391779, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3081994679161391779, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_Name
       value: Coelacanth
@@ -60,6 +76,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 7374029d35f5a0e49a2c025c728bded7, type: 2}
+    - target: {fileID: 4167280743394806330, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4167280743394806330, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_Controller
       value: 
@@ -164,7 +188,7 @@ CapsuleCollider:
   m_Radius: 0.25
   m_Height: 2.5
   m_Direction: 2
-  m_Center: {x: 0, y: 0.6, z: -0.2}
+  m_Center: {x: 0, y: 0, z: -0.5}
 --- !u!95 &7181221044441098564 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}

@@ -51,6 +51,7 @@ namespace Blue.Player
             model.Initialize(data);
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
+            model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
             inputHandler.OnInteractPressEvent += HandleScanPress;
@@ -70,6 +71,7 @@ namespace Blue.Player
         {
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
+            model.OnDepthChanged -= HandleDepthChanged;
 
             inputHandler.OnInteractPressEvent -= HandleScanPress;
             inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
@@ -88,6 +90,7 @@ namespace Blue.Player
         {
             HandleMove();
             HandleViewRotation();
+            model.SetDepth(0 - transform.position.y);
 
             if (inputHandler.JumpPressed && isGrounded)
             {
@@ -186,6 +189,11 @@ namespace Blue.Player
         {
             float ratio = current / max;
             playerStatusView.SetOxygenRatio(ratio);
+        }
+
+        private void HandleDepthChanged(float depth)
+        {
+            playerStatusView.SetDepth(depth);
         }
 
         private void Attack()
