@@ -828,6 +828,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hpSlider: {fileID: 7250012381592679649}
   oxygenSlider: {fileID: 172446805222308806}
+  hpSliderShadow: {fileID: 1227213063162698488}
+  oxygenSliderShadow: {fileID: 2874621804201376389}
 --- !u!1 &4892155955030977344
 GameObject:
   m_ObjectHideFlags: 0
