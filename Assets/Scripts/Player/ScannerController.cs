@@ -24,25 +24,37 @@ namespace Blue.Player
             {
                 if (!hit.TryGetComponent(out IScannable scannable)) continue;
 
-                Vector3 direction = (hit.transform.position - origin).normalized;
-                float angle = Vector3.Angle(forward, direction);
-                if (angle > fieldOfViewAngle * 0.5f) continue;
-
-                if (!scannedObjects.Contains(scannable))
+                if (IsWithinFieldOfView(origin, forward, hit.transform.position) && !scannedObjects.Contains(scannable))
                 {
-                    scannable.OnScanStart();
-                    scannedObjects.Add(scannable);
-                    scanTimers[scannable] = 0f;
-
-                    Transform target_position = ((MonoBehaviour)scannable).transform;
-
-                    scannerView.ShowScanUI(target_position, scannable.DisplayName, scanDisplayDuration);
+                    AddScannable(scannable);
                 }
-                else
+                else if (scannedObjects.Contains(scannable))
                 {
-                    scanTimers[scannable] = 0f;
+                    ResetScanTimer(scannable);
                 }
             }
+        }
+
+        private bool IsWithinFieldOfView(Vector3 origin, Vector3 forward, Vector3 target_position)
+        {
+            Vector3 direction = (target_position - origin).normalized;
+            float angle = Vector3.Angle(forward, direction);
+            return angle <= fieldOfViewAngle * 0.5f;
+        }
+
+        private void AddScannable(IScannable scannable)
+        {
+            scannable.OnScanStart();
+            scannedObjects.Add(scannable);
+            scanTimers[scannable] = 0f;
+
+            Transform target_position = ((MonoBehaviour)scannable).transform;
+            scannerView.ShowScanUI(target_position, scannable.DisplayName, scanDisplayDuration);
+        }
+
+        private void ResetScanTimer(IScannable scannable)
+        {
+            scanTimers[scannable] = 0f;
         }
 
         private void Update()
@@ -50,15 +62,25 @@ namespace Blue.Player
             for (int i = scannedObjects.Count - 1; i >= 0; i--)
             {
                 IScannable scannable = scannedObjects[i];
-                scanTimers[scannable] += Time.deltaTime;
-
-                if (scanTimers[scannable] >= scanDisplayDuration)
-                {
-                    scannable.OnScanEnd();
-                    scannedObjects.RemoveAt(i);
-                    scanTimers.Remove(scannable);
-                }
+                UpdateScanTimer(scannable, i);
             }
+        }
+
+        private void UpdateScanTimer(IScannable scannable, int index)
+        {
+            scanTimers[scannable] += Time.deltaTime;
+
+            if (scanTimers[scannable] >= scanDisplayDuration)
+            {
+                RemoveScannable(scannable, index);
+            }
+        }
+
+        private void RemoveScannable(IScannable scannable, int index)
+        {
+            scannable.OnScanEnd();
+            scannedObjects.RemoveAt(index);
+            scanTimers.Remove(scannable);
         }
     }
 }
