@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Blue.Interface;
 using UnityEngine;
 
 namespace Blue.UI
@@ -7,41 +8,75 @@ namespace Blue.UI
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
         [SerializeField] private UIController uiController;
-        [SerializeField] private float defaultDisplayDuration = 3.0f;
 
-        public void ShowScanUI(Transform target, string displayName, float duration = -1f)
+        private Dictionary<IScannable, ScanUIElement> details = new Dictionary<IScannable, ScanUIElement>();
+        private Camera mainCamera;
+
+        public void SetDetailUI(Transform target, IScannable scannable)
         {
+            if (details.ContainsKey(scannable))
+            {
+                Destroy(details[scannable].gameObject);
+                details.Remove(scannable);
+            }
+
             ScanUIElement element = Instantiate(scanUIPrefab, transform);
-            float show_time = duration > 0f ? duration : defaultDisplayDuration;
-            element.Initialize(target, displayName, show_time);
+            element.Initialize(target, scannable.DisplayName);
+            details.Add(scannable, element);
         }
 
-        private void Update()
+        public void ToggleShowDetailUI(IScannable scannable, bool value)
         {
-            ScanUIElement[] elements = GetComponentsInChildren<ScanUIElement>(true);
-            for (int i = 0; i < elements.Length; i++)
+            if (details.TryGetValue(scannable, out ScanUIElement element))
             {
-                ScanUIElement element = elements[i];
-                Vector3 viewport_position = Camera.main.WorldToViewportPoint(element.Target.position);
-
-                if (viewport_position.z < 0 || viewport_position.x < 0 || viewport_position.x > 1 || viewport_position.y < 0 || viewport_position.y > 1)
+                if (element.gameObject.activeSelf != value)
                 {
-                    if (element.gameObject.activeSelf) element.gameObject.SetActive(false);
+                    element.gameObject.SetActive(value);
                 }
-                else if (!element.gameObject.activeSelf)
-                {
-                    element.gameObject.SetActive(true);
-                }
-
-                Vector3 screen_position = new Vector3(
-                    viewport_position.x * UnityEngine.Screen.width,
-                    viewport_position.y * UnityEngine.Screen.height,
-                    0
-                );
-
-                element.transform.position = screen_position;
-                element.IncreaseElapsed();
             }
+        }
+
+        public void UpdateDetailUI(IScannable scannable, bool is_within_distance)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                Vector3 viewport_position = mainCamera.WorldToViewportPoint(element.Target.position);
+                bool is_visible = viewport_position.z > 0 &&
+                                         viewport_position.x >= 0 && viewport_position.x <= 1 &&
+                                         viewport_position.y >= 0 && viewport_position.y <= 1;
+
+                bool should_be_visible = is_within_distance && is_visible;
+
+                if (element.gameObject.activeSelf != should_be_visible)
+                {
+                    element.gameObject.SetActive(should_be_visible);
+                }
+
+                if (should_be_visible)
+                {
+                    Vector3 screen_position = new Vector3(
+                        viewport_position.x * UnityEngine.Screen.width,
+                        viewport_position.y * UnityEngine.Screen.height,
+                        0
+                    );
+
+                    element.transform.position = screen_position;
+                }
+            }
+        }
+
+        public void ReflashScanUI()
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+            details.Clear();
+        }
+
+        private void Start()
+        {
+            mainCamera = Camera.main;
         }
     }
 }

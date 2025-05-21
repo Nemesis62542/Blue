@@ -10,14 +10,15 @@ namespace Blue.Player
         [Header("Scan Settings")]
         [SerializeField] private float scanRadius = 6f;
         [SerializeField] private float fieldOfViewAngle = 60f;
-        [SerializeField] private float scanDisplayDuration = 3f;
-        [SerializeField] private ScannerView scannerView;
+        [SerializeField] private ScannerView view;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
-        private readonly Dictionary<IScannable, float> scanTimers = new Dictionary<IScannable, float>();
 
         public void Scan(Vector3 origin, Vector3 forward)
         {
+            RemoveScannableAll();
+            view.ReflashScanUI();
+
             Collider[] hits = Physics.OverlapSphere(origin, scanRadius);
 
             foreach (Collider hit in hits)
@@ -28,10 +29,17 @@ namespace Blue.Player
                 {
                     AddScannable(scannable);
                 }
-                else if (scannedObjects.Contains(scannable))
-                {
-                    ResetScanTimer(scannable);
-                }
+            }
+        }
+
+        private void Update()
+        {
+            for (int i = 0; i < scannedObjects.Count; i++)
+            {
+                IScannable scannable = scannedObjects[i];
+                float distance = Vector3.Distance(((MonoBehaviour)scannable).transform.position, transform.position);
+                
+                view.UpdateDetailUI(scannable, distance < scanRadius);
             }
         }
 
@@ -46,41 +54,32 @@ namespace Blue.Player
         {
             scannable.OnScanStart();
             scannedObjects.Add(scannable);
-            scanTimers[scannable] = 0f;
+            SetDetailUI(scannable);
+        }
 
+        public void SetDetailUI(IScannable scannable)
+        {
             Transform target_position = ((MonoBehaviour)scannable).transform;
-            scannerView.ShowScanUI(target_position, scannable.DisplayName, scanDisplayDuration);
-        }
-
-        private void ResetScanTimer(IScannable scannable)
-        {
-            scanTimers[scannable] = 0f;
-        }
-
-        private void Update()
-        {
-            for (int i = scannedObjects.Count - 1; i >= 0; i--)
-            {
-                IScannable scannable = scannedObjects[i];
-                UpdateScanTimer(scannable, i);
-            }
-        }
-
-        private void UpdateScanTimer(IScannable scannable, int index)
-        {
-            scanTimers[scannable] += Time.deltaTime;
-
-            if (scanTimers[scannable] >= scanDisplayDuration)
-            {
-                RemoveScannable(scannable, index);
-            }
+            view.SetDetailUI(target_position, scannable);
         }
 
         private void RemoveScannable(IScannable scannable, int index)
         {
             scannable.OnScanEnd();
             scannedObjects.RemoveAt(index);
-            scanTimers.Remove(scannable);
+        }
+
+        private void RemoveScannableAll()
+        {
+            for (int i = 0; i < scannedObjects.Count; i++)
+            {
+                RemoveScannable(scannedObjects[i], i);
+            }
+        }
+
+        public bool IsScanned(IScannable scannable)
+        {
+            return scannedObjects.Contains(scannable);
         }
     }
 }
