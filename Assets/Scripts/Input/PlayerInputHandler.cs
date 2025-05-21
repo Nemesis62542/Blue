@@ -23,12 +23,13 @@ namespace Blue.Input
         public Vector2 MoveInput => moveInput;
         public Vector2 LookInput => lookInput;
         public bool JumpPressed => jumpPressed;
+
         public event Action OnAttackEvent;
         public event Action OnInventoryToggleEvent;
         public event Action OnPauseToggleEvent;
         public event Action<int> OnQuickSlotChangeEvent;
-        public event Action OnInteractPressEvent;
-        public event Action OnInteractReleaseEvent;
+        public event Action OnInteractEvent;
+        public event Action OnScanEvent;
 
         public InputAction GetSubmitAction() => inputActions.Inventory.Submit;
         public InputAction GetCancelAction() => inputActions.Inventory.Cancel;
@@ -44,8 +45,8 @@ namespace Blue.Input
             inputActions.Player.Jump.performed += OnJump;
             inputActions.Player.Look.performed += OnLook;
             inputActions.Player.Look.canceled += OnLook;
-            inputActions.Player.Interact.started += OnInteractPress;
-            inputActions.Player.Interact.canceled += OnInteractRelease;
+            inputActions.Player.Interact.performed += OnInteract;
+            inputActions.Player.Scan.performed += OnScan;
             inputActions.Player.Attack.performed += OnAttack;
             inputActions.Player.QuickSlot1.performed += OnQuickSlot1;
             inputActions.Player.QuickSlot2.performed += OnQuickSlot2;
@@ -67,8 +68,8 @@ namespace Blue.Input
             inputActions.Player.Jump.performed -= OnJump;
             inputActions.Player.Look.performed -= OnLook;
             inputActions.Player.Look.canceled -= OnLook;
-            inputActions.Player.Interact.started -= OnInteractPress;
-            inputActions.Player.Interact.canceled -= OnInteractRelease;
+            inputActions.Player.Interact.performed -= OnInteract;
+            inputActions.Player.Scan.performed -= OnScan;
             inputActions.Player.Attack.performed -= OnAttack;
             inputActions.Player.QuickSlot1.performed -= OnQuickSlot1;
             inputActions.Player.QuickSlot2.performed -= OnQuickSlot2;
@@ -98,14 +99,14 @@ namespace Blue.Input
             lookInput = context.ReadValue<Vector2>();
         }
 
-        private void OnInteractPress(InputAction.CallbackContext context)
+        private void OnInteract(InputAction.CallbackContext context)
         {
-            OnInteractPressEvent?.Invoke();
+            OnInteractEvent?.Invoke();
         }
 
-        private void OnInteractRelease(InputAction.CallbackContext context)
+        private void OnScan(InputAction.CallbackContext context)
         {
-            OnInteractReleaseEvent?.Invoke();
+            OnScanEvent?.Invoke();
         }
 
         private void OnAttack(InputAction.CallbackContext context)

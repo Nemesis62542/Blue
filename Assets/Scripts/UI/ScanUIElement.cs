@@ -1,37 +1,49 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Blue.UI
 {
     public class ScanUIElement : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] private RectTransform detail;
+        [SerializeField] private RectTransform lookingUI;
+        [SerializeField] private Slider scanProgressBar;
+
         private Transform target;
-        private float lifeTime;
-        private float elapsed;
 
         public Transform Target => target;
+        public bool IsShowedDetail => detail.gameObject.activeSelf;
 
-        public void Initialize(Transform target, string display_name, float duration)
+        public void Initialize(Transform target, string display_name)
         {
             this.target = target;
-            lifeTime = duration;
-            elapsed = 0f;
 
             nameText.text = display_name;
             gameObject.SetActive(true);
         }
 
-        public void IncreaseElapsed()
+        public void ShowDetail()
         {
-            elapsed += Time.deltaTime;
-            if (elapsed >= lifeTime) Deactivate();
+            scanProgressBar.gameObject.SetActive(false);
+            detail.gameObject.SetActive(true);
         }
 
-        public void Deactivate()
+        public void ToggleLookingUI(bool is_looking)
         {
-            elapsed = 0f;
-            Destroy(gameObject);
+            lookingUI.gameObject.SetActive(is_looking);
+        }
+
+        public void UpdateScanProgress(float progress)
+        {
+            if (!scanProgressBar.gameObject.activeSelf) scanProgressBar.gameObject.SetActive(true);
+            if (scanProgressBar != null)
+            {
+                scanProgressBar.value = Mathf.Clamp01(progress);
+            }
+
+            if(scanProgressBar.value == 0) scanProgressBar.gameObject.SetActive(false);
         }
     }
 }

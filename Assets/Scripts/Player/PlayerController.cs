@@ -29,13 +29,10 @@ namespace Blue.Player
         [SerializeField] private float controllerLookSensitivity = 200f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
-        [SerializeField] private float scanHoldThreshold = 0.5f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
-        private float scanHoldStartTime;
-        private bool isScanning;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -54,8 +51,8 @@ namespace Blue.Player
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
-            inputHandler.OnInteractPressEvent += HandleScanPress;
-            inputHandler.OnInteractReleaseEvent += HandleScanRelease;
+            inputHandler.OnInteractEvent += InteractObject;
+            inputHandler.OnScanEvent += Scan;
             inputHandler.OnAttackEvent += Attack;
             inputHandler.OnInventoryToggleEvent += ToggleInventory;
             inputHandler.OnPauseToggleEvent += TogglePause;
@@ -73,8 +70,8 @@ namespace Blue.Player
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnDepthChanged -= HandleDepthChanged;
 
-            inputHandler.OnInteractPressEvent -= HandleScanPress;
-            inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
+            inputHandler.OnInteractEvent -= InteractObject;
+            inputHandler.OnScanEvent -= Scan;
             inputHandler.OnAttackEvent -= Attack;
             inputHandler.OnInventoryToggleEvent -= ToggleInventory;
             inputHandler.OnPauseToggleEvent -= TogglePause;
@@ -96,6 +93,17 @@ namespace Blue.Player
             {
                 Jump();
                 inputHandler.ResetJumpFlag();
+            }
+
+            if (RaycastFromCamera(out RaycastHit hit, 6f) && hit.collider.TryGetComponent(out IScannable scannable))
+            {
+                scannerController.ToggleLookingScannable(scannable);
+                scannerController.UpdateScan(Time.deltaTime);
+            }
+            else
+            {
+                scannerController.CancelScan();
+                scannerController.ToggleLookingScannable(null);
             }
         }
 
@@ -147,7 +155,7 @@ namespace Blue.Player
 
         private void InteractObject()
         {
-            if (RaycastFromCamera(out RaycastHit hit) && hit.collider.TryGetComponent(out IInteractable interactable))
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IInteractable interactable))
             {
                 Debug.Log($"調べた: {interactable.ObjectName}");
                 interactable.Interact(this);
@@ -158,25 +166,9 @@ namespace Blue.Player
             }
         }
 
-        private void HandleScanPress()
+        private void Scan()
         {
-            scanHoldStartTime = Time.time;
-            isScanning = true;
-        }
-
-        private void HandleScanRelease()
-        {
-            isScanning = false;
-            float hold_duration = Time.time - scanHoldStartTime;
-
-            if (hold_duration >= scanHoldThreshold)
-            {
-                scannerController.Scan(camTransform.position, camTransform.forward);
-            }
-            else
-            {
-                InteractObject();
-            }
+            scannerController.Scan(camTransform.position, camTransform.forward);
         }
 
         private void HandleHPChanged(float current, float max)
@@ -206,7 +198,7 @@ namespace Blue.Player
                 attack_power = item.ItemData.GetAttributeValue(Item.ItemAttribute.AttackPower);
             }
 
-            if (RaycastFromCamera(out RaycastHit hit) && hit.collider.TryGetComponent(out IAttackable attackable))
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
             {
                 Debug.Log($"攻撃: {hit.collider.gameObject.name}");
                 attackable.Damage(new AttackData(this, attack_power, AttackType.Melee, transform.position + transform.forward));
@@ -227,12 +219,12 @@ namespace Blue.Player
             inputHandler.DisableInput();
         }
 
-        private bool RaycastFromCamera(out RaycastHit hit)
+        private bool RaycastFromCamera(out RaycastHit hit, float range)
         {
             int player_layer = LayerMask.NameToLayer("Player");
             int layer_mask = ~(1 << player_layer);
 
-            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, interactDistance, layer_mask);
+            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, range, layer_mask, QueryTriggerInteraction.Ignore);
         }
 
         private void ToggleInventory()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Blue.Interface;
 using UnityEngine;
 
 namespace Blue.UI
@@ -6,41 +7,95 @@ namespace Blue.UI
     public class ScannerView : MonoBehaviour
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
-        [SerializeField] private UIController uiController;
-        [SerializeField] private float defaultDisplayDuration = 3.0f;
 
-        public void ShowScanUI(Transform target, string displayName, float duration = -1f)
+        private Dictionary<IScannable, ScanUIElement> details = new Dictionary<IScannable, ScanUIElement>();
+        private Camera mainCamera;
+
+        public bool IsShowedDetail(IScannable scannable)
         {
-            ScanUIElement element = Instantiate(scanUIPrefab, transform);
-            float show_time = duration > 0f ? duration : defaultDisplayDuration;
-            element.Initialize(target, displayName, show_time);
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                return element.IsShowedDetail;
+            }
+            return false;
         }
 
-        private void Update()
+        public void SetDetailUI(Transform target, IScannable scannable)
         {
-            ScanUIElement[] elements = GetComponentsInChildren<ScanUIElement>(true);
-            for (int i = 0; i < elements.Length; i++)
+            if (details.TryGetValue(scannable, out ScanUIElement existing_element))
             {
-                ScanUIElement element = elements[i];
-                Vector3 viewport_position = Camera.main.WorldToViewportPoint(element.Target.position);
+                Destroy(existing_element.gameObject);
+                details.Remove(scannable);
+            }
 
-                if (viewport_position.z < 0 || viewport_position.x < 0 || viewport_position.x > 1 || viewport_position.y < 0 || viewport_position.y > 1)
+            ScanUIElement element = Instantiate(scanUIPrefab, transform);
+            element.Initialize(target, scannable.DisplayName);
+            details.Add(scannable, element);
+        }
+
+        public void ToggleLookingUI(IScannable scannable, bool is_looking)
+        {
+            if (scannable != null && details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.ToggleLookingUI(is_looking);
+            }
+        }
+
+        public void UpdateDetailUI(IScannable scannable, bool is_within_distance)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                bool is_visible = IsVisibleInViewport(element.Target.position);
+                bool should_be_visible = is_within_distance && is_visible;
+
+                if (element.gameObject.activeSelf != should_be_visible)
                 {
-                    if (element.gameObject.activeSelf) element.gameObject.SetActive(false);
+                    element.gameObject.SetActive(should_be_visible);
                 }
-                else if (!element.gameObject.activeSelf)
+
+                if (should_be_visible)
                 {
-                    element.gameObject.SetActive(true);
+                    Vector3 screen_position = mainCamera.WorldToScreenPoint(element.Target.position);
+                    element.transform.position = screen_position;
                 }
+            }
+        }
 
-                Vector3 screen_position = new Vector3(
-                    viewport_position.x * UnityEngine.Screen.width,
-                    viewport_position.y * UnityEngine.Screen.height,
-                    0
-                );
+        private bool IsVisibleInViewport(Vector3 world_position)
+        {
+            Vector3 viewport_position = mainCamera.WorldToViewportPoint(world_position);
+            return viewport_position.z > 0 &&
+                   viewport_position.x >= 0 && viewport_position.x <= 1 &&
+                   viewport_position.y >= 0 && viewport_position.y <= 1;
+        }
 
-                element.transform.position = screen_position;
-                element.IncreaseElapsed();
+        public void UpdateScanProgress(IScannable scannable, float progress)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.UpdateScanProgress(progress);
+            }
+        }
+
+        public void ReflashScanUI()
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+            details.Clear();
+        }
+
+        private void Start()
+        {
+            mainCamera = Camera.main;
+        }
+
+        public void ShowDetail(IScannable scannable)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.ShowDetail();
             }
         }
     }
