@@ -28,7 +28,7 @@ namespace Blue.UI
         {
             if (details.TryGetValue(scannable, out ScanUIElement element))
             {
-                Vector3 viewport_position = mainCamera.WorldToViewportPoint(element.Target.position);
+                Vector3 viewport_position = mainCamera.WorldToViewportPoint(element.Target.position + (element.Target.up * 0.5f));
                 bool is_visible = viewport_position.z > 0 &&
                                          viewport_position.x >= 0 && viewport_position.x <= 1 &&
                                          viewport_position.y >= 0 && viewport_position.y <= 1;
