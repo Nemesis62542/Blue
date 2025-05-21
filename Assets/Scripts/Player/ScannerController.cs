@@ -9,7 +9,7 @@ namespace Blue.Player
     public class ScannerController : MonoBehaviour
     {
         [Header("Scan Settings")]
-        [SerializeField] private float scanRadius = 6f;
+        [SerializeField] private float scanRadius = 8f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private ScannerView view;
         [SerializeField] private float scanDuration = 2f;
