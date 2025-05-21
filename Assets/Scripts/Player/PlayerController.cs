@@ -29,13 +29,10 @@ namespace Blue.Player
         [SerializeField] private float controllerLookSensitivity = 200f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
-        [SerializeField] private float scanHoldThreshold = 0.5f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
-        private float scanHoldStartTime;
-        private bool isScanning;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -55,6 +52,7 @@ namespace Blue.Player
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
             inputHandler.OnInteractEvent += InteractObject;
+            inputHandler.OnScanEvent += Scan;
             inputHandler.OnAttackEvent += Attack;
             inputHandler.OnInventoryToggleEvent += ToggleInventory;
             inputHandler.OnPauseToggleEvent += TogglePause;
@@ -73,6 +71,7 @@ namespace Blue.Player
             model.OnDepthChanged -= HandleDepthChanged;
 
             inputHandler.OnInteractEvent -= InteractObject;
+            inputHandler.OnScanEvent -= Scan;
             inputHandler.OnAttackEvent -= Attack;
             inputHandler.OnInventoryToggleEvent -= ToggleInventory;
             inputHandler.OnPauseToggleEvent -= TogglePause;
@@ -154,6 +153,11 @@ namespace Blue.Player
             {
                 UseSelectedItem();
             }
+        }
+
+        private void Scan()
+        {
+            scannerController.Scan(camTransform.position, camTransform.forward);
         }
 
         private void HandleHPChanged(float current, float max)
