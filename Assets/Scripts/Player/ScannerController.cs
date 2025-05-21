@@ -11,12 +11,16 @@ namespace Blue.Player
         [SerializeField] private float scanRadius = 6f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private ScannerView view;
+        [SerializeField] private float scanDuration = 2f;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
         private IScannable lookingScannable = null;
+        private float scanProgress;
 
         public void Scan(Vector3 origin, Vector3 forward)
         {
+            CancelScan();
+            ToggleLookingScannable(null);
             RemoveScannableAll();
             view.ReflashScanUI();
 
@@ -43,6 +47,34 @@ namespace Blue.Player
 
             lookingScannable = scannable;
             view.ToggleLookingUI(lookingScannable, true);
+        }
+
+        public void UpdateScan(float delta_time)
+        {
+            if (!view.IsShowedDetail(lookingScannable))
+            {
+                scanProgress += delta_time;
+                view.UpdateScanProgress(lookingScannable, scanProgress / scanDuration);
+
+                if (scanProgress >= scanDuration)
+                {
+                    CompleteScan(lookingScannable);
+                }
+            }
+        }
+
+        public void CancelScan()
+        {
+            if (lookingScannable == null) return;
+            view.UpdateScanProgress(lookingScannable, 0f);
+            scanProgress = 0f;
+        }
+
+        private void CompleteScan(IScannable scannable)
+        {
+            view.ShowDetail(scannable);
+            lookingScannable = null;
+            scanProgress = 0f;
         }
 
         private void Update()

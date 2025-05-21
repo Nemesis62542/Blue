@@ -64,6 +64,7 @@ MonoBehaviour:
   nameText: {fileID: 9094008995779258482}
   detail: {fileID: 753489682242255337}
   lookingUI: {fileID: 6806841900464359279}
+  scanProgressBar: {fileID: 4265135559124586243}
 --- !u!1 &1832484426573142972
 GameObject:
   m_ObjectHideFlags: 0

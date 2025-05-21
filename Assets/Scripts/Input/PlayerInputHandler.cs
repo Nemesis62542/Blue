@@ -46,8 +46,7 @@ namespace Blue.Input
             inputActions.Player.Look.performed += OnLook;
             inputActions.Player.Look.canceled += OnLook;
             inputActions.Player.Interact.performed += OnInteract;
-            inputActions.Player.Scan.started += OnScan;
-            inputActions.Player.Scan.canceled += OnScan;
+            inputActions.Player.Scan.performed += OnScan;
             inputActions.Player.Attack.performed += OnAttack;
             inputActions.Player.QuickSlot1.performed += OnQuickSlot1;
             inputActions.Player.QuickSlot2.performed += OnQuickSlot2;
@@ -70,8 +69,7 @@ namespace Blue.Input
             inputActions.Player.Look.performed -= OnLook;
             inputActions.Player.Look.canceled -= OnLook;
             inputActions.Player.Interact.performed -= OnInteract;
-            inputActions.Player.Scan.started -= OnScan;
-            inputActions.Player.Scan.canceled -= OnScan;
+            inputActions.Player.Scan.performed -= OnScan;
             inputActions.Player.Attack.performed -= OnAttack;
             inputActions.Player.QuickSlot1.performed -= OnQuickSlot1;
             inputActions.Player.QuickSlot2.performed -= OnQuickSlot2;

@@ -98,9 +98,11 @@ namespace Blue.Player
             if (RaycastFromCamera(out RaycastHit hit, 6f) && hit.collider.TryGetComponent(out IScannable scannable))
             {
                 scannerController.ToggleLookingScannable(scannable);
+                scannerController.UpdateScan(Time.deltaTime);
             }
             else
             {
+                scannerController.CancelScan();
                 scannerController.ToggleLookingScannable(null);
             }
         }
@@ -222,7 +224,7 @@ namespace Blue.Player
             int player_layer = LayerMask.NameToLayer("Player");
             int layer_mask = ~(1 << player_layer);
 
-            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, range, layer_mask);
+            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, range, layer_mask, QueryTriggerInteraction.Ignore);
         }
 
         private void ToggleInventory()

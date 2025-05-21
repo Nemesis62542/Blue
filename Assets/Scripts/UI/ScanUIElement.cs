@@ -14,6 +14,7 @@ namespace Blue.UI
         private Transform target;
 
         public Transform Target => target;
+        public bool IsShowedDetail => detail.gameObject.activeSelf;
 
         public void Initialize(Transform target, string display_name)
         {
@@ -25,6 +26,7 @@ namespace Blue.UI
 
         public void ShowDetail()
         {
+            scanProgressBar.gameObject.SetActive(false);
             detail.gameObject.SetActive(true);
         }
 
@@ -35,10 +37,13 @@ namespace Blue.UI
 
         public void UpdateScanProgress(float progress)
         {
+            if (!scanProgressBar.gameObject.activeSelf) scanProgressBar.gameObject.SetActive(true);
             if (scanProgressBar != null)
             {
                 scanProgressBar.value = Mathf.Clamp01(progress);
             }
+
+            if(scanProgressBar.value == 0) scanProgressBar.gameObject.SetActive(false);
         }
     }
 }

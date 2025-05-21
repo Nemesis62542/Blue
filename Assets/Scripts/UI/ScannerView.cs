@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blue.Interface;
 using UnityEngine;
@@ -10,6 +11,15 @@ namespace Blue.UI
 
         private Dictionary<IScannable, ScanUIElement> details = new Dictionary<IScannable, ScanUIElement>();
         private Camera mainCamera;
+
+        public bool IsShowedDetail(IScannable scannable)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                return element.IsShowedDetail;
+            }
+            else return false;
+        }
 
         public void SetDetailUI(Transform target, IScannable scannable)
         {
@@ -82,6 +92,14 @@ namespace Blue.UI
         private void Start()
         {
             mainCamera = Camera.main;
+        }
+
+        public void ShowDetail(IScannable scannable)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.ShowDetail();
+            }
         }
     }
 }
