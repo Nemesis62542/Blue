@@ -54,8 +54,7 @@ namespace Blue.Player
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
-            inputHandler.OnInteractPressEvent += HandleScanPress;
-            inputHandler.OnInteractReleaseEvent += HandleScanRelease;
+            inputHandler.OnInteractEvent += InteractObject;
             inputHandler.OnAttackEvent += Attack;
             inputHandler.OnInventoryToggleEvent += ToggleInventory;
             inputHandler.OnPauseToggleEvent += TogglePause;
@@ -73,8 +72,7 @@ namespace Blue.Player
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnDepthChanged -= HandleDepthChanged;
 
-            inputHandler.OnInteractPressEvent -= HandleScanPress;
-            inputHandler.OnInteractReleaseEvent -= HandleScanRelease;
+            inputHandler.OnInteractEvent -= InteractObject;
             inputHandler.OnAttackEvent -= Attack;
             inputHandler.OnInventoryToggleEvent -= ToggleInventory;
             inputHandler.OnPauseToggleEvent -= TogglePause;
@@ -155,27 +153,6 @@ namespace Blue.Player
             else
             {
                 UseSelectedItem();
-            }
-        }
-
-        private void HandleScanPress()
-        {
-            scanHoldStartTime = Time.time;
-            isScanning = true;
-        }
-
-        private void HandleScanRelease()
-        {
-            isScanning = false;
-            float hold_duration = Time.time - scanHoldStartTime;
-
-            if (hold_duration >= scanHoldThreshold)
-            {
-                scannerController.Scan(camTransform.position, camTransform.forward);
-            }
-            else
-            {
-                InteractObject();
             }
         }
 
