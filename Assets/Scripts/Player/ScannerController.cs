@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Blue.Interface;
 using Blue.UI;
@@ -24,42 +25,36 @@ namespace Blue.Player
             RemoveScannableAll();
             view.ReflashScanUI();
 
-            Collider[] hits = Physics.OverlapSphere(origin, scanRadius);
+            IEnumerable<IScannable> hits = Physics.OverlapSphere(origin, scanRadius)
+                .Select(hit => hit.GetComponent<IScannable>())
+                .Where(scannable => scannable != null && 
+                                    IsWithinFieldOfView(origin, forward, ((MonoBehaviour)scannable).transform.position) &&
+                                    !scannedObjects.Contains(scannable));
 
-            foreach (Collider hit in hits)
+            foreach (IScannable scannable in hits)
             {
-                if (!hit.TryGetComponent(out IScannable scannable)) continue;
-
-                if (IsWithinFieldOfView(origin, forward, hit.transform.position) && !scannedObjects.Contains(scannable))
-                {
-                    AddScannable(scannable);
-                }
+                AddScannable(scannable);
             }
         }
 
         public void ToggleLookingScannable(IScannable scannable)
         {
             if (scannable == lookingScannable) return;
-            if (scannable == null)
-            {
-                view.ToggleLookingUI(lookingScannable, false);
-            }
-
+            view.ToggleLookingUI(lookingScannable, false);
             lookingScannable = scannable;
             view.ToggleLookingUI(lookingScannable, true);
         }
 
         public void UpdateScan(float delta_time)
         {
-            if (!view.IsShowedDetail(lookingScannable))
-            {
-                scanProgress += delta_time;
-                view.UpdateScanProgress(lookingScannable, scanProgress / scanDuration);
+            if (lookingScannable == null || view.IsShowedDetail(lookingScannable)) return;
 
-                if (scanProgress >= scanDuration)
-                {
-                    CompleteScan(lookingScannable);
-                }
+            scanProgress += delta_time;
+            view.UpdateScanProgress(lookingScannable, scanProgress / scanDuration);
+
+            if (scanProgress >= scanDuration)
+            {
+                CompleteScan(lookingScannable);
             }
         }
 
@@ -79,11 +74,9 @@ namespace Blue.Player
 
         private void Update()
         {
-            for (int i = 0; i < scannedObjects.Count; i++)
+            foreach (IScannable scannable in scannedObjects)
             {
-                IScannable scannable = scannedObjects[i];
                 float distance = Vector3.Distance(((MonoBehaviour)scannable).transform.position, transform.position);
-
                 view.UpdateDetailUI(scannable, distance < scanRadius);
             }
         }
@@ -91,8 +84,9 @@ namespace Blue.Player
         private bool IsWithinFieldOfView(Vector3 origin, Vector3 forward, Vector3 target_position)
         {
             Vector3 direction = (target_position - origin).normalized;
-            float angle = Vector3.Angle(forward, direction);
-            return angle <= fieldOfViewAngle * 0.5f;
+            float dot = Vector3.Dot(forward.normalized, direction);
+            float threshold = Mathf.Cos(fieldOfViewAngle * 0.5f * Mathf.Deg2Rad);
+            return dot >= threshold;
         }
 
         private void AddScannable(IScannable scannable)
@@ -116,7 +110,7 @@ namespace Blue.Player
 
         private void RemoveScannableAll()
         {
-            for (int i = 0; i < scannedObjects.Count; i++)
+            for (int i = scannedObjects.Count - 1; i >= 0; i--)
             {
                 RemoveScannable(scannedObjects[i], i);
             }

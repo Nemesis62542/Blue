@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Blue.Interface;
 using UnityEngine;
@@ -18,14 +17,14 @@ namespace Blue.UI
             {
                 return element.IsShowedDetail;
             }
-            else return false;
+            return false;
         }
 
         public void SetDetailUI(Transform target, IScannable scannable)
         {
-            if (details.ContainsKey(scannable))
+            if (details.TryGetValue(scannable, out ScanUIElement existing_element))
             {
-                Destroy(details[scannable].gameObject);
+                Destroy(existing_element.gameObject);
                 details.Remove(scannable);
             }
 
@@ -36,8 +35,7 @@ namespace Blue.UI
 
         public void ToggleLookingUI(IScannable scannable, bool is_looking)
         {
-            if (scannable == null) return;
-            if (details.TryGetValue(scannable, out ScanUIElement element))
+            if (scannable != null && details.TryGetValue(scannable, out ScanUIElement element))
             {
                 element.ToggleLookingUI(is_looking);
             }
@@ -47,11 +45,7 @@ namespace Blue.UI
         {
             if (details.TryGetValue(scannable, out ScanUIElement element))
             {
-                Vector3 viewport_position = mainCamera.WorldToViewportPoint(element.Target.position);
-                bool is_visible = viewport_position.z > 0 &&
-                                         viewport_position.x >= 0 && viewport_position.x <= 1 &&
-                                         viewport_position.y >= 0 && viewport_position.y <= 1;
-
+                bool is_visible = IsVisibleInViewport(element.Target.position);
                 bool should_be_visible = is_within_distance && is_visible;
 
                 if (element.gameObject.activeSelf != should_be_visible)
@@ -61,15 +55,18 @@ namespace Blue.UI
 
                 if (should_be_visible)
                 {
-                    Vector3 screen_position = new Vector3(
-                        viewport_position.x * UnityEngine.Screen.width,
-                        viewport_position.y * UnityEngine.Screen.height,
-                        0
-                    );
-
+                    Vector3 screen_position = mainCamera.WorldToScreenPoint(element.Target.position);
                     element.transform.position = screen_position;
                 }
             }
+        }
+
+        private bool IsVisibleInViewport(Vector3 world_position)
+        {
+            Vector3 viewport_position = mainCamera.WorldToViewportPoint(world_position);
+            return viewport_position.z > 0 &&
+                   viewport_position.x >= 0 && viewport_position.x <= 1 &&
+                   viewport_position.y >= 0 && viewport_position.y <= 1;
         }
 
         public void UpdateScanProgress(IScannable scannable, float progress)
