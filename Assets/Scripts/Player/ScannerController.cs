@@ -13,6 +13,7 @@ namespace Blue.Player
         [SerializeField] private ScannerView view;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
+        private IScannable lookingScannable = null;
 
         public void Scan(Vector3 origin, Vector3 forward)
         {
@@ -32,13 +33,25 @@ namespace Blue.Player
             }
         }
 
+        public void ToggleLookingScannable(IScannable scannable)
+        {
+            if (scannable == lookingScannable) return;
+            if (scannable == null)
+            {
+                view.ToggleLookingUI(lookingScannable, false);
+            }
+
+            lookingScannable = scannable;
+            view.ToggleLookingUI(lookingScannable, true);
+        }
+
         private void Update()
         {
             for (int i = 0; i < scannedObjects.Count; i++)
             {
                 IScannable scannable = scannedObjects[i];
                 float distance = Vector3.Distance(((MonoBehaviour)scannable).transform.position, transform.position);
-                
+
                 view.UpdateDetailUI(scannable, distance < scanRadius);
             }
         }

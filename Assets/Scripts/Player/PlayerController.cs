@@ -94,6 +94,15 @@ namespace Blue.Player
                 Jump();
                 inputHandler.ResetJumpFlag();
             }
+
+            if (RaycastFromCamera(out RaycastHit hit, 6f) && hit.collider.TryGetComponent(out IScannable scannable))
+            {
+                scannerController.ToggleLookingScannable(scannable);
+            }
+            else
+            {
+                scannerController.ToggleLookingScannable(null);
+            }
         }
 
         private void HandleMove()
@@ -144,7 +153,7 @@ namespace Blue.Player
 
         private void InteractObject()
         {
-            if (RaycastFromCamera(out RaycastHit hit) && hit.collider.TryGetComponent(out IInteractable interactable))
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IInteractable interactable))
             {
                 Debug.Log($"調べた: {interactable.ObjectName}");
                 interactable.Interact(this);
@@ -187,7 +196,7 @@ namespace Blue.Player
                 attack_power = item.ItemData.GetAttributeValue(Item.ItemAttribute.AttackPower);
             }
 
-            if (RaycastFromCamera(out RaycastHit hit) && hit.collider.TryGetComponent(out IAttackable attackable))
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
             {
                 Debug.Log($"攻撃: {hit.collider.gameObject.name}");
                 attackable.Damage(new AttackData(this, attack_power, AttackType.Melee, transform.position + transform.forward));
@@ -208,12 +217,12 @@ namespace Blue.Player
             inputHandler.DisableInput();
         }
 
-        private bool RaycastFromCamera(out RaycastHit hit)
+        private bool RaycastFromCamera(out RaycastHit hit, float range)
         {
             int player_layer = LayerMask.NameToLayer("Player");
             int layer_mask = ~(1 << player_layer);
 
-            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, interactDistance, layer_mask);
+            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, range, layer_mask);
         }
 
         private void ToggleInventory()

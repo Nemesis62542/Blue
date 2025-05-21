@@ -23,6 +23,7 @@ namespace Blue.Input
         public Vector2 MoveInput => moveInput;
         public Vector2 LookInput => lookInput;
         public bool JumpPressed => jumpPressed;
+
         public event Action OnAttackEvent;
         public event Action OnInventoryToggleEvent;
         public event Action OnPauseToggleEvent;
@@ -45,7 +46,8 @@ namespace Blue.Input
             inputActions.Player.Look.performed += OnLook;
             inputActions.Player.Look.canceled += OnLook;
             inputActions.Player.Interact.performed += OnInteract;
-            inputActions.Player.Scan.performed += OnScan;
+            inputActions.Player.Scan.started += OnScan;
+            inputActions.Player.Scan.canceled += OnScan;
             inputActions.Player.Attack.performed += OnAttack;
             inputActions.Player.QuickSlot1.performed += OnQuickSlot1;
             inputActions.Player.QuickSlot2.performed += OnQuickSlot2;
@@ -68,7 +70,8 @@ namespace Blue.Input
             inputActions.Player.Look.performed -= OnLook;
             inputActions.Player.Look.canceled -= OnLook;
             inputActions.Player.Interact.performed -= OnInteract;
-            inputActions.Player.Scan.performed -= OnScan;
+            inputActions.Player.Scan.started -= OnScan;
+            inputActions.Player.Scan.canceled -= OnScan;
             inputActions.Player.Attack.performed -= OnAttack;
             inputActions.Player.QuickSlot1.performed -= OnQuickSlot1;
             inputActions.Player.QuickSlot2.performed -= OnQuickSlot2;

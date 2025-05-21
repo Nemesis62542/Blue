@@ -24,11 +24,20 @@ namespace Blue.UI
             details.Add(scannable, element);
         }
 
+        public void ToggleLookingUI(IScannable scannable, bool is_looking)
+        {
+            if (scannable == null) return;
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.ToggleLookingUI(is_looking);
+            }
+        }
+
         public void UpdateDetailUI(IScannable scannable, bool is_within_distance)
         {
             if (details.TryGetValue(scannable, out ScanUIElement element))
             {
-                Vector3 viewport_position = mainCamera.WorldToViewportPoint(element.Target.position + (element.Target.up * 0.5f));
+                Vector3 viewport_position = mainCamera.WorldToViewportPoint(element.Target.position);
                 bool is_visible = viewport_position.z > 0 &&
                                          viewport_position.x >= 0 && viewport_position.x <= 1 &&
                                          viewport_position.y >= 0 && viewport_position.y <= 1;
@@ -50,6 +59,14 @@ namespace Blue.UI
 
                     element.transform.position = screen_position;
                 }
+            }
+        }
+
+        public void UpdateScanProgress(IScannable scannable, float progress)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.UpdateScanProgress(progress);
             }
         }
 
