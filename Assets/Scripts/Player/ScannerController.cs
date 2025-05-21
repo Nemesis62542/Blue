@@ -76,10 +76,5 @@ namespace Blue.Player
                 RemoveScannable(scannedObjects[i], i);
             }
         }
-
-        public bool IsScanned(IScannable scannable)
-        {
-            return scannedObjects.Contains(scannable);
-        }
     }
 }

@@ -7,7 +7,6 @@ namespace Blue.UI
     public class ScannerView : MonoBehaviour
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
-        [SerializeField] private UIController uiController;
 
         private Dictionary<IScannable, ScanUIElement> details = new Dictionary<IScannable, ScanUIElement>();
         private Camera mainCamera;
@@ -23,17 +22,6 @@ namespace Blue.UI
             ScanUIElement element = Instantiate(scanUIPrefab, transform);
             element.Initialize(target, scannable.DisplayName);
             details.Add(scannable, element);
-        }
-
-        public void ToggleShowDetailUI(IScannable scannable, bool value)
-        {
-            if (details.TryGetValue(scannable, out ScanUIElement element))
-            {
-                if (element.gameObject.activeSelf != value)
-                {
-                    element.gameObject.SetActive(value);
-                }
-            }
         }
 
         public void UpdateDetailUI(IScannable scannable, bool is_within_distance)
