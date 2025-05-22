@@ -8,22 +8,23 @@ namespace Blue.Visual
         [SerializeField] private Material highlightMaterial;
 
         private Material[] baseMaterials;
+        private Material[] highlightedMaterials;
         private bool isHighlighted = false;
 
         private void Awake()
         {
-            baseMaterials = targetRenderer.materials;
+            baseMaterials = (Material[])targetRenderer.sharedMaterials.Clone();
+
+            highlightedMaterials = new Material[baseMaterials.Length + 1];
+            baseMaterials.CopyTo(highlightedMaterials, 0);
+            highlightedMaterials[baseMaterials.Length] = highlightMaterial;
         }
 
         public void EnableHighlight()
         {
             if (isHighlighted) return;
 
-            Material[] new_materials = new Material[baseMaterials.Length + 1];
-            baseMaterials.CopyTo(new_materials, 0);
-            new_materials[baseMaterials.Length] = highlightMaterial;
-            targetRenderer.materials = new_materials;
-
+            targetRenderer.sharedMaterials = highlightedMaterials;
             isHighlighted = true;
         }
 
@@ -31,7 +32,7 @@ namespace Blue.Visual
         {
             if (!isHighlighted) return;
 
-            targetRenderer.materials = baseMaterials;
+            targetRenderer.sharedMaterials = baseMaterials;
             isHighlighted = false;
         }
     }
