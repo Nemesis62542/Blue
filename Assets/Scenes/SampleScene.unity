@@ -1722,23 +1722,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -17
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -460
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7207112264116272111, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 529.9612
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7716938865274684971, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1994,7 +1994,7 @@ GameObject:
   - component: {fileID: 1891765594}
   - component: {fileID: 1891765593}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: plankton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2929,7 +2929,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 300
+      scalar: 1000
       minScalar: 50
       maxCurve:
         serializedVersion: 2
