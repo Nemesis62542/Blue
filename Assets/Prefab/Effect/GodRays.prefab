@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9210120626425440574}
   - component: {fileID: 8391403005245238626}
   - component: {fileID: 2755810384085813457}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: GodRays
   m_TagString: Untagged
   m_Icon: {fileID: 0}
