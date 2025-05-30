@@ -15,7 +15,11 @@ namespace Blue.Player
 
         public InventoryModel Inventory => inventory;
         public QuickSlotHandler QuickSlot => quickSlotHandler;
-        public int MaxOxygen => maxOxygen;
+        public int MaxOxygen
+        {
+            get => maxOxygen;
+            set => maxOxygen = value;
+        }
         public int Oxygen => oxygen;
         public float Depth => depth;
 
