@@ -43,7 +43,7 @@ namespace Blue.UI
                 scanProgressBar.value = Mathf.Clamp01(progress);
             }
 
-            if(scanProgressBar.value == 0) scanProgressBar.gameObject.SetActive(false);
+            if (scanProgressBar.value <= 0.001f) scanProgressBar.gameObject.SetActive(false);
         }
     }
 }
