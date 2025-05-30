@@ -6,7 +6,6 @@ namespace Blue.Entity
 {
     public class CoelacanthController : BaseEntityController<CoelacanthModel, CoelacanthView>, IScannable
     {
-        [SerializeField] private float rotationSpeed = 5f;
         [SerializeField] private float wanderRadius = 3.0f;
         [SerializeField] private float wanderInterval = 2.0f;
         [SerializeField] private SwimMover swimMover = new SwimMover();
@@ -37,14 +36,6 @@ namespace Blue.Entity
                     {
                         view.SetAnimatorSwim(false);
                     });
-
-                    Vector3 target_position = swimMover.Destination;
-                    Vector3 forward_dir = (target_position - transform.position).normalized;
-
-                    if (forward_dir.sqrMagnitude > 0.01f)
-                    {
-                        transform.rotation = Quaternion.LookRotation(forward_dir);
-                    }
 
                     view.SetAnimatorSwim(true);
                     wanderTimer = 0f;

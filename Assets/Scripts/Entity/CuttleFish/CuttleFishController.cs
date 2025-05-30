@@ -7,7 +7,6 @@ namespace Blue.Entity
     public class CuttleFishController : BaseEntityController<CuttleFishModel, CuttleFishView>, IScannable
     {
         [SerializeField] private float threatSizeThreshold = 1.0f;
-        [SerializeField] private float rotationSpeed = 5f;
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
         [SerializeField] private float escapeDistance = 5.0f;
@@ -39,7 +38,7 @@ namespace Blue.Entity
             {
                 Vector3 target_position = target.transform.position;
                 target_position.y = transform.position.y;
-                Vector3 direction = (target_position - transform.position).normalized;
+                Vector3 direction = (transform.position - target_position).normalized;
                 if (direction.sqrMagnitude > 0.01f)
                 {
                     Quaternion target_rotation = Quaternion.LookRotation(direction);
@@ -62,13 +61,6 @@ namespace Blue.Entity
                         {
                             view.SetAnimatorSwim(false);
                         });
-
-                        Vector3 target_position = swimMover.Destination;
-                        Vector3 back_dir = (transform.position - target_position).normalized;
-                        if (back_dir.sqrMagnitude > 0.01f)
-                        {
-                            transform.rotation = Quaternion.LookRotation(back_dir);
-                        }
 
                         view.SetAnimatorSwim(true);
                         wanderTimer = 0f;
