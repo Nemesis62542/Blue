@@ -17,7 +17,7 @@ namespace Blue.Player
         public QuickSlotHandler QuickSlot => quickSlotHandler;
         public int MaxOxygen => maxOxygen;
         public int Oxygen => oxygen;
-        private float Depth => depth;
+        public float Depth => depth;
 
         public event Action<float, float> OnOxygenChanged;
         public event Action<float> OnDepthChanged;
