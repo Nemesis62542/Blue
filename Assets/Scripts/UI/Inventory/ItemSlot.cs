@@ -21,9 +21,18 @@ namespace Blue.UI.Inventory
         {
             currentItemData = item_data;
             currentItemCount = count;
-            if(item_data!= null) itemIcon.sprite = item_data.Icon;
-            else itemIcon.gameObject.SetActive(false);
-            itemCountText.text = count > 1 ? count.ToString() : "";
+
+            if (item_data != null)
+            {
+                itemIcon.gameObject.SetActive(true);
+                itemIcon.sprite = item_data.Icon;
+                itemCountText.text = count > 1 ? count.ToString() : "";
+            }
+            else
+            {
+                itemIcon.gameObject.SetActive(false);
+                itemCountText.text = "";
+            }
         }
 
         public void ShowItemDetails()
