@@ -19,9 +19,13 @@ namespace Blue.UI
         public void Initialize(Transform target, string display_name)
         {
             this.target = target;
-
             nameText.text = display_name;
             gameObject.SetActive(true);
+
+            detail.gameObject.SetActive(false);
+            scanProgressBar.gameObject.SetActive(false);
+            lookingUI.gameObject.SetActive(false);
+            scanProgressBar.value = 0f;
         }
 
         public void ShowDetail()

@@ -10,6 +10,7 @@ namespace Blue.UI
 
         private Dictionary<IScannable, ScanUIElement> details = new Dictionary<IScannable, ScanUIElement>();
         private Camera mainCamera;
+        private Queue<ScanUIElement> pool = new Queue<ScanUIElement>();
 
         public bool IsShowedDetail(IScannable scannable)
         {
@@ -20,17 +21,25 @@ namespace Blue.UI
             return false;
         }
 
+        private ScanUIElement GetOrCreateElement()
+        {
+            if (pool.Count > 0)
+            {
+                ScanUIElement element = pool.Dequeue();
+                element.gameObject.SetActive(true);
+                return element;
+            }
+            return Instantiate(scanUIPrefab, transform);
+        }
+
         public void SetDetailUI(Transform target, IScannable scannable)
         {
-            if (details.TryGetValue(scannable, out ScanUIElement existing_element))
+            if (!details.ContainsKey(scannable))
             {
-                Destroy(existing_element.gameObject);
-                details.Remove(scannable);
+                ScanUIElement element = GetOrCreateElement();
+                element.Initialize(target, scannable.DisplayName);
+                details[scannable] = element;
             }
-
-            ScanUIElement element = Instantiate(scanUIPrefab, transform);
-            element.Initialize(target, scannable.DisplayName);
-            details.Add(scannable, element);
         }
 
         public void ToggleLookingUI(IScannable scannable, bool is_looking)
@@ -79,9 +88,10 @@ namespace Blue.UI
 
         public void ReflashScanUI()
         {
-            foreach (Transform child in transform)
+            foreach (ScanUIElement element in details.Values)
             {
-                Destroy(child.gameObject);
+                element.gameObject.SetActive(false);
+                pool.Enqueue(element);
             }
             details.Clear();
         }
