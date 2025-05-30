@@ -30,6 +30,8 @@ namespace Blue.Player
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
 
+        private const float SCAN_RAY_DISTANCE = 6f;
+
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
@@ -95,7 +97,7 @@ namespace Blue.Player
                 inputHandler.ResetJumpFlag();
             }
 
-            if (RaycastFromCamera(out RaycastHit hit, 6f) && hit.collider.TryGetComponent(out IScannable scannable))
+            if (RaycastFromCamera(out RaycastHit hit, SCAN_RAY_DISTANCE) && hit.collider.TryGetComponent(out IScannable scannable))
             {
                 scannerController.ToggleLookingScannable(scannable);
                 scannerController.UpdateScan(Time.deltaTime);
