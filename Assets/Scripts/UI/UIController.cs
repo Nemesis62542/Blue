@@ -36,7 +36,7 @@ namespace Blue.UI
 
         public void ShowScreen(ScreenState state)
         {
-            SetScreenVisible(GetCanvasGroup(currentScreenState), false);
+            HideAllScreen();
             currentScreenState = state;
             OnScreenStateChanged?.Invoke(state);
 
@@ -51,18 +51,6 @@ namespace Blue.UI
         public void HideCurrentScreen()
         {
             ShowScreen(ScreenState.Ingame);
-        }
-
-        private CanvasGroup GetCanvasGroup(ScreenState state)
-        {
-            if (screenDictionary.TryGetValue(state, out CanvasGroup screen))
-            {
-                return screen;
-            }
-            else
-            {
-                return null;
-            }
         }
 
         private void HideAllScreen()
