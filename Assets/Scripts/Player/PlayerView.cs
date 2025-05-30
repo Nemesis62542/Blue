@@ -18,7 +18,7 @@ namespace Blue.Player
                 currentHeldItem = null;
             }
 
-            if (item == null || item.HeldItemPrefab == null)
+            if (item?.HeldItemPrefab == null)
             {
                 return;
             }
