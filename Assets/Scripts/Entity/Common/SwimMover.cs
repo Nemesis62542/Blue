@@ -3,13 +3,17 @@ using UnityEngine;
 
 namespace Blue.Entity.Common
 {
-    [System.Serializable]
+    [Serializable]
     public class SwimMover
     {
         [SerializeField] private Transform targetTransform;
         [SerializeField] private float moveSpeed = 3.0f;
+        [SerializeField] private float rotationSpeed = 5f;
         [SerializeField] private float arrivalDistance = 0.5f;
         [SerializeField] private float slowDownDistance = 2.0f;
+        [SerializeField] private float obstacleAvoidDistance = 2.0f;
+        [SerializeField] private float obstacleAvoidStrength = 1.5f;
+        [SerializeField] private LayerMask obstacleLayer = ~0;
 
         private Vector3 destination;
         private Action onMoveComplete;
@@ -33,23 +37,38 @@ namespace Blue.Entity.Common
         public void Stop()
         {
             isMoving = false;
+            onMoveComplete = null;
         }
 
         public void UpdateMove()
         {
-            if (!isMoving || targetTransform == null)
-            {
-                return;
-            }
+            if (!isMoving || targetTransform == null) return;
 
             Vector3 current_position = targetTransform.position;
             Vector3 direction = (destination - current_position).normalized;
             float distance_to_destination = Vector3.Distance(current_position, destination);
+
+            RaycastHit hit;
+            if (Physics.SphereCast(current_position, 0.5f, direction, out hit, obstacleAvoidDistance, obstacleLayer))
+            {
+                Vector3 avoid_dir = (direction + hit.normal * obstacleAvoidStrength).normalized;
+                direction = avoid_dir;
+            }
+
+            if (direction.sqrMagnitude > 0.0001f)
+            {
+                Quaternion target_rotation = Quaternion.LookRotation(direction, Vector3.up);
+                targetTransform.rotation = Quaternion.Slerp(
+                    targetTransform.rotation,
+                    target_rotation,
+                    rotationSpeed * Time.deltaTime
+                );
+            }
+
             if (distance_to_destination <= arrivalDistance)
             {
-                Stop();
                 onMoveComplete?.Invoke();
-                onMoveComplete = null;
+                Stop();
                 return;
             }
 
@@ -73,8 +92,7 @@ namespace Blue.Entity.Common
 
         private Vector3 GetRandomDestination(Vector3 center, float radius)
         {
-            Vector2 random_circle = UnityEngine.Random.insideUnitCircle * radius;
-            Vector3 random_offset = new Vector3(random_circle.x, 0f, random_circle.y);
+            Vector3 random_offset = UnityEngine.Random.onUnitSphere * radius;
             return center + random_offset;
         }
     }

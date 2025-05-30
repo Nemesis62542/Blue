@@ -36,38 +36,21 @@ namespace Blue.UI
 
         public void ShowScreen(ScreenState state)
         {
-            SetScreenVisible(GetCanvasGroup(currentScreenState), false);
+            HideAllScreen();
             currentScreenState = state;
             OnScreenStateChanged?.Invoke(state);
 
             if (screenDictionary.TryGetValue(state, out CanvasGroup screen))
             {
                 SetScreenVisible(screen, true);
-                ShowCursor(true);
             }
-            else
-            {
-                currentScreenState = ScreenState.Ingame;
-                ShowCursor(false);
-            }
+
+            ShowCursor(state != ScreenState.Ingame);
         }
 
         public void HideCurrentScreen()
         {
             ShowScreen(ScreenState.Ingame);
-            ShowCursor(false); 
-        }
-
-        private CanvasGroup GetCanvasGroup(ScreenState state)
-        {
-            if (screenDictionary.TryGetValue(state, out CanvasGroup screen))
-            {
-                return screen;
-            }
-            else
-            {
-                return null;
-            }
         }
 
         private void HideAllScreen()

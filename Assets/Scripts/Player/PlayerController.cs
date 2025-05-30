@@ -30,6 +30,8 @@ namespace Blue.Player
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
 
+        private const float SCAN_RAY_DISTANCE = 6f;
+
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
@@ -43,9 +45,8 @@ namespace Blue.Player
         {
             base.Awake();
             inputHandler = new PlayerInputHandler();
-            model = new PlayerModel();
+            model = new PlayerModel(data);
 
-            model.Initialize(data);
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
             model.OnDepthChanged += HandleDepthChanged;
@@ -95,7 +96,7 @@ namespace Blue.Player
                 inputHandler.ResetJumpFlag();
             }
 
-            if (RaycastFromCamera(out RaycastHit hit, 6f) && hit.collider.TryGetComponent(out IScannable scannable))
+            if (RaycastFromCamera(out RaycastHit hit, SCAN_RAY_DISTANCE) && hit.collider.TryGetComponent(out IScannable scannable))
             {
                 scannerController.ToggleLookingScannable(scannable);
                 scannerController.UpdateScan(Time.deltaTime);
@@ -118,7 +119,8 @@ namespace Blue.Player
             right.Normalize();
 
             Vector3 move_direction = (forward * move_input.y + right * move_input.x).normalized;
-            transform.Translate(move_direction * moveSpeed * Time.deltaTime, Space.World);
+            Vector3 targetPosition = rb.position + move_direction * moveSpeed * Time.deltaTime;
+            rb.MovePosition(targetPosition);
         }
 
         private void HandleViewRotation()
@@ -159,11 +161,9 @@ namespace Blue.Player
             {
                 Debug.Log($"調べた: {interactable.ObjectName}");
                 interactable.Interact(this);
+                return;
             }
-            else
-            {
-                UseSelectedItem();
-            }
+            UseSelectedItem();
         }
 
         private void Scan()

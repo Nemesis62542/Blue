@@ -10,6 +10,12 @@ namespace Blue.Player
 
         private GameObject currentHeldItem;
 
+        public Transform HeldItemAnchor
+        {
+            get => heldItemAnchor;
+            set => heldItemAnchor = value;
+        }
+
         public void ShowHeldItem(ItemData item)
         {
             if (currentHeldItem != null)
@@ -18,7 +24,7 @@ namespace Blue.Player
                 currentHeldItem = null;
             }
 
-            if (item == null || item.HeldItemPrefab == null)
+            if (item?.HeldItemPrefab == null)
             {
                 return;
             }
