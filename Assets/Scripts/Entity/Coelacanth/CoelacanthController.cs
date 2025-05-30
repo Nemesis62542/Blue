@@ -17,9 +17,8 @@ namespace Blue.Entity
 
         protected override void Awake()
         {
-            model = new CoelacanthModel();
-            
-            model.Initialize(data);
+            model = new CoelacanthModel(data);
+
             swimMover.Initialize(transform);
         }
 

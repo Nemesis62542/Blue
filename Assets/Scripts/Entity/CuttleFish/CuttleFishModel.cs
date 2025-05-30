@@ -11,6 +11,10 @@ namespace Blue.Entity
 
         private CuttleFishState currentState = CuttleFishState.Dim;
 
+        public CuttleFishModel(EntityData data) : base(data)
+        {
+        }
+
         public CuttleFishState CurrentState => currentState;
 
         public void SetState(CuttleFishState state)
