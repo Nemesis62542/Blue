@@ -118,7 +118,8 @@ namespace Blue.Player
             right.Normalize();
 
             Vector3 move_direction = (forward * move_input.y + right * move_input.x).normalized;
-            transform.Translate(move_direction * moveSpeed * Time.deltaTime, Space.World);
+            Vector3 targetPosition = rb.position + move_direction * moveSpeed * Time.deltaTime;
+            rb.MovePosition(targetPosition);
         }
 
         private void HandleViewRotation()
