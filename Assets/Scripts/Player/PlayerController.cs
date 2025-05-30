@@ -162,11 +162,9 @@ namespace Blue.Player
             {
                 Debug.Log($"調べた: {interactable.ObjectName}");
                 interactable.Interact(this);
+                return;
             }
-            else
-            {
-                UseSelectedItem();
-            }
+            UseSelectedItem();
         }
 
         private void Scan()
