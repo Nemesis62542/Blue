@@ -33,6 +33,7 @@ namespace Blue.Entity.Common
         public void Stop()
         {
             isMoving = false;
+            onMoveComplete = null;
         }
 
         public void UpdateMove()
