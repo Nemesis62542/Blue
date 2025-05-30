@@ -8,7 +8,7 @@ namespace Blue.Entity
         public Status Status { get; private set; }
         public bool IsDead => Status.IsDead;
 
-        public virtual void Initialize(EntityData data)
+        public BaseEntityModel(EntityData data)
         {
             Status = new Status(data);
         }

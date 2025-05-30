@@ -45,9 +45,8 @@ namespace Blue.Player
         {
             base.Awake();
             inputHandler = new PlayerInputHandler();
-            model = new PlayerModel();
+            model = new PlayerModel(data);
 
-            model.Initialize(data);
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
             model.OnDepthChanged += HandleDepthChanged;

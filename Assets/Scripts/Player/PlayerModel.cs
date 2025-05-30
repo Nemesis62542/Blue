@@ -13,6 +13,13 @@ namespace Blue.Player
         private int oxygen;
         private float depth;
 
+        public PlayerModel(EntityData data, InventoryModel inventory = null, int? initialOxygen = null) : base(data)
+        {
+            this.inventory = inventory ?? new InventoryModel();
+            quickSlotHandler = new QuickSlotHandler(this.inventory);
+            oxygen = initialOxygen ?? maxOxygen;
+        }
+
         public InventoryModel Inventory => inventory;
         public QuickSlotHandler QuickSlot => quickSlotHandler;
         public int MaxOxygen
@@ -20,19 +27,15 @@ namespace Blue.Player
             get => maxOxygen;
             set => maxOxygen = value;
         }
-        public int Oxygen => oxygen;
+        public int Oxygen
+        {
+            get => oxygen;
+            private set => SetOxygen(value);
+        }
         public float Depth => depth;
 
         public event Action<float, float> OnOxygenChanged;
         public event Action<float> OnDepthChanged;
-
-        public override void Initialize(EntityData data)
-        {
-            base.Initialize(data);
-
-            quickSlotHandler = new QuickSlotHandler(inventory);
-            oxygen = maxOxygen;
-        }
 
         public void ConsumeOxygen(int amount)
         {
