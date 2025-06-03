@@ -37,7 +37,7 @@ namespace Blue.UI
             if (!details.ContainsKey(scannable))
             {
                 ScanUIElement element = GetOrCreateElement();
-                element.Initialize(target, scannable.DisplayName);
+                element.Initialize(target, scannable.ScanData);
                 details[scannable] = element;
             }
         }

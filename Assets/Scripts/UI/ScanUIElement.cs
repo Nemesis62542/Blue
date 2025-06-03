@@ -1,3 +1,4 @@
+using Blue.UI.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,8 @@ namespace Blue.UI
     public class ScanUIElement : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] private TextMeshProUGUI detailText;
+        [SerializeField] private new RectTransform name;
         [SerializeField] private RectTransform detail;
         [SerializeField] private RectTransform lookingUI;
         [SerializeField] private Slider scanProgressBar;
@@ -14,23 +17,22 @@ namespace Blue.UI
         private Transform target;
 
         public Transform Target => target;
-        public bool IsShowedDetail => detail.gameObject.activeSelf;
+        public bool IsShowedDetail => name.gameObject.activeSelf;
 
-        public void Initialize(Transform target, string display_name)
+        public void Initialize(Transform target, ScanData data)
         {
             this.target = target;
-            nameText.text = display_name;
+            nameText.text = data.displayName;
+            detailText.text = GenerateDetail(data);
             gameObject.SetActive(true);
 
-            detail.gameObject.SetActive(false);
-            scanProgressBar.gameObject.SetActive(false);
-            lookingUI.gameObject.SetActive(false);
             scanProgressBar.value = 0f;
         }
 
         public void ShowDetail()
         {
             scanProgressBar.gameObject.SetActive(false);
+            name.gameObject.SetActive(true);
             detail.gameObject.SetActive(true);
         }
 
@@ -48,6 +50,29 @@ namespace Blue.UI
             }
 
             if (scanProgressBar.value <= 0.001f) scanProgressBar.gameObject.SetActive(false);
+        }
+
+        private string GenerateDetail(ScanData data)
+        {
+            if (data == null) return "詳細不明";
+            string detail = "";
+
+            switch (data.threat)
+            {
+                case ScanData.Threat.Safety:
+                    detail += "危険度：<color=green>低</color>\n";
+                    break;
+
+                case ScanData.Threat.Warning:
+                    detail += "危険度：<color=yellow>中</color>\n";
+                    break;
+
+                case ScanData.Threat.Danger:
+                    detail += "危険度：<color=green>高</color>\n";
+                    break;
+            }
+
+            return detail;
         }
     }
 }
