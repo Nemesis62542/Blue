@@ -1,5 +1,6 @@
 using Blue.Entity.Common;
 using Blue.Interface;
+using Blue.UI.Common;
 using UnityEngine;
 
 namespace Blue.Entity
@@ -20,8 +21,8 @@ namespace Blue.Entity
         private float wanderTimer = 0f;
         private bool isWandering = true;
 
-        public string DisplayName => model.Status.Name;
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
+        public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
 
         protected override void Awake()
         {

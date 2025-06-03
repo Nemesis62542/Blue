@@ -1,10 +1,11 @@
+using Blue.UI.Common;
 using UnityEngine;
 
 namespace Blue.Interface
 {
     public interface IScannable
     {
-        string DisplayName { get; }
+        ScanData ScanData { get; }
         Renderer[] TargetRenderers { get; }
 
         void OnScanStart();
