@@ -11,14 +11,13 @@ namespace Blue.Entity
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
         [SerializeField] private float escapeDistance = 5.0f;
-        [SerializeField] private float wanderRadius = 3.0f;
-        [SerializeField] private float wanderInterval = 2.0f;
+        [SerializeField] private float minIntervalTime = 10.0f;
+        [SerializeField] private float maxIntervalTime = 15.0f;
 
-        [SerializeField] private SwimMover swimMover = new SwimMover();
+        [SerializeField] private BaseSwimmer swimmer = new BaseSwimmer();
 
         private ILivingEntity threateningEntity;
         private float intimidateTimer = 0f;
-        private float wanderTimer = 0f;
         private bool isWandering = true;
 
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
@@ -27,14 +26,10 @@ namespace Blue.Entity
         protected override void Awake()
         {
             model = new CuttleFishModel(data);
-
-            swimMover.Initialize(transform);
         }
 
         private void Update()
         {
-            swimMover.UpdateMove();
-
             if (model.CurrentState == CuttleFishModel.CuttleFishState.Intimidate && threateningEntity is MonoBehaviour target)
             {
                 Vector3 target_position = target.transform.position;
@@ -47,30 +42,6 @@ namespace Blue.Entity
                 }
 
                 CheckSpitInkTrigger(target);
-            }
-
-            if (isWandering)
-            {
-                if (!swimMover.IsMoving)
-                {
-                    wanderTimer += Time.deltaTime;
-
-                    if (wanderTimer >= wanderInterval)
-                    {
-                        Vector3 randomPos = transform.position;
-                        swimMover.MoveToRandomPosition(randomPos, wanderRadius, () =>
-                        {
-                            view.SetAnimatorSwim(false);
-                        });
-
-                        view.SetAnimatorSwim(true);
-                        wanderTimer = 0f;
-                    }
-                }
-                else
-                {
-                    wanderTimer = 0f;
-                }
             }
         }
 
@@ -152,7 +123,6 @@ namespace Blue.Entity
             Vector3 backDirection = -transform.forward;
             Vector3 escapeDestination = transform.position + backDirection * escapeDistance;
             view.SetAnimatorSwim(true);
-            swimMover.MoveTo(escapeDestination, () => view.SetAnimatorSwim(false));
         }
 
         public void OnScanStart()
