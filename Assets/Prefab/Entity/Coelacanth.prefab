@@ -111,6 +111,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 248435239785026429}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8701273697882507639}
   m_SourcePrefab: {fileID: 100100000, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
 --- !u!137 &1601733464396475057 stripped
 SkinnedMeshRenderer:
@@ -202,6 +205,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 0.05
   rotationSpeed: 0.1
+  waypointDistance: 1
+  useAvoidance: 1
+  avoidDistance: 2
+  avoidStrength: 75
+  avoidanceMask:
+    serializedVersion: 2
+    m_Bits: 20
+  pushDistance: 1
+  pushForce: 2
+  roamCenter: {x: 0, y: 0, z: 0}
+  roamArea: {x: 5, y: 2, z: 5}
+--- !u!114 &8701273697882507639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4468465858061347204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe30b2726165f854ea9bffd7cbb3cf68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  rotationSpeed: 5
   waypointDistance: 1
   useAvoidance: 1
   avoidDistance: 2
