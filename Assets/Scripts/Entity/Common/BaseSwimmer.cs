@@ -59,7 +59,7 @@ namespace Blue.Entity.Common
             transform.position += transform.forward * currentSpeed * Time.deltaTime;
         }
 
-        private void SetRandomWaypoint()
+        protected void SetRandomWaypoint()
         {
             tParam = 0f;
             Vector3 offset = new Vector3(

@@ -2,6 +2,7 @@ using Blue.Entity.Common;
 using Blue.Interface;
 using Blue.UI.Common;
 using UnityEngine;
+using System.Collections;
 
 namespace Blue.Entity
 {
@@ -11,14 +12,13 @@ namespace Blue.Entity
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
         [SerializeField] private float escapeDistance = 5.0f;
-        [SerializeField] private float minIntervalTime = 10.0f;
-        [SerializeField] private float maxIntervalTime = 15.0f;
 
-        [SerializeField] private BaseSwimmer swimmer = new BaseSwimmer();
+        [SerializeField] private CuttleFishSwimmer swimmer;
 
         private ILivingEntity threateningEntity;
         private float intimidateTimer = 0f;
         private bool isWandering = true;
+        private bool isSpitting = false;
 
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
         public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
@@ -26,37 +26,31 @@ namespace Blue.Entity
         protected override void Awake()
         {
             model = new CuttleFishModel(data);
+            swimmer.OnSwimStateChanged += view.SetAnimatorSwim;
         }
 
         private void Update()
         {
             if (model.CurrentState == CuttleFishModel.CuttleFishState.Intimidate && threateningEntity is MonoBehaviour target)
             {
-                Vector3 target_position = target.transform.position;
-                target_position.y = transform.position.y;
-                Vector3 direction = (transform.position - target_position).normalized;
-                if (direction.sqrMagnitude > 0.01f)
-                {
-                    Quaternion target_rotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, target_rotation, 5f * Time.deltaTime);
-                }
-
                 CheckSpitInkTrigger(target);
             }
         }
 
         private void CheckSpitInkTrigger(MonoBehaviour target)
         {
+            if (isSpitting) return;
+
             float distance = Vector3.Distance(transform.position, target.transform.position);
             if (distance < inkTriggerDistance)
             {
-                SpitInk();
+                StartCoroutine(SpitInkRoutine(target.transform));
             }
 
             intimidateTimer += Time.deltaTime;
             if (intimidateTimer >= inkTriggerTime)
             {
-                SpitInk();
+                StartCoroutine(SpitInkRoutine(target.transform));
             }
         }
 
@@ -91,13 +85,8 @@ namespace Blue.Entity
                     threateningEntity = entity;
                     SetState(CuttleFishModel.CuttleFishState.Intimidate);
                     view.SetAnimatorIntimidate(true);
-                    if (entity.Status.Size >= threatSizeThreshold)
-                    {
-                        threateningEntity = entity;
-                        SetState(CuttleFishModel.CuttleFishState.Intimidate);
-                        view.SetAnimatorIntimidate(true);
-                        intimidateTimer = 0f;
-                    }
+                    swimmer.EnterIntimidate(other.gameObject.transform);
+                    intimidateTimer = 0f;
                 }
             }
         }
@@ -111,18 +100,25 @@ namespace Blue.Entity
                 threateningEntity = null;
                 SetState(CuttleFishModel.CuttleFishState.Dim);
                 view.SetAnimatorIntimidate(false);
+                swimmer.ExitIntimidate();
             }
         }
-        
-        public void SpitInk()
-        {
-            if (model.CurrentState != CuttleFishModel.CuttleFishState.Intimidate) return;
 
+        private IEnumerator SpitInkRoutine(Transform threat)
+        {
+            isSpitting = true;
+            SetState(CuttleFishModel.CuttleFishState.Bright);
+            view.SetAnimatorIntimidate(false);
+            view.SetAnimatorSwim(true);
             view.PlayInkEffect();
 
-            Vector3 backDirection = -transform.forward;
-            Vector3 escapeDestination = transform.position + backDirection * escapeDistance;
-            view.SetAnimatorSwim(true);
+            swimmer.SpitInk(threat, () =>
+            {
+                SetState(CuttleFishModel.CuttleFishState.Dim);
+                isSpitting = false;
+            });
+
+            yield return null;
         }
 
         public void OnScanStart()

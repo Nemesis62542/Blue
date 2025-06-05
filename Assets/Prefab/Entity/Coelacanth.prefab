@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.6
+      value: -2.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -88,6 +88,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 1c9b55edeb66ced41aae26df3af37438, type: 2}
+    - target: {fileID: 5866666021909216657, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -104,6 +108,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7005597075431469654}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 248435239785026429}
   m_SourcePrefab: {fileID: 100100000, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
 --- !u!137 &1601733464396475057 stripped
 SkinnedMeshRenderer:
@@ -129,14 +136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   view: {fileID: 4171117332488052160}
   data: {fileID: 11400000, guid: f5e27857ee5703d48b7c22e0ec49ec75, type: 2}
-  rotationSpeed: 5
-  wanderRadius: 3
-  wanderInterval: 2
-  swimMover:
-    targetTransform: {fileID: 0}
-    moveSpeed: 0.1
-    arrivalDistance: 0.5
-    slowDownDistance: 2
 --- !u!114 &4171117332488052160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,6 +188,31 @@ CapsuleCollider:
   m_Height: 2.5
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: -0.5}
+--- !u!114 &248435239785026429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4468465858061347204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe30b2726165f854ea9bffd7cbb3cf68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 0.05
+  rotationSpeed: 0.1
+  waypointDistance: 1
+  useAvoidance: 1
+  avoidDistance: 2
+  avoidStrength: 75
+  avoidanceMask:
+    serializedVersion: 2
+    m_Bits: 20
+  pushDistance: 1
+  pushForce: 2
+  roamCenter: {x: 0, y: 0, z: 0}
+  roamArea: {x: 5, y: 2, z: 5}
 --- !u!95 &7181221044441098564 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}

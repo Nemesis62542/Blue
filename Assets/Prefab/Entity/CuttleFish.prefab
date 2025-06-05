@@ -4910,15 +4910,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.07
+      value: 8.480261
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.45
+      value: -1.907
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.973
+      value: -8.242819
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5010,6 +5010,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8060060413113926821}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7118899816597671920}
   m_SourcePrefab: {fileID: 100100000, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
 --- !u!1 &1566385464481461660 stripped
 GameObject:
@@ -5034,19 +5037,7 @@ MonoBehaviour:
   inkTriggerDistance: 1.5
   inkTriggerTime: 10
   escapeDistance: 5
-  wanderRadius: 3
-  wanderInterval: 2
-  swimMover:
-    targetTransform: {fileID: 0}
-    moveSpeed: 3
-    rotationSpeed: 5
-    arrivalDistance: 0.5
-    slowDownDistance: 2
-    obstacleAvoidDistance: 2
-    obstacleAvoidStrength: 1.5
-    obstacleLayer:
-      serializedVersion: 2
-      m_Bits: 4294967295
+  swimmer: {fileID: 7118899816597671920}
 --- !u!114 &1888090129187062961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5121,6 +5112,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5, y: 0.3, z: 0.7}
   m_Center: {x: 0, y: 0, z: -0.2}
+--- !u!114 &7118899816597671920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566385464481461660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4ab10691343cf478283e9a3a7b17f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  rotationSpeed: 5
+  waypointDistance: 1
+  useAvoidance: 1
+  avoidDistance: 2
+  avoidStrength: 75
+  avoidanceMask:
+    serializedVersion: 2
+    m_Bits: 20
+  pushDistance: 1
+  pushForce: 2
+  roamCenter: {x: 0, y: 0, z: 0}
+  roamArea: {x: 5, y: 2, z: 5}
+  threatRotateSpeed: 5
+  inkEscapeDistance: 5
+  minPauseTime: 10
+  maxPauseTime: 15
+  minSwimTime: 1
+  maxSwimTime: 2
 --- !u!4 &2231318022993276710 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
