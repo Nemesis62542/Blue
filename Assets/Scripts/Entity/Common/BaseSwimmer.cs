@@ -54,7 +54,7 @@ namespace Blue.Entity.Common
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
             currentSpeed = Mathf.Lerp(currentSpeed, moveSpeed, tParam);
-            tParam += Time.deltaTime;
+            tParam = Mathf.Min(tParam + Time.deltaTime, 1f);
 
             transform.position += transform.forward * currentSpeed * Time.deltaTime;
         }
@@ -77,8 +77,8 @@ namespace Blue.Entity.Common
             RaycastHit hit;
             Vector3 forward = transform.forward;
             Vector3 right = transform.right;
-            Vector3 up = Vector3.up;
-            Vector3 down = Vector3.down;
+            Vector3 up = transform.up;
+            Vector3 down = -transform.up;
 
             if (Physics.Raycast(transform.position, down + forward * 0.1f, out hit, avoidDistance, avoidanceMask))
             {
@@ -111,7 +111,7 @@ namespace Blue.Entity.Common
 
             if (Physics.Raycast(transform.position, forward - right * 0.35f, out hit, avoidDistance, avoidanceMask))
             {
-                rotation = Quaternion.Euler(0, transform.eulerAngles.y + avoidStrength, 0);
+                rotation = Quaternion.Euler(0, transform.eulerAngles.y + avoidStrength * Time.deltaTime, 0);
                 return true;
             }
 

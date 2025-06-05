@@ -10,6 +10,8 @@ namespace Blue.Entity
         [SerializeField] private float threatRotateSpeed = 5f;
         [SerializeField] private float inkEscapeDistance = 5f;
         [SerializeField] private float escapeDuration = 2.5f;
+        [SerializeField] private float escapeMoveSpeed = 3.0f;
+        [SerializeField] private bool rotateAwayFromThreat = true; // 5. 威嚇時の回転方向
 
         [Header("Idle Swim Settings")]
         [SerializeField] private float minPauseTime = 2f;
@@ -33,15 +35,20 @@ namespace Blue.Entity
         protected override void Start()
         {
             base.Start();
-            SetNextSwimState();
+            isPaused = true;
+            stateTimer = 0f;
+            stateDuration = UnityEngine.Random.Range(minPauseTime, maxPauseTime);
+            OnSwimStateChanged?.Invoke(false);
         }
 
         protected override void Update()
         {
+            bool callBaseUpdate = false;
+
             if (isEscaping)
             {
-                base.Update();
                 EscapeMove();
+                callBaseUpdate = true;
             }
             else if (isIntimidating && threatTarget != null)
             {
@@ -49,11 +56,16 @@ namespace Blue.Entity
             }
             else
             {
-                UpdateDimSwim();
+                callBaseUpdate = UpdateDimSwim();
+            }
+
+            if (callBaseUpdate)
+            {
+                base.Update();
             }
         }
 
-        private void UpdateDimSwim()
+        private bool UpdateDimSwim()
         {
             stateTimer += Time.deltaTime;
 
@@ -71,17 +83,18 @@ namespace Blue.Entity
                 OnSwimStateChanged?.Invoke(!isPaused);
             }
 
-            if (!isPaused)
-            {
-                base.Update();
-            }
+            return !isPaused;
         }
 
         private void RotateTowardThreat()
         {
+            if (threatTarget == null) return;
+
             Vector3 targetPos = threatTarget.position;
             targetPos.y = transform.position.y;
-            Vector3 dir = (transform.position - targetPos).normalized;
+            Vector3 dir = rotateAwayFromThreat
+                ? (transform.position - targetPos).normalized
+                : (targetPos - transform.position).normalized;
 
             if (dir.sqrMagnitude > 0.01f)
             {
@@ -96,7 +109,7 @@ namespace Blue.Entity
             Quaternion rot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, 5f * Time.deltaTime);
 
-            transform.position += transform.forward * 3.0f * Time.deltaTime;
+            transform.position += transform.forward * escapeMoveSpeed * Time.deltaTime;
 
             escapeTimer += Time.deltaTime;
             if (escapeTimer >= escapeDuration)
@@ -139,9 +152,20 @@ namespace Blue.Entity
             threatTarget = threat;
             escapeTimer = 0f;
             Vector3 dir = (transform.position - threat.position).normalized;
-            escapeDestination = transform.position + dir * inkEscapeDistance;
+
+            RaycastHit hit;
+            Vector3 candidateDestination = transform.position + dir * inkEscapeDistance;
+            if (Physics.Raycast(transform.position, dir, out hit, inkEscapeDistance))
+            {
+                escapeDestination = hit.point - dir * 0.5f;
+            }
+            else
+            {
+                escapeDestination = candidateDestination;
+            }
+
             onEscapeComplete = onComplete;
             OnSwimStateChanged?.Invoke(true);
         }
     }
-}        
+}
