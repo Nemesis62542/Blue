@@ -4910,15 +4910,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.480261
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.907
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.242819
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5139,6 +5139,9 @@ MonoBehaviour:
   roamArea: {x: 5, y: 2, z: 5}
   threatRotateSpeed: 5
   inkEscapeDistance: 5
+  escapeDuration: 2.5
+  escapeMoveSpeed: 3
+  rotateAwayFromThreat: 1
   minPauseTime: 10
   maxPauseTime: 15
   minSwimTime: 1
