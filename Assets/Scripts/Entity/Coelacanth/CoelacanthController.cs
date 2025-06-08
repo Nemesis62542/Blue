@@ -13,8 +13,6 @@ namespace Blue.Entity
         protected override void Awake()
         {
             model = new CoelacanthModel(data);
-
-            view.SetAnimatorSwim(true);
         }
 
         private void Update()
