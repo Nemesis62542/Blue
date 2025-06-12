@@ -7,9 +7,9 @@ namespace Blue.UI
     public class ScannerView : MonoBehaviour
     {
         [SerializeField] private ScanUIElement scanUIPrefab;
+        [SerializeField] private new Camera camera;
 
         private Dictionary<IScannable, ScanUIElement> details = new Dictionary<IScannable, ScanUIElement>();
-        private Camera mainCamera;
         private Queue<ScanUIElement> pool = new Queue<ScanUIElement>();
 
         public bool IsShowedDetail(IScannable scannable)
@@ -64,15 +64,25 @@ namespace Blue.UI
 
                 if (should_be_visible)
                 {
-                    Vector3 screen_position = mainCamera.WorldToScreenPoint(element.Target.position);
-                    element.transform.position = screen_position;
+                    Vector3 world_position = element.Target.position;
+                    Vector3 screen_position = camera.WorldToScreenPoint(world_position);
+
+                    Vector2 local_position;
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                        element.transform.parent as RectTransform,
+                        screen_position,
+                        camera,
+                        out local_position
+                    );
+
+                    element.transform.localPosition = new Vector3(local_position.x, local_position.y, 0f);
                 }
             }
         }
 
         private bool IsVisibleInViewport(Vector3 world_position)
         {
-            Vector3 viewport_position = mainCamera.WorldToViewportPoint(world_position);
+            Vector3 viewport_position = camera.WorldToViewportPoint(world_position);
             return viewport_position.z > 0 &&
                    viewport_position.x >= 0 && viewport_position.x <= 1 &&
                    viewport_position.y >= 0 && viewport_position.y <= 1;
@@ -94,11 +104,6 @@ namespace Blue.UI
                 pool.Enqueue(element);
             }
             details.Clear();
-        }
-
-        private void Start()
-        {
-            mainCamera = Camera.main;
         }
 
         public void ShowDetail(IScannable scannable)
