@@ -24,6 +24,8 @@ namespace Blue.UI
             this.target = target;
             nameText.text = data.displayName;
             detailText.text = GenerateDetail(data);
+            name.gameObject.SetActive(false);
+            detail.gameObject.SetActive(false);
             gameObject.SetActive(true);
 
             scanProgressBar.value = 0f;
