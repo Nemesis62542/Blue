@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1262270018950539776}
   - component: {fileID: 1468240702594395606}
   - component: {fileID: 6954040735673285902}
-  m_Layer: 2
+  m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 720836241039303844}
   - component: {fileID: 784119464909072608}
   - component: {fileID: 9115259199739755726}
-  m_Layer: 2
+  m_Layer: 5
   m_Name: ItemSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,7 +390,7 @@ GameObject:
   - component: {fileID: 1458876482137684330}
   - component: {fileID: 7226453790009227742}
   - component: {fileID: 2330617549341888152}
-  m_Layer: 2
+  m_Layer: 5
   m_Name: Count
   m_TagString: Untagged
   m_Icon: {fileID: 0}

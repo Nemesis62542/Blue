@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4275599249169294940}
   - component: {fileID: 2828921105939965642}
   - component: {fileID: 317219741939886814}
-  m_Layer: 2
+  m_Layer: 5
   m_Name: QuickSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 371562602249487263}
   - component: {fileID: 4512217887639055716}
   - component: {fileID: 5836454396093254562}
-  m_Layer: 2
+  m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 6491452963911904296}
   - component: {fileID: 2857992704166459258}
   - component: {fileID: 3940953658331971562}
-  m_Layer: 2
+  m_Layer: 5
   m_Name: Count
   m_TagString: Untagged
   m_Icon: {fileID: 0}
