@@ -35,5 +35,10 @@ namespace Blue.Player
             currentHeldItem.transform.localPosition = Vector3.zero;
             currentHeldItem.transform.localRotation = Quaternion.identity;
         }
+
+        public void AddMessage(MessageData data)
+        {
+            messageView.ShowMessage(data);
+        }
     }
 }
