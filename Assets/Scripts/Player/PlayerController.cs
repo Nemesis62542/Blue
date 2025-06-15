@@ -106,6 +106,11 @@ namespace Blue.Player
                 scannerController.CancelScan();
                 scannerController.ToggleLookingScannable(null);
             }
+
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            {
+                view.AddMessage(new MessageData("テストメッセージ"));
+            }
         }
 
         private void HandleMove()
