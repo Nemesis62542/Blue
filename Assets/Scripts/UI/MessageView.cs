@@ -31,7 +31,7 @@ namespace Blue.UI
         {
             Text = text;
             Icon = icon;
-            Color = color ?? Color.white;
+            Color = color ?? new Color(1, 0.7019608f, 0.2784314f);
         }
     }
 }
