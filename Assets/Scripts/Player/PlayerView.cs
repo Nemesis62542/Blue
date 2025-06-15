@@ -1,12 +1,14 @@
 using UnityEngine;
 using Blue.Item;
 using Blue.Entity;
+using Blue.UI;
 
 namespace Blue.Player
 {
     public class PlayerView : BaseEntityView
     {
         [SerializeField] private Transform heldItemAnchor;
+        [SerializeField] private MessageView messageView;
 
         private GameObject currentHeldItem;
 
