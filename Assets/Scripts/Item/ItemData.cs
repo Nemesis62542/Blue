@@ -100,5 +100,6 @@ namespace Blue.Item
         AttackPower,  // 武器の攻撃力
         MaxAmmo,      // 銃の装弾数
         HealingValue, // 回復量
+        Level,        // アイテムのレベル
     }
 }
