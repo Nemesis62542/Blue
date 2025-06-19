@@ -88,7 +88,7 @@ namespace Blue.Item
     {
         Consumable,  // 消費アイテム（回復薬など）
         Weapon,      // 武器
-        Armor,       // 防具
+        Tool,        // 道具
         Ammo,        // 弾薬
         QuestItem,   // クエストアイテム
         Misc         // その他（特殊アイテムなど）
