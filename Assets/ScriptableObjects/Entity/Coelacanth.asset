@@ -16,3 +16,4 @@ MonoBehaviour:
   hp: 10
   attackPower: 0
   size: 2
+  capturedItem: {fileID: 11400000, guid: 4deeb2ee044f72646a461c888c95067d, type: 2}

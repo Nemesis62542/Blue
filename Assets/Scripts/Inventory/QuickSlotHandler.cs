@@ -67,8 +67,6 @@ namespace Blue.Inventory
                     CleanupInvalidSlots();
                     break;
             }
-
-            OnQuickSlotChanged?.Invoke(index, item);
         }
 
         public InventoryItem GetInventoryItem(int index)

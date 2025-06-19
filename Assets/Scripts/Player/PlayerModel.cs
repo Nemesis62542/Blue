@@ -62,5 +62,7 @@ namespace Blue.Player
                 OnOxygenChanged?.Invoke(oxygen, maxOxygen);
             }
         }
+
+
     }
 }

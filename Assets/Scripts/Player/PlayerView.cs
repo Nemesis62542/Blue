@@ -10,7 +10,9 @@ namespace Blue.Player
         [SerializeField] private Transform heldItemAnchor;
         [SerializeField] private MessageView messageView;
 
-        private GameObject currentHeldItem;
+        private ItemUseHandler currentHeldItem;
+
+        public ItemUseHandler CurrentHeldItem => currentHeldItem;
 
         public void ShowHeldItem(ItemData item)
         {

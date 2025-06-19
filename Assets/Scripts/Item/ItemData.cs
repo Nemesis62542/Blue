@@ -12,7 +12,7 @@ namespace Blue.Item
         [SerializeField] private Sprite icon;        // アイコン
         [SerializeField] private ItemType itemType;  // アイテムの種類
         [SerializeField] private bool isStackable;   // スタックできるか
-        [SerializeField] private GameObject heldItemPrefab;
+        [SerializeField] private ItemUseHandler heldItemPrefab;
 
         [SerializeField] private List<ItemAttributeData> attributes; // 属性データ
 
@@ -21,7 +21,7 @@ namespace Blue.Item
         public Sprite Icon => icon;
         public ItemType Type => itemType;
         public bool IsStackable => isStackable;
-        public GameObject HeldItemPrefab => heldItemPrefab;
+        public ItemUseHandler HeldItemPrefab => heldItemPrefab;
 
         public int GetAttributeValue(ItemAttribute attribute_type)
         {
