@@ -10,19 +10,15 @@ namespace Blue.Player
         [SerializeField] private Transform heldItemAnchor;
         [SerializeField] private MessageView messageView;
 
-        private GameObject currentHeldItem;
+        private ItemUseHandler currentHeldItem;
 
-        public Transform HeldItemAnchor
-        {
-            get => heldItemAnchor;
-            set => heldItemAnchor = value;
-        }
+        public ItemUseHandler CurrentHeldItem => currentHeldItem;
 
         public void ShowHeldItem(ItemData item)
         {
             if (currentHeldItem != null)
             {
-                Destroy(currentHeldItem);
+                Destroy(currentHeldItem.gameObject);
                 currentHeldItem = null;
             }
 

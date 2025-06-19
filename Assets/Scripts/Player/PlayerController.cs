@@ -168,7 +168,7 @@ namespace Blue.Player
                 interactable.Interact(this);
                 return;
             }
-            UseSelectedItem();
+            if(QuickSlot.CurrentEquippedItem != null) UseSelectedItem();
         }
 
         private void Scan()
@@ -277,12 +277,19 @@ namespace Blue.Player
 
         private void UseSelectedItem()
         {
+            view.CurrentHeldItem.OnUse(this);
             QuickSlot.Use(QuickSlot.CurrentSlotIndex);
         }
-        
+
         private void HandleSlotChanged(int index, ItemData item)
         {
             view.ShowHeldItem(item);
+        }
+
+        public void CaptureEntity(ItemData captured)
+        {
+            model.Inventory.AddItem(captured);
+            view.AddMessage(new MessageData($"{captured.ItemName}を捕獲しました"));
         }
     }
 }

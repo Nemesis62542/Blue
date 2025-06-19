@@ -66,13 +66,7 @@ namespace Blue.Inventory
                     inventory.RemoveItem(item, 1);
                     CleanupInvalidSlots();
                     break;
-
-                case ItemType.Weapon:
-                    EquipWeapon(item);
-                    break;
             }
-
-            OnQuickSlotChanged?.Invoke(index, item);
         }
 
         public InventoryItem GetInventoryItem(int index)
@@ -113,9 +107,5 @@ namespace Blue.Inventory
             Debug.Log($"使用: {item.ItemName} ({item.GetAttributeValue(ItemAttribute.HealingValue)} HP 回復)");
         }
 
-        private void EquipWeapon(ItemData item)
-        {
-            Debug.Log($"装備: {item.ItemName}");
-        }
     }
 }

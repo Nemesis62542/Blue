@@ -37,8 +37,15 @@ namespace Blue.UI.Inventory
 
         public void OnDrag(PointerEventData event_data)
         {
-            if (itemData == null) return;
-            itemSlot.transform.position = event_data.position;
+            Vector2 local_position;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                itemSlot.transform.parent as RectTransform,
+                event_data.position,
+                event_data.pressEventCamera,
+                out local_position
+            );
+
+            itemSlot.transform.localPosition = new Vector3(local_position.x, local_position.y, 0f);
         }
 
         public void OnEndDrag(PointerEventData event_data)

@@ -1,14 +1,19 @@
 using Blue.Entity.Common;
 using Blue.Interface;
+using Blue.Item;
 using Blue.UI.Common;
 using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class CoelacanthController : BaseEntityController<CoelacanthModel, CoelacanthView>, IScannable
+    public class CoelacanthController : BaseEntityController<CoelacanthModel, CoelacanthView>, IScannable, ICapturable
     {
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
         public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
+
+        public Status Status => model.Status;
+
+        public ItemData CapturedItem => data.CapturedItem;
 
         protected override void Awake()
         {

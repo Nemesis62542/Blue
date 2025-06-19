@@ -10,14 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 913543138e12b6946b5169ecf1aef7e9, type: 3}
-  m_Name: TestItem
+  m_Name: Coelacanth
   m_EditorClassIdentifier: 
-  itemName: "\u30C6\u30B9\u30C8\u7528\u6355\u7372\u30A2\u30A4\u30C6\u30E0"
-  description: This is Debug Item
-  icon: {fileID: 21300000, guid: 57085aa31c456c94bae21d614271438d, type: 3}
-  itemType: 2
+  itemName: "\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30BA"
+  description: "\u6355\u7372\u3057\u305F\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30BA"
+  icon: {fileID: 21300000, guid: dc02d8480e9309c4fbda34a1e60ffcab, type: 3}
+  itemType: 5
   isStackable: 0
-  heldItemPrefab: {fileID: 9126055102594032584, guid: 215c7032c8c278a42b76789e2469ab89, type: 3}
-  attributes:
-  - attribute: 3
-    value: 5
+  heldItemPrefab: {fileID: 9131493879366391909, guid: 441f13dd095fc3f41877fbeb7f70c328, type: 3}
+  attributes: []
