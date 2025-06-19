@@ -124,4 +124,4 @@ MonoBehaviour:
   captureDistance: 5
   captureLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
