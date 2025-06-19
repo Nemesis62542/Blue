@@ -18,7 +18,7 @@ namespace Blue.Player
         {
             if (currentHeldItem != null)
             {
-                Destroy(currentHeldItem);
+                Destroy(currentHeldItem.gameObject);
                 currentHeldItem = null;
             }
 
