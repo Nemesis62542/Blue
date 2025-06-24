@@ -5184,7 +5184,8 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_Cameras: []
+  m_Cameras:
+  - {fileID: 6392527181719669084}
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
@@ -5397,6 +5398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heldItemAnchor: {fileID: 2443764899327010668}
+  messageView: {fileID: 7174150627329561345}
 --- !u!114 &2531166024297944478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6141,3 +6143,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8295584269408688194, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
   m_PrefabInstance: {fileID: 3353199792829356935}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7174150627329561345 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5550482642188503174, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+  m_PrefabInstance: {fileID: 3353199792829356935}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2f22a211aff1a8448a1e544af7aa68a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
