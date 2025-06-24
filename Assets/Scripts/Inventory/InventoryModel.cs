@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using Blue.Item;
+using System;
 
 namespace Blue.Inventory
 {
@@ -10,6 +11,7 @@ namespace Blue.Inventory
         private List<InventoryItem> inventoryItems = new List<InventoryItem>();
 
         public ReadOnlyCollection<InventoryItem> InventoryItems => inventoryItems.AsReadOnly();
+        public Action<ItemData> OnPickUpItem { private get; set; }
 
         public void AddItem(ItemData item_data, int quantity = 1)
         {
@@ -23,6 +25,8 @@ namespace Blue.Inventory
                 new_item.ModifyQuantity(quantity);
                 inventoryItems.Add(new_item);
             }
+
+            OnPickUpItem?.Invoke(item_data);
         }
 
         public void RemoveItem(ItemData item_data, int quantity = 1)
