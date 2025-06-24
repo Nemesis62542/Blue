@@ -60,6 +60,7 @@ namespace Blue.Player
             inputHandler.OnQuickSlotChangeEvent += QuickSlot.SelectSlot;
 
             QuickSlot.OnQuickSlotChanged += HandleSlotChanged;
+            Inventory.OnPickUpItem = OnPickUpItem;
 
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(InputMapType.Player);
@@ -168,7 +169,7 @@ namespace Blue.Player
                 interactable.Interact(this);
                 return;
             }
-            if(QuickSlot.CurrentEquippedItem != null) UseSelectedItem();
+            if (QuickSlot.CurrentEquippedItem != null) UseSelectedItem();
         }
 
         private void Scan()
@@ -290,6 +291,11 @@ namespace Blue.Player
         {
             model.Inventory.AddItem(captured);
             view.AddMessage(new MessageData($"{captured.ItemName}を捕獲しました"));
+        }
+
+        public void OnPickUpItem(ItemData item)
+        {
+            view.AddMessage(new MessageData($"{item.ItemName}を入手しました"));
         }
     }
 }
