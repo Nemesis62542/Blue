@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.5058824, g: 0.7176471, b: 0.8745098, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.04
+  m_FogDensity: 0.1
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
@@ -27,7 +27,7 @@ RenderSettings:
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 0acba0a56e005d94b822d024809efe8e, type: 2}
-  m_HaloStrength: 0.5
+  m_HaloStrength: 0.455
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -748,10 +748,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1836559564834993118, guid: a40e0691fee7fdd4b877adc2d7f0b28c, type: 3}
-      propertyPath: sharedProfile
-      value: 
-      objectReference: {fileID: 11400000, guid: 026eafb4fd816fd4d8a17ddfa094e00f, type: 2}
     - target: {fileID: 4543652670962703171, guid: a40e0691fee7fdd4b877adc2d7f0b28c, type: 3}
       propertyPath: m_Name
       value: PostProcessingVolume
@@ -836,7 +832,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49922069897803081, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.79
+      value: -1.868
       objectReference: {fileID: 0}
     - target: {fileID: 49922069897803081, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1135,9 +1131,11 @@ PrefabInstance:
     - target: {fileID: 4310332037496197694, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4310332037496197694, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_LocalPosition.y
+      value: 0
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4313100808600159755, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
@@ -1354,7 +1352,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424724188950865022, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00014523891
+      value: -0.0012433479
       objectReference: {fileID: 0}
     - target: {fileID: 7624444497065843833, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchorMax.x
