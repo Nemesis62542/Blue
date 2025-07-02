@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: Sardine
   m_EditorClassIdentifier: 
-  entityName: "\u30D2\u30AB\u30EA\u30A4\u30EF\u30B7"
-  hp: 2
+  entityName: 
+  hp: 0
   attackPower: 0
-  size: 1
+  size: 0
   capturedItem: {fileID: 0}
+  entityObject: {fileID: 0}
