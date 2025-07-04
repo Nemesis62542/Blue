@@ -12,11 +12,9 @@ namespace Blue.Player
         [SerializeField] private float scanRadius = 8f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private ScannerView view;
-        [SerializeField] private float scanDuration = 2f;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
         private IScannable lookingScannable = null;
-        private float scanProgress;
 
         public void Scan(Vector3 origin, Vector3 forward)
         {
@@ -33,24 +31,17 @@ namespace Blue.Player
 
             foreach (IScannable scannable in hits)
             {
-                if (((MonoBehaviour)scannable).transform.TryGetComponent(out SchoolChild fish))
-                {
-                    if (!FindSameSchool(fish)) AddScannable(scannable);
-                    continue;
-                }
                 AddScannable(scannable);
             }
         }
 
         private bool FindSameSchool(SchoolChild obj)
         {
-            List<SchoolChild> school_fish = (List<SchoolChild>)scannedObjects.Where(fish => ((MonoBehaviour)fish).transform.TryGetComponent(out SchoolChild _));
-            foreach (SchoolChild child in school_fish)
-            {
-                if (child.Spawner == obj.Spawner) return true;
-            }
+            IEnumerable<SchoolChild> school_fish = scannedObjects
+                                                    .Select(scannable => ((MonoBehaviour)scannable).GetComponent<SchoolChild>())
+                                                    .Where(scannable => scannable.Spawner == obj.Spawner);
 
-            return false;
+            return school_fish.Count() > 1;
         }
 
         public void ToggleLookingScannable(IScannable scannable)
@@ -61,31 +52,10 @@ namespace Blue.Player
             view.ToggleLookingUI(lookingScannable, true);
         }
 
-        public void UpdateScan(float delta_time)
-        {
-            if (lookingScannable == null || view.IsShowedDetail(lookingScannable)) return;
-
-            scanProgress += delta_time;
-            view.UpdateScanProgress(lookingScannable, scanProgress / scanDuration);
-
-            if (scanProgress >= scanDuration)
-            {
-                CompleteScan(lookingScannable);
-            }
-        }
-
         public void CancelScan()
         {
             if (lookingScannable == null) return;
             view.UpdateScanProgress(lookingScannable, 0f);
-            scanProgress = 0f;
-        }
-
-        private void CompleteScan(IScannable scannable)
-        {
-            view.ShowDetail(scannable);
-            lookingScannable = null;
-            scanProgress = 0f;
         }
 
         private void Update()
@@ -98,8 +68,7 @@ namespace Blue.Player
                     scannedObjects.Remove(scannable);
                     return;
                 }
-                float distance = Vector3.Distance(((MonoBehaviour)scannable).transform.position, transform.position);
-                view.UpdateDetailUI(scannable, distance < scanRadius);
+                view.UpdateDetailUI(scannable);
             }
         }
 
@@ -121,7 +90,19 @@ namespace Blue.Player
         public void SetDetailUI(IScannable scannable)
         {
             Transform target_position = ((MonoBehaviour)scannable).transform;
-            view.SetDetailUI(target_position, scannable);
+
+            if (((MonoBehaviour)scannable).transform.TryGetComponent(out SchoolChild fish))
+            {
+                if (!FindSameSchool(fish))
+                {
+                    target_position = fish.Spawner.transform;
+                    view.SetDetailUI(target_position, scannable);
+                }
+            }
+            else
+            {
+                view.SetDetailUI(target_position, scannable);
+            }
         }
 
         private void RemoveScannable(IScannable scannable, int index)

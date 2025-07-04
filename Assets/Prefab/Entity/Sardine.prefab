@@ -48,14 +48,62 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7523898139307217857, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -5569988501944410693, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -2641955852382473295, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -1894584525524268105, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 635547659545568360, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_Name
       value: Sardine
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1922624669174248781, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2103800136561837715, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2636601314729078172, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: efad3c6bf2e324647aa91a628b35965f, type: 2}
+    - target: {fileID: 5945620190058138965, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7157309607397930224, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9207422780455894014, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -72,6 +120,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2021633195146329359}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6045110964322779317}
   m_SourcePrefab: {fileID: 100100000, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
 --- !u!4 &1186156147288127747 stripped
 Transform:
@@ -138,6 +189,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetRenderer: {fileID: 3676181991406002316}
   highlightMaterial: {fileID: 2100000, guid: c27ba7ca28f726c4a987ffb0d862242c, type: 2}
+--- !u!65 &6045110964322779317
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962938419427500985}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.2, y: 0.3, z: 1.2}
+  m_Center: {x: 0, y: 0.25, z: 0}
 --- !u!137 &3676181991406002316 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2664098864995057252, guid: 2153a738256e65240814bc58e6e9f427, type: 3}

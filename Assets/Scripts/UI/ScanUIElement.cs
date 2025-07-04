@@ -43,6 +43,12 @@ namespace Blue.UI
             detail.gameObject.SetActive(true);
         }
 
+        public void HideDetail()
+        {
+            name.gameObject.SetActive(false);
+            detail.gameObject.SetActive(false);
+        }
+
         public void ToggleLookingUI(bool is_looking)
         {
             lookingUI.gameObject.SetActive(is_looking);
