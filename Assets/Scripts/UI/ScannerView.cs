@@ -77,8 +77,10 @@ namespace Blue.UI
 
                     element.transform.localPosition = new Vector3(local_position.x, local_position.y, 0f);
 
-                    if (IsCenter(element.Target.position)) element.ShowDetail();
+                    bool is_center = IsCenter(element.Target.position);
+                    if (is_center) element.ShowDetail();
                     else element.HideDetail();
+                    element.ToggleLookingUI(is_center);
                 }
             }
         }

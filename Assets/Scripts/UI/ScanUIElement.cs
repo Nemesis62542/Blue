@@ -38,7 +38,6 @@ namespace Blue.UI
 
         public void ShowDetail()
         {
-            scanProgressBar.gameObject.SetActive(false);
             name.gameObject.SetActive(true);
             detail.gameObject.SetActive(true);
         }
