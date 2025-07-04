@@ -31,6 +31,11 @@ namespace Blue.UI
             scanProgressBar.value = 0f;
         }
 
+        void Update()
+        {
+            if (target == null) Destroy(gameObject);
+        }
+
         public void ShowDetail()
         {
             scanProgressBar.gameObject.SetActive(false);

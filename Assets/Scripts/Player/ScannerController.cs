@@ -76,6 +76,12 @@ namespace Blue.Player
         {
             foreach (IScannable scannable in scannedObjects)
             {
+                MonoBehaviour target = (MonoBehaviour)scannable;
+                if (target == null)
+                {
+                    scannedObjects.Remove(scannable);
+                    return;
+                }
                 float distance = Vector3.Distance(((MonoBehaviour)scannable).transform.position, transform.position);
                 view.UpdateDetailUI(scannable, distance < scanRadius);
             }
@@ -104,7 +110,7 @@ namespace Blue.Player
 
         private void RemoveScannable(IScannable scannable, int index)
         {
-            scannable.OnScanEnd();
+            scannable?.OnScanEnd();
             scannedObjects.RemoveAt(index);
         }
 
