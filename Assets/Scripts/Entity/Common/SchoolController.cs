@@ -69,9 +69,6 @@ public class SchoolController:MonoBehaviour{
 	public float _pushDistance;				//How far away obstacles can be before starting to push away	
 	public float _pushForce = 5.0f;			//How fast/hard to push away
 	
-	///BUBBLES
-	public SchoolBubbles _bubbles;
-	
 	//FRAME SKIP
 	public int _updateDivisor = 1;				//Skip update every N frames (Higher numbers might give choppy results, 3 - 4 on 60fps , 2 - 3 on 30 fps)
 	public float _newDelta;
@@ -114,7 +111,7 @@ public class SchoolController:MonoBehaviour{
 		if(_groupChildToNewTransform)InstantiateGroup();	
 		for(int i=0;i<amount;i++){
 			int child = Random.Range(0,_childPrefab.Length);
-			SchoolChild obj = (SchoolChild)Instantiate(_childPrefab[child]);		
+			SchoolChild obj = Instantiate(_childPrefab[child]);		
 		    obj._spawner = this;
 		    _roamers.Add(obj);
 			AddChildToParent(obj.transform);
@@ -159,7 +156,7 @@ public class SchoolController:MonoBehaviour{
 		_posBuffer = t;	
 		if(_forceChildWaypoints){
 			for(int i = 0; i < _roamers.Count; i++) {
-	  		 	(_roamers[i]).Wander(Random.value*_forcedRandomDelay);
+	  		 	_roamers[i].Wander(Random.value*_forcedRandomDelay);
 			}	
 		}
 	}
