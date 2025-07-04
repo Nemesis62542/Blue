@@ -14,14 +14,12 @@ public class SchoolChild:MonoBehaviour{
 	public float _speed= 10.0f;				//Fish Speed
 	float _stuckCounter;			//prevents looping around a waypoint
 	float _damping;					//Turn speed
-	[SerializeField] Transform _model;				//Model with animations
 	float _targetSpeed;				//Fish target speed
 	float tParam = 0.0f;				//
 	float _rotateCounterR;			//Used to increase avoidance speed over time
 	float _rotateCounterL;			
 	public Transform _scanner;				//Scanner object used for push, this rotates to check for collisions
-	bool _scan = true;			
-	bool _instantiated;			//Has this been instantiated
+	bool _scan = true;
 	static int _updateNextSeed = 0;	//When using frameskip seed will prevent calculations for all fish to be on the same frame
 	int _updateSeed = -1;
 	[HideInInspector]
@@ -41,8 +39,6 @@ public class SchoolChild:MonoBehaviour{
 			_speed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed);
 			Wander(0.0f);
 			SetRandomWaypoint();
-			CheckForBubblesThenInvoke();	
-			_instantiated = true;
 			GetStartPos();
 			FrameSkipSeedInit();
 			_spawner._activeChildren++;
@@ -52,10 +48,9 @@ public class SchoolChild:MonoBehaviour{
 		this.enabled = false;
 		Debug.Log(gameObject + " found no school to swim in: " + this + " disabled... Standalone fish not supported, please use the SchoolController"); 
 	}
-	
+
 	public void Update() {
-		//Skip frames
-		if (_spawner._updateDivisor <=1 || _spawner._updateCounter == _updateSeed){
+		if (_spawner._updateDivisor <= 1 || _spawner._updateCounter == _updateSeed){
 			CheckForDistanceToWaypoint();
 		   	RotationBasedOnWaypointOrAvoidance();
 		    ForwardMovement();
@@ -67,37 +62,26 @@ public class SchoolChild:MonoBehaviour{
 		if(_spawner._updateDivisor > 1){
 			int _updateSeedCap = _spawner._updateDivisor -1;
 			_updateNextSeed++;
-		    this._updateSeed = _updateNextSeed;
+		    _updateSeed = _updateNextSeed;
 		    _updateNextSeed = _updateNextSeed % _updateSeedCap;
 		}
 	}
 	
-	public void CheckForBubblesThenInvoke() {
-		if(_spawner._bubbles != null)
-			InvokeRepeating("EmitBubbles", (_spawner._bubbles._emitEverySecond*Random.value)+1 , _spawner._bubbles._emitEverySecond);	
-	}
-	
-	public void EmitBubbles(){
-		_spawner._bubbles.EmitBubbles(_cacheTransform.position, _speed);
-	}
-	
 	public void OnDisable() {
-		CancelInvoke();
-		_spawner._activeChildren--;
+		if(_spawner != null && _spawner._activeChildren > 0){
+			_spawner._activeChildren--;
+		}
 	}
 	
 	public void OnEnable() {
-		if(_instantiated){
-			CheckForBubblesThenInvoke();
+		if(_spawner != null){
 			_spawner._activeChildren++;
 		}
 	}
 	
 	public void LocateRequiredChildren(){
-		if(_model == null) _model = _cacheTransform.Find("Model");
 		if(_scanner == null){
-			_scanner = new GameObject().transform;
-			_scanner.parent = transform;
+			_scanner = transform;
 			_scanner.localRotation = Quaternion.identity;
 			_scanner.localPosition = Vector3.zero;
 			#if UNITY_EDITOR
@@ -113,7 +97,7 @@ public class SchoolChild:MonoBehaviour{
 		// Adds a slight rotation to the model so that the fish get a little less uniformed movement	
 		Quaternion rx = Quaternion.identity;
 		rx.eulerAngles = new Vector3(0.0f, 0.0f , (float)Random.Range(-25, 25));
-		_model.	rotation =	rx;
+		transform.rotation = rx;
 	}
 	
 	public void SetRandomScale(){
@@ -178,33 +162,29 @@ public class SchoolChild:MonoBehaviour{
 	}
 	
 	public bool Avoidance() {
-		//Avoidance () - Returns true if there is an obstacle in the way
 		if(!_spawner._avoidance)
 			return false;		
-		RaycastHit hit = new RaycastHit();
-		float d = 0.0f;
+		RaycastHit hit;
+		float d;
 		Quaternion rx = _cacheTransform.rotation;
 		Vector3 ex = _cacheTransform.rotation.eulerAngles;
 		Vector3 cacheForward = _cacheTransform.forward;
 		Vector3 cacheRight = _cacheTransform.right;
-		//Up / Down avoidance
-		if (Physics.Raycast(_cacheTransform.position, -Vector3.up+(cacheForward*.1f), out hit, _spawner._avoidDistance, _spawner._avoidanceMask)){			
-			//Debug.DrawLine(_cacheTransform.position,hit.point);
-			d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;
-			ex.x -= _spawner._avoidSpeed*d*_spawner._newDelta*(_speed +1);
-			rx.eulerAngles = ex;
-			_cacheTransform.rotation = rx;
+		float randomRight = Random.Range(-.1f, .1f);
+
+		Vector3[] upDownDirs = { -Vector3.up + (cacheForward * .1f), Vector3.up + (cacheForward * .1f) };
+		float[] upDownSigns = { -1f, 1f };
+		for (int i = 0; i < 2; i++) {
+			if (Physics.Raycast(_cacheTransform.position, upDownDirs[i], out hit, _spawner._avoidDistance, _spawner._avoidanceMask)) {
+				d = (_spawner._avoidDistance - hit.distance) / _spawner._avoidDistance;
+				ex.x += upDownSigns[i] * _spawner._avoidSpeed * d * _spawner._newDelta * (_speed + 1);
+				rx.eulerAngles = ex;
+				_cacheTransform.rotation = rx;
+			}
 		}
-		if (Physics.Raycast(_cacheTransform.position, Vector3.up+(cacheForward*.1f), out hit, _spawner._avoidDistance, _spawner._avoidanceMask)){
-			//Debug.DrawLine(_cacheTransform.position,hit.point);
-			d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;			
-			ex.x += _spawner._avoidSpeed*d*_spawner._newDelta*(_speed +1);	
-			rx.eulerAngles = ex;
-			_cacheTransform.rotation = rx;	
-		}
-		
+
 		//Crash avoidance //Checks for obstacles forward
-		if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*Random.Range(-.1f, .1f)), out hit, _spawner._stopDistance, _spawner._avoidanceMask)){		
+		if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*randomRight), out hit, _spawner._stopDistance, _spawner._avoidanceMask)){		
 	//					Debug.DrawLine(_cacheTransform.position,hit.point);
 					d = (_spawner._stopDistance - hit.distance)/_spawner._stopDistance;				
 					ex.y -= _spawner._avoidSpeed*d*_spawner._newDelta*(_targetSpeed +3);
@@ -263,9 +243,8 @@ public class SchoolChild:MonoBehaviour{
 	}
 	
 	public void RotationBasedOnWaypointOrAvoidance(){
-		Quaternion rotation = Quaternion.identity;
-	    rotation = Quaternion.LookRotation(_wayPoint - _cacheTransform.position);
-	    if(!Avoidance()){
+        Quaternion rotation = Quaternion.LookRotation(_wayPoint - _cacheTransform.position);
+        if (!Avoidance()){
 			_cacheTransform.rotation = Quaternion.Slerp(_cacheTransform.rotation, rotation, _spawner._newDelta * _damping);
 		}
 		//Limit rotation up and down to avoid freaky behavior
