@@ -17,7 +17,8 @@ using UnityEngine;
 using System.Collections.Generic;
 
 
-public class SchoolController:MonoBehaviour{
+public class SchoolController : MonoBehaviour
+{
 	
 	public SchoolChild[] _childPrefab;			// Assign prefab with SchoolChild script attached
 	public bool _groupChildToNewTransform;	// Parents fish transform to school transform
@@ -111,8 +112,8 @@ public class SchoolController:MonoBehaviour{
 		if(_groupChildToNewTransform)InstantiateGroup();	
 		for(int i=0;i<amount;i++){
 			int child = Random.Range(0,_childPrefab.Length);
-			SchoolChild obj = Instantiate(_childPrefab[child]);		
-		    obj._spawner = this;
+			SchoolChild obj = Instantiate(_childPrefab[child]);
+			obj.SetSpawner(this);
 		    _roamers.Add(obj);
 			AddChildToParent(obj.transform);
 		}	

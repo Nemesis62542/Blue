@@ -33,8 +33,24 @@ namespace Blue.Player
 
             foreach (IScannable scannable in hits)
             {
+                if (((MonoBehaviour)scannable).transform.TryGetComponent(out SchoolChild fish))
+                {
+                    if (!FindSameSchool(fish)) AddScannable(scannable);
+                    continue;
+                }
                 AddScannable(scannable);
             }
+        }
+
+        private bool FindSameSchool(SchoolChild obj)
+        {
+            List<SchoolChild> school_fish = (List<SchoolChild>)scannedObjects.Where(fish => ((MonoBehaviour)fish).transform.TryGetComponent(out SchoolChild _));
+            foreach (SchoolChild child in school_fish)
+            {
+                if (child.Spawner == obj.Spawner) return true;
+            }
+
+            return false;
         }
 
         public void ToggleLookingScannable(IScannable scannable)
