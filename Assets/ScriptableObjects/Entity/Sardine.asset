@@ -17,3 +17,4 @@ MonoBehaviour:
   attackPower: 0
   size: 1
   capturedItem: {fileID: 0}
+  entityObject: {fileID: 718894429180662373, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
