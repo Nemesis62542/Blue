@@ -18,6 +18,7 @@ RenderSettings:
   m_FogColor: {r: 0.5058824, g: 0.7176471, b: 0.8745098, a: 1}
   m_FogMode: 2
   m_FogDensity: 0.1
+  m_FogDensity: 0.1
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
@@ -27,6 +28,7 @@ RenderSettings:
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 0acba0a56e005d94b822d024809efe8e, type: 2}
+  m_HaloStrength: 0.455
   m_HaloStrength: 0.455
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -833,6 +835,7 @@ PrefabInstance:
     - target: {fileID: 49922069897803081, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: m_LocalPosition.y
       value: -1.868
+      value: -1.868
       objectReference: {fileID: 0}
     - target: {fileID: 49922069897803081, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1352,6 +1355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424724188950865022, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: -0.0012433479
       value: -0.0012433479
       objectReference: {fileID: 0}
     - target: {fileID: 7624444497065843833, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
