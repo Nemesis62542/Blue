@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Blue.Interface;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Blue.UI
@@ -50,19 +51,18 @@ namespace Blue.UI
             }
         }
 
-        public void UpdateDetailUI(IScannable scannable, bool is_within_distance)
+        public void UpdateDetailUI(IScannable scannable)
         {
             if (details.TryGetValue(scannable, out ScanUIElement element))
             {
                 bool is_visible = IsVisibleInViewport(element.Target.position);
-                bool should_be_visible = is_within_distance && is_visible;
 
-                if (element.gameObject.activeSelf != should_be_visible)
+                if (element.gameObject.activeSelf != is_visible)
                 {
-                    element.gameObject.SetActive(should_be_visible);
+                    element.gameObject.SetActive(is_visible);
                 }
 
-                if (should_be_visible)
+                if (is_visible)
                 {
                     Vector3 world_position = element.Target.position;
                     Vector3 screen_position = camera.WorldToScreenPoint(world_position);
@@ -76,8 +76,23 @@ namespace Blue.UI
                     );
 
                     element.transform.localPosition = new Vector3(local_position.x, local_position.y, 0f);
+
+                    bool is_center = IsCenter(element.Target.position);
+                    if (is_center) element.ShowDetail();
+                    else element.HideDetail();
+                    element.ToggleLookingUI(is_center);
                 }
             }
+        }
+
+        private bool IsCenter(Vector3 position)
+        {
+            Vector3 viewportPos = camera.WorldToViewportPoint(position);
+
+            return
+                viewportPos.z > 0f &&
+                Mathf.Abs(viewportPos.x - 0.5f) < 0.1f &&
+                Mathf.Abs(viewportPos.y - 0.5f) < 0.1f;
         }
 
         private bool IsVisibleInViewport(Vector3 world_position)
@@ -104,14 +119,6 @@ namespace Blue.UI
                 pool.Enqueue(element);
             }
             details.Clear();
-        }
-
-        public void ShowDetail(IScannable scannable)
-        {
-            if (details.TryGetValue(scannable, out ScanUIElement element))
-            {
-                element.ShowDetail();
-            }
         }
     }
 }

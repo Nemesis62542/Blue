@@ -6,127 +6,119 @@
 using UnityEngine;
 
 
-public class SchoolChild:MonoBehaviour{
-	[HideInInspector]
-	public SchoolController _spawner;
-	Vector3 _wayPoint;
-	[HideInInspector]
-	public float _speed= 10.0f;				//Fish Speed
-	float _stuckCounter;			//prevents looping around a waypoint
-	float _damping;					//Turn speed
-	[SerializeField] Transform _model;				//Model with animations
-	float _targetSpeed;				//Fish target speed
-	float tParam = 0.0f;				//
-	float _rotateCounterR;			//Used to increase avoidance speed over time
-	float _rotateCounterL;			
-	public Transform _scanner;				//Scanner object used for push, this rotates to check for collisions
-	bool _scan = true;			
-	bool _instantiated;			//Has this been instantiated
-	static int _updateNextSeed = 0;	//When using frameskip seed will prevent calculations for all fish to be on the same frame
-	int _updateSeed = -1;
-	[HideInInspector]
-	public Transform _cacheTransform;
+public class SchoolChild : MonoBehaviour
+{
+	[SerializeField] private Transform _scanner;
 	
-	#if UNITY_EDITOR
-	public static bool _sWarning;
-	#endif
-	
-	public void Start(){
-		//Check if there is a controller attached
-		if(_cacheTransform == null) _cacheTransform = transform;
-		if(_spawner != null){	
-			SetRandomScale();			
-			LocateRequiredChildren();
-		    SkewModelForLessUniformedMovement();
-			_speed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed);
-			Wander(0.0f);
-			SetRandomWaypoint();
-			CheckForBubblesThenInvoke();	
-			_instantiated = true;
-			GetStartPos();
-			FrameSkipSeedInit();
-			_spawner._activeChildren++;
-			return;
-		}
-		
-		this.enabled = false;
-		Debug.Log(gameObject + " found no school to swim in: " + this + " disabled... Standalone fish not supported, please use the SchoolController"); 
+    private SchoolController _spawner;
+    private Vector3 _wayPoint;
+    private float _speed = 10.0f;
+    private float _stuckCounter;
+    private float _damping;
+    private float _targetSpeed;
+    private float tParam = 0.0f;
+    private float _rotateCounterR;
+    private float _rotateCounterL;
+    private bool _scan = true;
+    private int _updateNextSeed = 0;
+    private int _updateSeed = -1;
+    private Transform _cacheTransform;
+
+#if UNITY_EDITOR
+    private bool _sWarning;
+#endif
+
+	public SchoolController Spawner => _spawner;
+
+	public void Start()
+	{
+		if (_cacheTransform == null) _cacheTransform = transform;
+		SetRandomScale();
+		LocateRequiredChildren();
+		SkewModelForLessUniformedMovement();
+		_speed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed);
+		Wander(0.0f);
+		SetRandomWaypoint();
+		GetStartPos();
+		FrameSkipSeedInit();
+		_spawner._activeChildren++;
 	}
-	
-	public void Update() {
-		//Skip frames
-		if (_spawner._updateDivisor <=1 || _spawner._updateCounter == _updateSeed){
-			CheckForDistanceToWaypoint();
-		   	RotationBasedOnWaypointOrAvoidance();
-		    ForwardMovement();
-			RayCastToPushAwayFromObstacles();
-		}
-	}
-	
-	public void FrameSkipSeedInit(){
+
+    public void Update() {
+        if (_spawner._updateDivisor <= 1 || _spawner._updateCounter == _updateSeed){
+            CheckForDistanceToWaypoint();
+            RotationBasedOnWaypointOrAvoidance();
+            ForwardMovement();
+            RayCastToPushAwayFromObstacles();
+        }
+    }
+
+    public void OnDisable() {
+        if (_spawner != null && _spawner._activeChildren > 0) {
+            _spawner._activeChildren--;
+        }
+    }
+
+    public void OnEnable() {
+        if(_spawner != null){
+            _spawner._activeChildren++;
+        }
+    }
+
+    // 外部から呼ばれる（SchoolControllerから）のでpublic
+    public void SetSpawner(SchoolController spawner) {
+        _spawner = spawner;
+    }
+
+    // 外部から呼ばれる（SchoolControllerから）のでpublic
+    public void Wander(float delay) {
+        _damping = Random.Range(_spawner._minDamping, _spawner._maxDamping);
+        _targetSpeed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed) * _spawner._speedCurveMultiplier.Evaluate(Random.value) * _spawner._schoolSpeed;
+        Invoke("SetRandomWaypoint", delay);
+    }
+
+    // 外部から呼ばれる（Invokeや他クラスから）のでpublic
+    public void SetRandomWaypoint() {
+        tParam = 0.0f;
+        _wayPoint = findWaypoint();
+    }
+
+    // 内部処理はprivate
+    private void FrameSkipSeedInit(){
 		if(_spawner._updateDivisor > 1){
 			int _updateSeedCap = _spawner._updateDivisor -1;
 			_updateNextSeed++;
-		    this._updateSeed = _updateNextSeed;
+		    _updateSeed = _updateNextSeed;
 		    _updateNextSeed = _updateNextSeed % _updateSeedCap;
 		}
 	}
-	
-	public void CheckForBubblesThenInvoke() {
-		if(_spawner._bubbles != null)
-			InvokeRepeating("EmitBubbles", (_spawner._bubbles._emitEverySecond*Random.value)+1 , _spawner._bubbles._emitEverySecond);	
-	}
-	
-	public void EmitBubbles(){
-		_spawner._bubbles.EmitBubbles(_cacheTransform.position, _speed);
-	}
-	
-	public void OnDisable() {
-		CancelInvoke();
-		_spawner._activeChildren--;
-	}
-	
-	public void OnEnable() {
-		if(_instantiated){
-			CheckForBubblesThenInvoke();
-			_spawner._activeChildren++;
-		}
-	}
-	
-	public void LocateRequiredChildren(){
-		if(_model == null) _model = _cacheTransform.Find("Model");
+
+    private void LocateRequiredChildren(){
 		if(_scanner == null){
-			_scanner = new GameObject().transform;
-			_scanner.parent = transform;
+			_scanner = transform;
 			_scanner.localRotation = Quaternion.identity;
 			_scanner.localPosition = Vector3.zero;
-			#if UNITY_EDITOR
-			if(!_sWarning){
-				Debug.Log("No scanner assigned: creating... (Increase instantiate performance by manually creating a scanner object)");
-				_sWarning = true;
-			}
-			#endif
 		}
 	}
 	
-	public void SkewModelForLessUniformedMovement() {
+	private void SkewModelForLessUniformedMovement() {
 		// Adds a slight rotation to the model so that the fish get a little less uniformed movement	
 		Quaternion rx = Quaternion.identity;
 		rx.eulerAngles = new Vector3(0.0f, 0.0f , (float)Random.Range(-25, 25));
-		_model.	rotation =	rx;
+		transform.rotation = rx;
 	}
 	
-	public void SetRandomScale(){
+	private void SetRandomScale(){
 		float sc = Random.Range(_spawner._minScale, _spawner._maxScale);
 		_cacheTransform.localScale=Vector3.one*sc;
 	}
 	
-	public void GetStartPos(){
+	private void GetStartPos(){
 		//-Vector is to avoid zero rotation warning
 		_cacheTransform.position = _wayPoint - new Vector3(.1f,.1f,.1f);
 	}
 	
-	public Vector3 findWaypoint(){
+	private Vector3 findWaypoint(){
 		Vector3 t = Vector3.zero;
 		t.x = Random.Range(-_spawner._spawnSphere, _spawner._spawnSphere) + _spawner._posBuffer.x;
 		t.z = Random.Range(-_spawner._spawnSphereDepth, _spawner._spawnSphereDepth) + _spawner._posBuffer.z;
@@ -135,14 +127,14 @@ public class SchoolChild:MonoBehaviour{
 	}
 	
 	//Uses scanner to push away from obstacles
-	public void RayCastToPushAwayFromObstacles() {
+	private void RayCastToPushAwayFromObstacles() {
 		if(_spawner._push){
 			RotateScanner();
 			RayCastToPushAwayFromObstaclesCheckForCollision();
 		}
 	}
 	
-	public void RayCastToPushAwayFromObstaclesCheckForCollision() {
+	private void RayCastToPushAwayFromObstaclesCheckForCollision() {
 		RaycastHit hit = new RaycastHit();
 		float d = 0.0f;
 		Vector3 cacheForward = _scanner.forward;
@@ -167,7 +159,7 @@ public class SchoolChild:MonoBehaviour{
 		}
 	}
 	
-	public void RotateScanner() {
+	private void RotateScanner() {
 		//Scan random if not pushing
 		if(_scan){
 			_scanner.rotation = Random.rotation;
@@ -177,34 +169,54 @@ public class SchoolChild:MonoBehaviour{
 		_scanner.Rotate(new Vector3(150*_spawner._newDelta,0.0f,0.0f));
 	}
 	
-	public bool Avoidance() {
-		//Avoidance () - Returns true if there is an obstacle in the way
+	private void CheckForDistanceToWaypoint(){
+		if((_cacheTransform.position - _wayPoint).magnitude < _spawner._waypointDistance+_stuckCounter){
+	      	Wander(0.0f);	//create a new waypoint
+	        _stuckCounter=0.0f;
+	        CheckIfThisShouldTriggerNewFlockWaypoint();
+	        return;
+	    }
+	    _stuckCounter+=_spawner._newDelta*(_spawner._waypointDistance*.25f);
+	}
+	
+	private void CheckIfThisShouldTriggerNewFlockWaypoint(){
+		if(_spawner._childTriggerPos){
+			_spawner.SetRandomWaypointPosition();
+		}
+	}
+	
+	private float ClampAngle(float angle,float min,float max) {
+		if (angle < -360)angle += 360.0f;
+		if (angle > 360)angle -= 360.0f;
+		return Mathf.Clamp (angle, min, max);
+	}
+	
+	// Avoidance, ForwardMovement, RotationBasedOnWaypointOrAvoidanceは
+    // 他クラスから直接呼ばれていなければprivateにしてOK
+    private bool Avoidance() {
 		if(!_spawner._avoidance)
 			return false;		
-		RaycastHit hit = new RaycastHit();
-		float d = 0.0f;
+		RaycastHit hit;
+		float d;
 		Quaternion rx = _cacheTransform.rotation;
 		Vector3 ex = _cacheTransform.rotation.eulerAngles;
 		Vector3 cacheForward = _cacheTransform.forward;
 		Vector3 cacheRight = _cacheTransform.right;
-		//Up / Down avoidance
-		if (Physics.Raycast(_cacheTransform.position, -Vector3.up+(cacheForward*.1f), out hit, _spawner._avoidDistance, _spawner._avoidanceMask)){			
-			//Debug.DrawLine(_cacheTransform.position,hit.point);
-			d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;
-			ex.x -= _spawner._avoidSpeed*d*_spawner._newDelta*(_speed +1);
-			rx.eulerAngles = ex;
-			_cacheTransform.rotation = rx;
+		float randomRight = Random.Range(-.1f, .1f);
+
+		Vector3[] upDownDirs = { -Vector3.up + (cacheForward * .1f), Vector3.up + (cacheForward * .1f) };
+		float[] upDownSigns = { -1f, 1f };
+		for (int i = 0; i < 2; i++) {
+			if (Physics.Raycast(_cacheTransform.position, upDownDirs[i], out hit, _spawner._avoidDistance, _spawner._avoidanceMask)) {
+				d = (_spawner._avoidDistance - hit.distance) / _spawner._avoidDistance;
+				ex.x += upDownSigns[i] * _spawner._avoidSpeed * d * _spawner._newDelta * (_speed + 1);
+				rx.eulerAngles = ex;
+				_cacheTransform.rotation = rx;
+			}
 		}
-		if (Physics.Raycast(_cacheTransform.position, Vector3.up+(cacheForward*.1f), out hit, _spawner._avoidDistance, _spawner._avoidanceMask)){
-			//Debug.DrawLine(_cacheTransform.position,hit.point);
-			d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;			
-			ex.x += _spawner._avoidSpeed*d*_spawner._newDelta*(_speed +1);	
-			rx.eulerAngles = ex;
-			_cacheTransform.rotation = rx;	
-		}
-		
+
 		//Crash avoidance //Checks for obstacles forward
-		if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*Random.Range(-.1f, .1f)), out hit, _spawner._stopDistance, _spawner._avoidanceMask)){		
+		if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*randomRight), out hit, _spawner._stopDistance, _spawner._avoidanceMask)){		
 	//					Debug.DrawLine(_cacheTransform.position,hit.point);
 					d = (_spawner._stopDistance - hit.distance)/_spawner._stopDistance;				
 					ex.y -= _spawner._avoidSpeed*d*_spawner._newDelta*(_targetSpeed +3);
@@ -250,7 +262,7 @@ public class SchoolChild:MonoBehaviour{
 		return false;																	    																																				    																				
 	}
 	
-	public void ForwardMovement(){
+	private void ForwardMovement(){
 		_cacheTransform.position += _cacheTransform.TransformDirection(Vector3.forward)*_speed*_spawner._newDelta;
 		if (tParam < 1) {
 			if(_speed > _targetSpeed){
@@ -262,10 +274,9 @@ public class SchoolChild:MonoBehaviour{
 		}
 	}
 	
-	public void RotationBasedOnWaypointOrAvoidance(){
-		Quaternion rotation = Quaternion.identity;
-	    rotation = Quaternion.LookRotation(_wayPoint - _cacheTransform.position);
-	    if(!Avoidance()){
+	private void RotationBasedOnWaypointOrAvoidance(){
+        Quaternion rotation = Quaternion.LookRotation(_wayPoint - _cacheTransform.position);
+        if (!Avoidance()){
 			_cacheTransform.rotation = Quaternion.Slerp(_cacheTransform.rotation, rotation, _spawner._newDelta * _damping);
 		}
 		//Limit rotation up and down to avoid freaky behavior
@@ -276,38 +287,5 @@ public class SchoolChild:MonoBehaviour{
 	    rxea.x = ClampAngle(angle, -50.0f , 50.0f);
 	    rx.eulerAngles = rxea;
 		_cacheTransform.rotation = rx;
-	}
-	
-	public void CheckForDistanceToWaypoint(){
-		if((_cacheTransform.position - _wayPoint).magnitude < _spawner._waypointDistance+_stuckCounter){
-	      	Wander(0.0f);	//create a new waypoint
-	        _stuckCounter=0.0f;
-	        CheckIfThisShouldTriggerNewFlockWaypoint();
-	        return;
-	    }
-	    _stuckCounter+=_spawner._newDelta*(_spawner._waypointDistance*.25f);
-	}
-	
-	public void CheckIfThisShouldTriggerNewFlockWaypoint(){
-		if(_spawner._childTriggerPos){
-			_spawner.SetRandomWaypointPosition();
-		}
-	}
-	
-	public static float ClampAngle(float angle,float min,float max) {
-		if (angle < -360)angle += 360.0f;
-		if (angle > 360)angle -= 360.0f;
-		return Mathf.Clamp (angle, min, max);
-	}
-	
-	public void Wander(float delay){
-		_damping = Random.Range(_spawner._minDamping, _spawner._maxDamping);
-	    _targetSpeed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed)*_spawner._speedCurveMultiplier.Evaluate(Random.value)*_spawner._schoolSpeed;
-		Invoke("SetRandomWaypoint", delay);
-	}
-	
-	public void SetRandomWaypoint(){
-		tParam = 0.0f;
-		_wayPoint = findWaypoint();
 	}
 }

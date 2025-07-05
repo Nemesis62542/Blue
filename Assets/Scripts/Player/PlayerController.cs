@@ -25,16 +25,15 @@ namespace Blue.Player
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpStrength = 5f;
-        [SerializeField] private float mouseLookSensitivity = 100f;
-        [SerializeField] private float controllerLookSensitivity = 200f;
+        [SerializeField] private float mouseLookSensitivity = 25f;
+        [SerializeField] private float controllerLookSensitivity = 50f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
-
-        private const float SCAN_RAY_DISTANCE = 6f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
+        private float waterLevel;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -64,6 +63,7 @@ namespace Blue.Player
 
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(InputMapType.Player);
+            waterLevel = transform.position.y;
         }
 
         private void OnDestroy()
@@ -89,23 +89,12 @@ namespace Blue.Player
         {
             HandleMove();
             HandleViewRotation();
-            model.SetDepth(0 - transform.position.y);
+            model.SetDepth(waterLevel - transform.position.y);
 
             if (inputHandler.JumpPressed && isGrounded)
             {
                 Jump();
                 inputHandler.ResetJumpFlag();
-            }
-
-            if (RaycastFromCamera(out RaycastHit hit, SCAN_RAY_DISTANCE) && hit.collider.TryGetComponent(out IScannable scannable))
-            {
-                scannerController.ToggleLookingScannable(scannable);
-                scannerController.UpdateScan(Time.deltaTime);
-            }
-            else
-            {
-                scannerController.CancelScan();
-                scannerController.ToggleLookingScannable(null);
             }
 
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))

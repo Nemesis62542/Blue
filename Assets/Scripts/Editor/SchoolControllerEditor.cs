@@ -10,19 +10,12 @@ using UnityEditor;
 public class SchoolControllerEditor: Editor
 {
 	public SerializedProperty myProperty;
-	public SerializedProperty bubbles;
 	public SerializedProperty avoidanceMask;
 	
 	public void OnEnable()
 	{
-		var target_cs = (SchoolController)target;
         avoidanceMask= serializedObject.FindProperty("_avoidanceMask");
-		if(target_cs._bubbles == null)
-		{
-			target_cs._bubbles = (SchoolBubbles)Transform.FindObjectOfType(typeof(SchoolBubbles));
-		}
 		myProperty = serializedObject.FindProperty("_childPrefab");
-		bubbles = serializedObject.FindProperty("_bubbles");
 	}
 
 	public override void OnInspectorGUI()
@@ -76,23 +69,6 @@ public class SchoolControllerEditor: Editor
 		target_cs._groupChildToNewTransform = EditorGUILayout.Toggle("Group to New GameObject", target_cs._groupChildToNewTransform);
 		target_cs._groupName = EditorGUILayout.TextField("Group Name", target_cs._groupName);
 		GUI.enabled = true;
-		EditorGUILayout.EndVertical();
-		GUI.color = dColor;
-		EditorGUILayout.BeginVertical("Box");
-		GUI.color = Color.white;
-		EditorGUILayout.LabelField("Bubbles", EditorStyles.boldLabel);
-		EditorGUILayout.PropertyField(bubbles, new GUIContent("Bubbles Object"), true);
-		if(target_cs._bubbles != null)
-		{
-			target_cs._bubbles._emitEverySecond = EditorGUILayout.FloatField("Emit Every Second", target_cs._bubbles._emitEverySecond);
-			target_cs._bubbles._speedEmitMultiplier = EditorGUILayout.FloatField("Fish Speed Emit Multiplier", target_cs._bubbles._speedEmitMultiplier);
-			target_cs._bubbles._minBubbles = EditorGUILayout.IntField("Minimum Bubbles Emitted", target_cs._bubbles._minBubbles);
-			target_cs._bubbles._maxBubbles = EditorGUILayout.IntField("Maximum Bubbles Emitted", target_cs._bubbles._maxBubbles);
-			if(GUI.changed)
-			{
-				EditorUtility.SetDirty(target_cs._bubbles);
-			}
-		}
 		EditorGUILayout.EndVertical();
 		GUI.color = dColor;
 		EditorGUILayout.BeginVertical("Box");

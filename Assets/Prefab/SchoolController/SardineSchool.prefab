@@ -101,7 +101,7 @@ MonoBehaviour:
   _forcedRandomDelay: 2
   _schoolSpeed: 0
   _roamers: []
-  _posBuffer: {x: 11.7351, y: 3.59, z: -3.069}
+  _posBuffer: {x: 11.7351, y: 6.2, z: -3.069}
   _posOffset: {x: 0, y: 0, z: 0}
   _avoidance: 1
   _avoidAngle: 0.35
@@ -111,11 +111,10 @@ MonoBehaviour:
   _stopSpeedMultiplier: 2
   _avoidanceMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   _push: 0
   _pushDistance: 0
   _pushForce: 5
-  _bubbles: {fileID: 0}
   _updateDivisor: 1
   _newDelta: 0
   _updateCounter: 0

@@ -31,11 +31,21 @@ namespace Blue.UI
             scanProgressBar.value = 0f;
         }
 
+        void Update()
+        {
+            if (target == null) Destroy(gameObject);
+        }
+
         public void ShowDetail()
         {
-            scanProgressBar.gameObject.SetActive(false);
             name.gameObject.SetActive(true);
             detail.gameObject.SetActive(true);
+        }
+
+        public void HideDetail()
+        {
+            name.gameObject.SetActive(false);
+            detail.gameObject.SetActive(false);
         }
 
         public void ToggleLookingUI(bool is_looking)
