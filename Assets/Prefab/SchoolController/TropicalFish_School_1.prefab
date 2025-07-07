@@ -111,11 +111,10 @@ MonoBehaviour:
   _stopSpeedMultiplier: 2
   _avoidanceMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   _push: 0
   _pushDistance: 0.1
   _pushForce: 0.01
-  _bubbles: {fileID: 0}
   _updateDivisor: 1
   _newDelta: 0
   _updateCounter: 0
