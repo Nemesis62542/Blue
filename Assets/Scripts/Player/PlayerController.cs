@@ -40,6 +40,11 @@ namespace Blue.Player
 
         public Status Status => model.Status;
 
+        public void SetWaterLevel(float level)
+        {
+            waterLevel = level;
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -63,7 +68,6 @@ namespace Blue.Player
 
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(InputMapType.Player);
-            waterLevel = transform.position.y;
         }
 
         private void OnDestroy()

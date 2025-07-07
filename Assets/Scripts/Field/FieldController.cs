@@ -9,6 +9,11 @@ public class FieldController : MonoBehaviour
 
     public float WaterLevel => waterSurface.transform.position.y;
 
+    void Awake()
+    {
+        player.SetWaterLevel(WaterLevel);
+    }
+
     void Update()
     {
         godRay.transform.position = new Vector3(player.transform.position.x, WaterLevel, player.transform.position.z);
