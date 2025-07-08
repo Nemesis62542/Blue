@@ -9,6 +9,7 @@ using Blue.UI;
 using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Blue.Player
 {
@@ -101,9 +102,11 @@ namespace Blue.Player
                 inputHandler.ResetJumpFlag();
             }
 
+            //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                view.AddMessage(new MessageData("テストメッセージ"));
+                if (SceneManager.GetActiveScene().name == "Terrain") SceneManager.LoadSceneAsync("Aquarium");
+                if (SceneManager.GetActiveScene().name == "Aquarium") SceneManager.LoadSceneAsync("Terrain");
             }
         }
 
