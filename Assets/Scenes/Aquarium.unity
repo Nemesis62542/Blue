@@ -5511,6 +5511,10 @@ PrefabInstance:
       value: SardineSchool
       objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
+      propertyPath: _childAmount
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _positionSphere
       value: 3.5
       objectReference: {fileID: 0}
