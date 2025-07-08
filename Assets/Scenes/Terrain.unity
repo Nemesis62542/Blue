@@ -8,8 +8,8 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: ca5184748ad16174893b2b2125a34a60
+  m_OcclusionCullingData: {fileID: 36300000, guid: cfa9fb0e6a1a8f04d84825c599cb6bb2, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -413,6 +413,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -482,6 +486,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coral_Yellow (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -495,6 +503,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1609281747889502537, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2025196988016558864, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2690893447805991146, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2912930826455916952, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2998997573334120287, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 3454389316243411526, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 3839598686183453502, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
       propertyPath: m_LocalPosition.x
       value: 735.38043
@@ -535,9 +567,69 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4184878619672408253, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4229651090745756467, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 4468465858061347204, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
       propertyPath: m_Name
       value: Coelacanth
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468465858061347204, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4976310784547713385, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5343622923079461436, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549861805432614699, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5877647208551653413, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003178843945831407, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 6028504979087228313, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 6935914905412721024, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7429789164158672334, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7469853358167610048, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7608731456478799716, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7628199099852173307, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8815908368684013754, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -555,6 +647,10 @@ PrefabInstance:
     - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_Name
       value: Coral_Red (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 8945130739996071140, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_LocalPosition.x
@@ -841,6 +937,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coral_Yellow
       objectReference: {fileID: 0}
+    - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -898,17 +998,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: SardineSchool (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 718894429180662373, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 127
+      objectReference: {fileID: 0}
+    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
+      propertyPath: _childAmount
+      value: 250
+      objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _posBuffer.x
-      value: 756.131
+      value: 696.12
       objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _posBuffer.y
-      value: 54.76863
+      value: 75.29
       objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _posBuffer.z
-      value: 687.2633
+      value: 644.36
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1394,6 +1502,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1462,6 +1574,10 @@ PrefabInstance:
     - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
       propertyPath: m_Name
       value: Rock (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1540,6 +1656,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coral_Red
       objectReference: {fileID: 0}
+    - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 8945130739996071140, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_LocalPosition.x
       value: 723.54
@@ -1596,6 +1716,10 @@ PrefabInstance:
     - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_Name
       value: Coral_Red (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 8945130739996071140, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_LocalScale.x
@@ -1883,6 +2007,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TropicalFish_School_1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8702827711994473978, guid: bdbe06a8eaf0d3b41b11944f2d7ab125, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1951,6 +2079,10 @@ PrefabInstance:
     - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
       propertyPath: m_Name
       value: Coral_Yellow (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2242,6 +2374,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TropicalFish_School_1
       objectReference: {fileID: 0}
+    - target: {fileID: 8702827711994473978, guid: bdbe06a8eaf0d3b41b11944f2d7ab125, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2310,6 +2446,10 @@ PrefabInstance:
     - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
       propertyPath: m_Name
       value: Rock (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2779,6 +2919,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock
       objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2980,6 +3124,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coral_Yellow (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3048,6 +3196,10 @@ PrefabInstance:
     - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
       propertyPath: m_Name
       value: Rock (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3300,7 +3452,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424724188950865022, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0041622138
+      value: -0.0039338623
       objectReference: {fileID: 0}
     - target: {fileID: 7624444497065843833, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3397,6 +3549,10 @@ PrefabInstance:
     - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_Name
       value: Coral_Red (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8604318056704167518, guid: e1f509199f59164459343a3f2d967169, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 8945130739996071140, guid: e1f509199f59164459343a3f2d967169, type: 3}
       propertyPath: m_LocalScale.x
@@ -3506,6 +3662,10 @@ PrefabInstance:
     - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
       propertyPath: m_Name
       value: Coral_Yellow (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3729,17 +3889,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: SardineSchool
       objectReference: {fileID: 0}
+    - target: {fileID: 718894429180662373, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 127
+      objectReference: {fileID: 0}
+    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
+      propertyPath: _childAmount
+      value: 250
+      objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _posBuffer.x
-      value: 669.319
+      value: 686.45
       objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _posBuffer.y
-      value: 52.332504
+      value: 75.57
       objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _posBuffer.z
-      value: 672.6785
+      value: 619.62
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4109,6 +4277,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Coral_Yellow (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 3222116524293230589, guid: b970d4282f7e7c54781690051b21c6a4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4177,6 +4349,10 @@ PrefabInstance:
     - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
       propertyPath: m_Name
       value: Rock (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393282705752551012, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4592,9 +4768,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7945228172733148131, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 8698531705469006319, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
       propertyPath: m_Name
       value: FieldController
+      objectReference: {fileID: 0}
+    - target: {fileID: 8698531705469006319, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185160036601663258, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

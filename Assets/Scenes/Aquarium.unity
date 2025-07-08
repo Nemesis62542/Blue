@@ -8,8 +8,8 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: 10d315b37e9e8264a942c0e78ca4e3d2
+  m_OcclusionCullingData: {fileID: 36300000, guid: db125b173e025cc4ea7fde6f8e76a3d2, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -5575,49 +5575,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: SardineSchool
       objectReference: {fileID: 0}
-    - target: {fileID: 718894429180662373, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _childAmount
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _posBuffer.x
-      value: 2.5900002
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _posBuffer.y
-      value: 4.7599998
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _posBuffer.z
-      value: -9.71
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _spawnSphere
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _positionSphere
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _spawnSphereDepth
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _spawnSphereHeight
-      value: 1
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
       propertyPath: _positionSphereDepth
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
-      propertyPath: _positionSphereHeight
-      value: 1
+      value: 3.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
