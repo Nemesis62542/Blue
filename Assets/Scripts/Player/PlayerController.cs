@@ -9,6 +9,7 @@ using Blue.UI;
 using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Blue.Player
 {
@@ -33,7 +34,7 @@ namespace Blue.Player
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
-        private float waterLevel;
+        private float waterLevel = 0;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -101,9 +102,11 @@ namespace Blue.Player
                 inputHandler.ResetJumpFlag();
             }
 
+            //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                view.AddMessage(new MessageData("テストメッセージ"));
+                if (SceneManager.GetActiveScene().name == "Terrain") SceneManager.LoadSceneAsync("Aquarium");
+                if (SceneManager.GetActiveScene().name == "Aquarium") SceneManager.LoadSceneAsync("Terrain");
             }
         }
 

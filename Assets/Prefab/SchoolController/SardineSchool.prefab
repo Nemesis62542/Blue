@@ -15,7 +15,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &49922069897803081
 Transform:
@@ -50,12 +50,12 @@ MonoBehaviour:
   _groupTransform: {fileID: 0}
   _groupName: 
   _groupChildToSchool: 1
-  _childAmount: 250
-  _spawnSphere: 0.5
-  _spawnSphereDepth: 0.5
-  _spawnSphereHeight: 0.5
+  _childAmount: 500
+  _spawnSphere: 1
+  _spawnSphereDepth: 1
+  _spawnSphereHeight: 3
   _childSpeedMultipler: 0.71
-  _minSpeed: 3
+  _minSpeed: 1
   _maxSpeed: 5
   _speedCurveMultiplier:
     serializedVersion: 2
@@ -83,8 +83,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   _minScale: 0.5
   _maxScale: 1
-  _minDamping: 1
-  _maxDamping: 0.5
+  _minDamping: 0.8
+  _maxDamping: 1
   _waypointDistance: 0.67
   _minAnimationSpeed: 0.125
   _maxAnimationSpeed: 0.125
@@ -92,16 +92,16 @@ MonoBehaviour:
   _randomPositionTimerMin: 3
   _acceleration: 0.025
   _brake: 0.01
-  _positionSphere: 1
-  _positionSphereDepth: 1
-  _positionSphereHeight: 1
+  _positionSphere: 4
+  _positionSphereDepth: 4
+  _positionSphereHeight: 0.1
   _childTriggerPos: 1
   _forceChildWaypoints: 1
   _autoRandomPosition: 1
   _forcedRandomDelay: 2
   _schoolSpeed: 0
   _roamers: []
-  _posBuffer: {x: 0, y: 8, z: 0}
+  _posBuffer: {x: 2.5900002, y: 4.7599998, z: -9.71}
   _posOffset: {x: 0, y: 0, z: 0}
   _avoidance: 1
   _avoidAngle: 0.35
