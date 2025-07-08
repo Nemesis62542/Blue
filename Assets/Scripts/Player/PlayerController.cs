@@ -33,7 +33,7 @@ namespace Blue.Player
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
-        private float waterLevel;
+        private float waterLevel = 0;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
