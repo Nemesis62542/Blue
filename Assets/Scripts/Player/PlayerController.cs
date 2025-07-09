@@ -26,8 +26,6 @@ namespace Blue.Player
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpStrength = 5f;
-        [SerializeField] private float mouseLookSensitivity = 25f;
-        [SerializeField] private float controllerLookSensitivity = 50f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
 
@@ -35,6 +33,8 @@ namespace Blue.Player
         private bool isGrounded;
         private float camVerticalRotation = 0f;
         private float waterLevel = 0;
+        private float mouseLookSensitivity = 10f;
+        private float controllerLookSensitivity = 10f;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
