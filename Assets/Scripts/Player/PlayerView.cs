@@ -28,6 +28,7 @@ namespace Blue.Player
             }
 
             currentHeldItem = Instantiate(item.HeldItemPrefab, heldItemAnchor);
+            currentHeldItem.Initialize(item);
         }
 
         public void AddMessage(MessageData data)

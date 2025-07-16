@@ -20,6 +20,7 @@ public class CaptureItemHandler : ItemUseHandler
     public override void OnUse(MonoBehaviour user)
     {
         this.user = user;
+        base.OnUse(this.user);
         captureBullet.PlayParticle();
     }
 
