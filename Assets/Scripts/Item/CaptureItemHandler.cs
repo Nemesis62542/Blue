@@ -8,6 +8,7 @@ public class CaptureItemHandler : ItemUseHandler
 {
     [SerializeField] private float captureDistance = 5.0f;
     [SerializeField] private CaptureBullet captureBullet;
+    [SerializeField] private ParticleSystem captureEffect;
 
     private MonoBehaviour user;
     
@@ -29,6 +30,7 @@ public class CaptureItemHandler : ItemUseHandler
         if (other.TryGetComponent(out ICapturable capturable))
         {
             player.CaptureEntity(capturable.EntityData);
+            Instantiate(captureEffect, other.transform.position, Quaternion.identity);
             Destroy(other);
         }
     }
