@@ -10,14 +10,12 @@ namespace Blue.Entity
         [SerializeField] private int hp;
         [SerializeField] private int attackPower;
         [SerializeField] private float size;
-        [SerializeField] private ItemData capturedItem; // 捕獲時にインベントリへ追加されるアイテム
         [SerializeField] private GameObject entityObject;
 
         public string EntityName => entityName;
         public int HP => hp;
         public int AttackPower => attackPower;
         public float Size => size;
-        public ItemData CapturedItem => capturedItem;
         public GameObject EntityObject => entityObject;
     }
 }

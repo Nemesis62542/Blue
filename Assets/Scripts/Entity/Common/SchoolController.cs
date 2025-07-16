@@ -80,7 +80,7 @@ public class SchoolController : MonoBehaviour
 		_posBuffer = transform.position + _posOffset;
 		_schoolSpeed = Random.Range(1.0f , _childSpeedMultipler);
 		AddFish(_childAmount);
-		Invoke("AutoRandomWaypointPosition", RandomWaypointTime());
+		Invoke(nameof(AutoRandomWaypointPosition), RandomWaypointTime());
 	}
 	
 	public void Update() {
@@ -92,7 +92,6 @@ public class SchoolController : MonoBehaviour
 			}else{
 				_newDelta = Time.deltaTime;
 			}
-			UpdateFishAmount();
 		}
 	}
 	
@@ -131,20 +130,9 @@ public class SchoolController : MonoBehaviour
 	}
 	
 	public void RemoveFish(int amount){
-		SchoolChild dObj = _roamers[_roamers.Count-1];
-		_roamers.RemoveAt(_roamers.Count-1);
+		SchoolChild dObj = _roamers[_roamers.Count - amount];
+		_roamers.RemoveAt(_roamers.Count - amount);
 		Destroy(dObj.gameObject);
-	}
-	
-	public void UpdateFishAmount(){
-		if(_childAmount>= 0 && _childAmount < _roamers.Count){
-			RemoveFish(1);
-			return;
-		}
-		if (_childAmount > _roamers.Count){	
-			AddFish(1);
-			return;
-		}
 	}
 	
 	//Set waypoint randomly inside box
@@ -156,8 +144,16 @@ public class SchoolController : MonoBehaviour
 		t.y = Random.Range(-_positionSphereHeight, _positionSphereHeight) + transform.position.y;
 		_posBuffer = t;	
 		if(_forceChildWaypoints){
-			for(int i = 0; i < _roamers.Count; i++) {
-	  		 	_roamers[i].Wander(Random.value*_forcedRandomDelay);
+			for (int i = 0; i < _roamers.Count; i++)
+			{
+				if (_roamers[i] != null)
+				{
+					_roamers[i].Wander(Random.value * _forcedRandomDelay);
+				}
+				else
+				{
+					_roamers.RemoveAt(i);
+				}
 			}	
 		}
 	}
@@ -166,8 +162,8 @@ public class SchoolController : MonoBehaviour
 		if(_autoRandomPosition && _activeChildren > 0){
 			SetRandomWaypointPosition();
 		}
-		CancelInvoke("AutoRandomWaypointPosition");
-		Invoke("AutoRandomWaypointPosition", RandomWaypointTime());
+		CancelInvoke(nameof(AutoRandomWaypointPosition));
+		Invoke(nameof(AutoRandomWaypointPosition), RandomWaypointTime());
 	}
 	
 	public float RandomWaypointTime(){

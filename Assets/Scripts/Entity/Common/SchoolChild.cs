@@ -65,25 +65,21 @@ public class SchoolChild : MonoBehaviour
         }
     }
 
-    // 外部から呼ばれる（SchoolControllerから）のでpublic
     public void SetSpawner(SchoolController spawner) {
         _spawner = spawner;
     }
 
-    // 外部から呼ばれる（SchoolControllerから）のでpublic
     public void Wander(float delay) {
         _damping = Random.Range(_spawner._minDamping, _spawner._maxDamping);
         _targetSpeed = Random.Range(_spawner._minSpeed, _spawner._maxSpeed) * _spawner._speedCurveMultiplier.Evaluate(Random.value) * _spawner._schoolSpeed;
-        Invoke("SetRandomWaypoint", delay);
+        Invoke(nameof(SetRandomWaypoint), delay);
     }
 
-    // 外部から呼ばれる（Invokeや他クラスから）のでpublic
     public void SetRandomWaypoint() {
         tParam = 0.0f;
         _wayPoint = findWaypoint();
     }
 
-    // 内部処理はprivate
     private void FrameSkipSeedInit(){
 		if(_spawner._updateDivisor > 1){
 			int _updateSeedCap = _spawner._updateDivisor -1;
@@ -190,9 +186,7 @@ public class SchoolChild : MonoBehaviour
 		if (angle > 360)angle -= 360.0f;
 		return Mathf.Clamp (angle, min, max);
 	}
-	
-	// Avoidance, ForwardMovement, RotationBasedOnWaypointOrAvoidanceは
-    // 他クラスから直接呼ばれていなければprivateにしてOK
+
     private bool Avoidance() {
 		if(!_spawner._avoidance)
 			return false;		

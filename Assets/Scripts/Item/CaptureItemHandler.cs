@@ -19,7 +19,7 @@ public class CaptureItemHandler : ItemUseHandler
         {
             if (hit.collider.TryGetComponent(out ICapturable capturable))
             {
-                player.CaptureEntity(capturable.CapturedItem);
+                player.CaptureEntity(capturable.EntityData);
                 Destroy(hit.collider.gameObject);
             }
         }

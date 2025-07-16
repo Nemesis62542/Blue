@@ -5,11 +5,15 @@ namespace Blue.Entity
 {
     public abstract class BaseEntityModel : ILivingEntity
     {
+        private EntityData data;
+
         public Status Status { get; private set; }
+        public EntityData Data => data;
         public bool IsDead => Status.IsDead;
 
         public BaseEntityModel(EntityData data)
         {
+            this.data = data;
             Status = new Status(data);
         }
 

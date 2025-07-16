@@ -22,6 +22,7 @@ namespace Blue.Entity
 
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
         public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
+        public EntityData EntityData => model.Data;
 
         protected override void Awake()
         {
