@@ -28,8 +28,7 @@ namespace Blue.Player
             }
 
             currentHeldItem = Instantiate(item.HeldItemPrefab, heldItemAnchor);
-            currentHeldItem.transform.localPosition = Vector3.zero;
-            currentHeldItem.transform.localRotation = Quaternion.identity;
+            currentHeldItem.Initialize(item);
         }
 
         public void AddMessage(MessageData data)

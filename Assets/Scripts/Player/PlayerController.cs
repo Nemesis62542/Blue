@@ -274,6 +274,8 @@ namespace Blue.Player
 
         private void UseSelectedItem()
         {
+            if (!view.CurrentHeldItem.IsUseble()) return;
+            
             view.CurrentHeldItem.OnUse(this);
             QuickSlot.Use(QuickSlot.CurrentSlotIndex);
         }

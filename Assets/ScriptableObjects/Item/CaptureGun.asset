@@ -10,14 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 913543138e12b6946b5169ecf1aef7e9, type: 3}
-  m_Name: TestItem
+  m_Name: CaptureGun
   m_EditorClassIdentifier: 
-  itemName: "\u30C6\u30B9\u30C8\u7528\u6355\u7372\u30A2\u30A4\u30C6\u30E0"
+  itemName: "\u6355\u7372\u30E9\u30F3\u30C1\u30E3\u30FC"
   description: This is Debug Item
   icon: {fileID: 21300000, guid: 57085aa31c456c94bae21d614271438d, type: 3}
   itemType: 2
   isStackable: 0
-  heldItemPrefab: {fileID: 9126055102594032584, guid: 215c7032c8c278a42b76789e2469ab89, type: 3}
+  heldItemPrefab: {fileID: 7432241780357832965, guid: 4bdd5358f70cd0d469c213ad108b5952, type: 3}
   attributes:
   - attribute: 3
     value: 5
+  - attribute: 1
+    value: 50
+  - attribute: 4
+    value: 1000

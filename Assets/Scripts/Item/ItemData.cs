@@ -101,5 +101,6 @@ namespace Blue.Item
         MaxAmmo,      // 銃の装弾数
         HealingValue, // 回復量
         Level,        // アイテムのレベル
+        CoolDown,     // アイテムクールダウン(ミリ秒想定)
     }
 }
