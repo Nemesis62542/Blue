@@ -283,10 +283,10 @@ namespace Blue.Player
             view.ShowHeldItem(item);
         }
 
-        public void CaptureEntity(ItemData captured)
+        public void CaptureEntity(EntityData captured)
         {
-            model.Inventory.AddItem(captured);
-            view.AddMessage(new MessageData($"{captured.ItemName}を捕獲しました"));
+            model.AddCapturedEntity(captured);
+            view.AddMessage(new MessageData($"{captured.EntityName}を捕獲しました"));
         }
 
         public void OnPickUpItem(ItemData item)

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Blue.Entity;
 using Blue.Inventory;
 using UnityEngine;
@@ -8,6 +10,7 @@ namespace Blue.Player
     public class PlayerModel : BaseEntityModel
     {
         private InventoryModel inventory = new InventoryModel();
+        private Dictionary<EntityData, int> capturedEntity = new Dictionary<EntityData, int>();
         private QuickSlotHandler quickSlotHandler;
         private int maxOxygen = 100;
         private int oxygen;
@@ -63,6 +66,16 @@ namespace Blue.Player
             }
         }
 
-
+        public void AddCapturedEntity(EntityData entity)
+        {
+            if (capturedEntity.ContainsKey(entity))
+            {
+                capturedEntity[entity]++;
+            }
+            else
+            {
+                capturedEntity.Add(entity, 1);
+            }
+        }
     }
 }

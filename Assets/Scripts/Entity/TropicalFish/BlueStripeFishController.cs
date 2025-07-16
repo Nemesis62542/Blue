@@ -4,13 +4,12 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class BlueStripeFishController : BaseEntityController<BlueStripeFishModel, BlueStripeFishView>, IScannable
+    public class BlueStripeFishController : BaseEntityController<BlueStripeFishModel, BlueStripeFishView>, IScannable, ICapturable
     {
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
-
         public Status Status => model.Status;
-
         public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
+        public EntityData EntityData => model.Data;
 
         protected override void Awake()
         {

@@ -10,10 +10,8 @@ namespace Blue.Entity
     {
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
         public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
-
         public Status Status => model.Status;
-
-        public ItemData CapturedItem => data.CapturedItem;
+        public EntityData EntityData => model.Data;
 
         protected override void Awake()
         {

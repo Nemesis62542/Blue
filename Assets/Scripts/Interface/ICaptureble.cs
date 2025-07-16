@@ -6,6 +6,6 @@ namespace Blue.Interface
     public interface ICapturable
     {
         Status Status { get; }
-        ItemData CapturedItem { get; }
+        EntityData EntityData { get; }
     }
 }
