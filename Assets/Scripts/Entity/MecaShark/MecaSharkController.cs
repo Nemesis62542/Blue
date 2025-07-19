@@ -1,5 +1,5 @@
+using Blue.Attack;
 using Blue.Interface;
-using Blue.Player;
 using Blue.UI.Common;
 using UnityEngine;
 
@@ -16,6 +16,7 @@ namespace Blue.Entity
         [SerializeField] private float circleRadius = 10.0f;
         [SerializeField] private float circleSpeed = 2.0f;
         [SerializeField] private float chargeSpeed = 20.0f;
+        [SerializeField] private AttackHitBox attackHitbox;
 
         private BossState state = BossState.Circling;
         private float stateTimer = 0f;
@@ -31,6 +32,7 @@ namespace Blue.Entity
         protected override void Awake()
         {
             model = new MecaSharkModel(data);
+            attackHitbox.Initialize(this, model.Status.AttackPower);
             StartBattle();
         }
 
@@ -82,6 +84,7 @@ namespace Blue.Entity
 
                 state = BossState.Charging;
                 view.LockOn(true);
+                attackHitbox.StartAttack();
                 stateTimer = 0f;
             }
         }
@@ -108,6 +111,7 @@ namespace Blue.Entity
 
                 state = BossState.Circling;
                 view.LockOn(false);
+                attackHitbox.EndAttack();
                 stateTimer = 0f;
             }
         }
