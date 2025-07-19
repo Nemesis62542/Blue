@@ -69,12 +69,14 @@ namespace Blue.Entity
             Vector3 prev_pos = transform.position;
             transform.position = Vector3.Lerp(transform.position, target_pos, Time.deltaTime * 2.0f);
 
-            Vector3 move_dir = transform.position - prev_pos;
-            if (move_dir.sqrMagnitude > 0.001f)
-            {
-                Quaternion target_rot = Quaternion.LookRotation(move_dir.normalized);
-                transform.rotation = Quaternion.Slerp(transform.rotation, target_rot, Time.deltaTime * 5.0f);
-            }
+            Vector3 tangent_dir = new Vector3(
+                -Mathf.Sin(angle),
+                0,
+                Mathf.Cos(angle)
+            ).normalized;
+
+            Quaternion target_rot = Quaternion.LookRotation(tangent_dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, target_rot, Time.deltaTime * 5.0f);
 
             stateTimer += Time.deltaTime;
             if (stateTimer >= 5.0f)
