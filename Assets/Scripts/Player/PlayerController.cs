@@ -203,7 +203,7 @@ namespace Blue.Player
             if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
             {
                 Debug.Log($"攻撃: {hit.collider.gameObject.name}");
-                attackable.Damage(new AttackData(this, attack_power, AttackType.Melee, transform.position + transform.forward));
+                attackable.Damage(new AttackData(this, attackable, attack_power, AttackType.Melee, transform.position + transform.forward));
             }
         }
 

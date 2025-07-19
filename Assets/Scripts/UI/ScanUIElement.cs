@@ -80,7 +80,7 @@ namespace Blue.UI
                     break;
 
                 case ScanData.Threat.Danger:
-                    detail += "危険度：<color=green>高</color>\n";
+                    detail += "危険度：<color=red>高</color>\n";
                     break;
             }
 

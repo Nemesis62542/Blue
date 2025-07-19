@@ -5381,8 +5381,6 @@ MonoBehaviour:
   inventoryController: {fileID: 1031699587672444242}
   moveSpeed: 5
   jumpStrength: 5
-  mouseLookSensitivity: 100
-  controllerLookSensitivity: 200
   maxLookUpAngle: 80
   interactDistance: 3
 --- !u!114 &6702476828333239595
@@ -5611,6 +5609,10 @@ PrefabInstance:
     - target: {fileID: 1894224427400258582, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3398406362642345405, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+      propertyPath: tweenDuration
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 3483830249515554359, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.x
