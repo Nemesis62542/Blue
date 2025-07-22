@@ -18,7 +18,7 @@ namespace Blue.Entity
             Name = data.Name;
             MaxHp = data.HP;
             AttackPower = data.AttackPower;
-            Size = data.Size;
+            Size = data.DisplaySize;
             HP = MaxHp;
         }
 

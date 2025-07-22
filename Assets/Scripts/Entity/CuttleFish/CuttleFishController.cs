@@ -10,7 +10,6 @@ namespace Blue.Entity
     {
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
-        [SerializeField] private float escapeDistance = 5.0f;
 
         [SerializeField] private CuttleFishSwimmer swimmer;
 

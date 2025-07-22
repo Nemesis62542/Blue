@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: TropicalFish_1
   m_EditorClassIdentifier: 
-  entityName: "\u30A2\u30AA\u30B9\u30B8\u30CF\u30AE"
+  name: "\u30A2\u30AA\u30B9\u30B8\u30CF\u30AE"
   hp: 2
   attackPower: 0
-  size: 1
-  capturedItem: {fileID: 0}
-  entityObject: {fileID: 6722645572466106152, guid: afed6e8d6d3f031469005b7398112a8c, type: 3}
+  aquariumSize: 0
+  object: {fileID: 6722645572466106152, guid: afed6e8d6d3f031469005b7398112a8c, type: 3}
+  school: {fileID: 5895800538610881639, guid: bdbe06a8eaf0d3b41b11944f2d7ab125, type: 3}

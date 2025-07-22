@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: Coelacanth
   m_EditorClassIdentifier: 
-  entityName: "\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30BA"
+  name: "\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30B9"
   hp: 10
   attackPower: 0
-  size: 2
-  capturedItem: {fileID: 11400000, guid: 4deeb2ee044f72646a461c888c95067d, type: 2}
-  entityObject: {fileID: 4468465858061347204, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+  aquariumSize: 0
+  object: {fileID: 4468465858061347204, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
+  school: {fileID: 0}

@@ -9,14 +9,14 @@ namespace Blue.Entity
         [SerializeField] private new string name;
         [SerializeField] private int hp;
         [SerializeField] private int attackPower;
-        [SerializeField] private float size;
+        [SerializeField] private float displaySize;
         [SerializeField] private GameObject @object;
         [SerializeField] private SchoolController school;
 
         public string Name => name;
         public int HP => hp;
         public int AttackPower => attackPower;
-        public float Size => size;
+        public float DisplaySize => displaySize;
         public GameObject Object => @object;
         public SchoolController School => school;
     }

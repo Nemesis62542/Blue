@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: MecaShark
   m_EditorClassIdentifier: 
-  entityName: ME-G4L0
+  name: ME-G4L0
   hp: 100
   attackPower: 10
-  size: 4
-  entityObject: {fileID: 8882036559786868035, guid: ba0c85f8cdacd65439439d400758335c, type: 3}
+  aquariumSize: 0
+  object: {fileID: 8882036559786868035, guid: ba0c85f8cdacd65439439d400758335c, type: 3}
+  school: {fileID: 0}
