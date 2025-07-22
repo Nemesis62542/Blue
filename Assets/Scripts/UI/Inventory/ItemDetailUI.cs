@@ -28,7 +28,7 @@ namespace Blue.UI.Inventory
 
         public void ShowItemDetails(ItemData item_data)
         {
-            itemNameText.text = item_data.ItemName;
+            itemNameText.text = item_data.Name;
             itemDescriptionText.text = item_data.Description;
             itemTypeText.text = item_data.Type.ToString();
             itemIcon.sprite = item_data.Icon;

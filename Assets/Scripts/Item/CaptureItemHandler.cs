@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class CaptureItemHandler : ItemUseHandler
 {
-    [SerializeField] private float captureDistance = 5.0f;
     [SerializeField] private CaptureBullet captureBullet;
     [SerializeField] private ParticleSystem captureEffect;
 

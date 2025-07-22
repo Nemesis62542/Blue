@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: CuttleFish
   m_EditorClassIdentifier: 
-  entityName: "\u30D2\u30AB\u30EA\u30A4\u30AB"
+  name: "\u30D2\u30AB\u30EA\u30A4\u30AB"
   hp: 10
   attackPower: 0
-  size: 1
+  aquariumSize: 0
+  object: {fileID: 1566385464481461660, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
+  school: {fileID: 0}

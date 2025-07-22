@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: Sardine
   m_EditorClassIdentifier: 
-  entityName: "\u30D2\u30AB\u30EA\u30A4\u30EF\u30B7"
+  name: "\u30C1\u30E7\u30A6\u30C1\u30F3\u30A4\u30EF\u30B7"
   hp: 2
   attackPower: 0
-  size: 1
-  capturedItem: {fileID: 0}
-  entityObject: {fileID: 718894429180662373, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
+  aquariumSize: 0
+  object: {fileID: 1962938419427500985, guid: 92c418530b3c1374eaa1583fe4884451, type: 3}
+  school: {fileID: 8332584915972963582, guid: 574984934abb5f148bf17d7b0e5b8744, type: 3}
