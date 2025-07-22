@@ -15,7 +15,7 @@ namespace Blue.Entity
 
         public Status(EntityData data)
         {
-            Name = data.EntityName;
+            Name = data.Name;
             MaxHp = data.HP;
             AttackPower = data.AttackPower;
             Size = data.Size;

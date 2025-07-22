@@ -7,19 +7,19 @@ namespace Blue.Item
     [CreateAssetMenu(fileName = "NewItem", menuName = "Blue/ScriptableObject/ItemData")]
     public class ItemData : ScriptableObject
     {
-        [SerializeField] private string itemName;    // アイテムの名前
+        [SerializeField] private new string name;    // アイテムの名前
         [SerializeField] private string description; // 説明
         [SerializeField] private Sprite icon;        // アイコン
-        [SerializeField] private ItemType itemType;  // アイテムの種類
+        [SerializeField] private ItemType type;  // アイテムの種類
         [SerializeField] private bool isStackable;   // スタックできるか
         [SerializeField] private ItemUseHandler heldItemPrefab;
 
         [SerializeField] private List<ItemAttributeData> attributes; // 属性データ
 
-        public string ItemName => itemName;
+        public string Name => name;
         public string Description => description;
         public Sprite Icon => icon;
-        public ItemType Type => itemType;
+        public ItemType Type => type;
         public bool IsStackable => isStackable;
         public ItemUseHandler HeldItemPrefab => heldItemPrefab;
 
@@ -50,9 +50,9 @@ namespace Blue.Item
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"アイテム名: {itemName}");
+            sb.AppendLine($"アイテム名: {name}");
             sb.AppendLine($"説明: {description}");
-            sb.AppendLine($"種類: {itemType}");
+            sb.AppendLine($"種類: {type}");
             sb.AppendLine($"スタック可: {isStackable}");
             sb.AppendLine("属性:");
 

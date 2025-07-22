@@ -8,7 +8,6 @@ namespace Blue.Entity
 {
     public class CuttleFishController : BaseEntityController<CuttleFishModel, CuttleFishView>, IScannable
     {
-        [SerializeField] private float threatSizeThreshold = 1.0f;
         [SerializeField] private float inkTriggerDistance = 1.5f;
         [SerializeField] private float inkTriggerTime = 10.0f;
         [SerializeField] private float escapeDistance = 5.0f;
@@ -81,14 +80,11 @@ namespace Blue.Entity
 
             if (other.TryGetComponent(out ILivingEntity entity))
             {
-                if (entity.Status.Size >= threatSizeThreshold)
-                {
-                    threateningEntity = entity;
-                    SetState(CuttleFishModel.CuttleFishState.Intimidate);
-                    view.SetAnimatorIntimidate(true);
-                    swimmer.EnterIntimidate(other.gameObject.transform);
-                    intimidateTimer = 0f;
-                }
+                threateningEntity = entity;
+                SetState(CuttleFishModel.CuttleFishState.Intimidate);
+                view.SetAnimatorIntimidate(true);
+                swimmer.EnterIntimidate(other.gameObject.transform);
+                intimidateTimer = 0f;
             }
         }
 

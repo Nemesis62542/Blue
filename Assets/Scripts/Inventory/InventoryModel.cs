@@ -40,11 +40,11 @@ namespace Blue.Inventory
                 {
                     inventoryItems.Remove(existing_item);
 
-                    Debug.Log($"アイテム削除: {item_data.ItemName}（すべて削除）");
+                    Debug.Log($"アイテム削除: {item_data.Name}（すべて削除）");
                 }
                 else
                 {
-                    Debug.Log($"アイテムの個数減少: {item_data.ItemName} x{quantity}");
+                    Debug.Log($"アイテムの個数減少: {item_data.Name} x{quantity}");
                 }
             }
         }

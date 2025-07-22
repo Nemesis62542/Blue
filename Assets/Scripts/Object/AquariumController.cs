@@ -10,7 +10,7 @@ namespace Blue.Object
 
         void Start()
         {
-            Instantiate(entity.EntityObject, spawnPoint.position, Quaternion.identity);
+            Instantiate(entity.Object, spawnPoint.position, Quaternion.identity);
         }
     }
 }

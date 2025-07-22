@@ -48,7 +48,7 @@ namespace Blue.Inventory
         public override string ToString()
         {
             System.Text.StringBuilder result = new System.Text.StringBuilder();
-            result.Append($"[{ItemData.ItemName}]");
+            result.Append($"[{ItemData.Name}]");
 
             foreach (KeyValuePair<ItemAttribute, int> kvp in dynamicValues)
             {

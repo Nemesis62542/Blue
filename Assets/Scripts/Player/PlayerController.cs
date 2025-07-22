@@ -288,12 +288,12 @@ namespace Blue.Player
         public void CaptureEntity(EntityData captured)
         {
             model.AddCapturedEntity(captured);
-            view.AddMessage(new MessageData($"{captured.EntityName}を捕獲しました"));
+            view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
         }
 
         public void OnPickUpItem(ItemData item)
         {
-            view.AddMessage(new MessageData($"{item.ItemName}を入手しました"));
+            view.AddMessage(new MessageData($"{item.Name}を入手しました"));
         }
     }
 }

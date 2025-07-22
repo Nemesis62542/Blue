@@ -104,7 +104,7 @@ namespace Blue.Inventory
 
         private void ApplyConsumableEffect(ItemData item)
         {
-            Debug.Log($"使用: {item.ItemName} ({item.GetAttributeValue(ItemAttribute.HealingValue)} HP 回復)");
+            Debug.Log($"使用: {item.Name} ({item.GetAttributeValue(ItemAttribute.HealingValue)} HP 回復)");
         }
 
     }
