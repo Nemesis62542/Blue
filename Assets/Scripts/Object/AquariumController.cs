@@ -11,7 +11,7 @@ namespace Blue.Object
 
         private void Start()
         {
-            Initialize();
+            //Initialize();
         }
 
         private void Initialize()
@@ -27,6 +27,26 @@ namespace Blue.Object
             GameObject @object = data.Entity.School != null ? data.Entity.School.gameObject : data.Entity.Object;
             Instantiate(@object, data.SpawnPoint.position, Quaternion.identity, transform);
         }
+
+        private void SetDisplayEntity(DisplayData data, EntityData entity)
+        {
+            if (data.MaxDisplayableSize <= entity.DisplaySize) throw new Exception("生物の展示に失敗");
+
+            if (entity.School != null)
+            {
+                if (data.IsSchool)
+                {
+                    data.Entity = entity;
+                    InstantiateDisplayEntity(data);
+                }
+                else throw new Exception("生物の展示に失敗");
+            }
+            else
+            {
+                data.Entity = entity;
+                InstantiateDisplayEntity(data);
+            }
+        }
     }
 
     [Serializable]
@@ -40,6 +60,7 @@ namespace Blue.Object
         public Transform SpawnPoint => spawnPoint;
         public bool IsSchool => isSchool;
         public int MaxDisplayableSize => maxDisplayableSize;
-        public EntityData Entity => entity;
+
+        public EntityData Entity { get => entity; set => entity = value; }
     }
 }
