@@ -28,7 +28,26 @@ namespace Blue.Object
             Instantiate(@object, data.SpawnPoint.position, Quaternion.identity, transform);
         }
 
-        private void SetDisplayEntity(DisplayData data, EntityData entity)
+        public DisplayData FirstEnptyDisplayData(bool isSchool = false)
+        {
+            foreach (DisplayData data in displayData)
+            {
+                if (data.Entity != null) continue;
+
+                if (isSchool)
+                {
+                    if (data.IsSchool) return data;
+                }
+                else
+                {
+                    return data;
+                }
+            }
+
+            return null;
+        }
+
+        public void SetDisplayEntity(DisplayData data, EntityData entity)
         {
             if (data.MaxDisplayableSize <= entity.DisplaySize) throw new Exception("生物の展示に失敗");
 
