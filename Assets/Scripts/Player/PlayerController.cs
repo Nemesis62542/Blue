@@ -1,5 +1,6 @@
 using Blue.Attack;
 using Blue.Entity;
+using Blue.Game;
 using Blue.Input;
 using Blue.Interface;
 using Blue.Inventory;
@@ -9,7 +10,6 @@ using Blue.UI;
 using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 namespace Blue.Player
 {
@@ -105,8 +105,8 @@ namespace Blue.Player
             //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                if (SceneManager.GetActiveScene().name == "Terrain") SceneManager.LoadSceneAsync("Aquarium");
-                if (SceneManager.GetActiveScene().name == "Aquarium") SceneManager.LoadSceneAsync("Terrain");
+                if (SceneLoader.CurrentSceneName == "Terrain") SceneLoader.LoadScene("Aquarium");
+                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Terrain");
             }
         }
 
