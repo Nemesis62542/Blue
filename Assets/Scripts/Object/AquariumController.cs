@@ -28,11 +28,12 @@ namespace Blue.Object
             Instantiate(@object, data.SpawnPoint.position, Quaternion.identity, transform);
         }
 
-        public DisplayData FirstEnptyDisplayData(bool isSchool = false)
+        public DisplayData FirstEnptyDisplayData(HabitationArea habitation, bool isSchool = false)
         {
             foreach (DisplayData data in displayData)
             {
                 if (data.Entity != null) continue;
+                if (data.Habitation != habitation) continue;
 
                 if (isSchool)
                 {
@@ -75,10 +76,12 @@ namespace Blue.Object
         [SerializeField] private bool isSchool;
         [SerializeField] private int maxDisplayableSize;
         [SerializeField] private EntityData entity;
+        [SerializeField] private HabitationArea habitation;
 
         public Transform SpawnPoint => spawnPoint;
         public bool IsSchool => isSchool;
         public int MaxDisplayableSize => maxDisplayableSize;
+        public HabitationArea Habitation => habitation;
 
         public EntityData Entity { get => entity; set => entity = value; }
     }

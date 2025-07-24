@@ -6,13 +6,6 @@ namespace Blue.Entity
     [CreateAssetMenu(fileName = "EntityData", menuName = "Blue/ScriptableObject/EntityData")]
     public class EntityData : ScriptableObject
     {
-        public enum HabitationArea //生息地域
-        {
-            None,    // なし
-            Shallow, // 浅い場所
-            Depth,   // 深海
-        }
-
         [SerializeField] private new string name;
         [SerializeField] private int hp;
         [SerializeField] private int attackPower;
@@ -28,5 +21,12 @@ namespace Blue.Entity
         public HabitationArea Habitation => habitation;
         public GameObject Object => @object;
         public SchoolController School => school;
+    }
+
+    public enum HabitationArea //生息地域
+    {
+        None,    // なし
+        Shallow, // 浅い場所
+        Depth,   // 深海
     }
 }

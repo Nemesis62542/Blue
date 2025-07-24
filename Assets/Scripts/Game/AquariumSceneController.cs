@@ -18,7 +18,10 @@ namespace Blue.Game
         {
             for (int i = 0; i < aquaria.Count; i++)
             {
-                aquaria[i].SetDisplayEntity(aquaria[i].FirstEnptyDisplayData(entities[i].School != null), entities[i]);
+                EntityData entity = entities[i];
+                AquariumController aquarium = aquaria[i];
+
+                aquarium.SetDisplayEntity(aquarium.FirstEnptyDisplayData(entity.Habitation, entity.School != null), entity);
             }
         }
     }
