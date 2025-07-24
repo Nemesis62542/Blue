@@ -11,7 +11,12 @@ namespace Blue.Game
 
         void Awake()
         {
-            //InitializeAquaria();
+            if (SceneDataBridge.TransferData != null)
+            {
+                List<EntityData> entities = new List<EntityData>(SceneDataBridge.TransferData.CapturedEntity.Keys);
+                InitializeAquaria(entities);
+                SceneDataBridge.Clear();
+            }
         }
 
         private void InitializeAquaria(List<EntityData> entities)

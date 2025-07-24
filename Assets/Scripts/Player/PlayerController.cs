@@ -105,7 +105,11 @@ namespace Blue.Player
             //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                if (SceneLoader.CurrentSceneName == "Terrain") SceneLoader.LoadScene("Aquarium");
+                if (SceneLoader.CurrentSceneName == "Terrain")
+                {
+                    SceneDataBridge.TransferData = model.CreateTransferData();
+                    SceneLoader.LoadScene("Aquarium");
+                }
                 if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Terrain");
             }
         }

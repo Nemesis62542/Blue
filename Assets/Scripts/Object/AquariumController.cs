@@ -9,19 +9,6 @@ namespace Blue.Object
     {
         [SerializeField] private List<DisplayData> displayData = new List<DisplayData>();
 
-        private void Start()
-        {
-            //Initialize();
-        }
-
-        private void Initialize()
-        {
-            foreach (DisplayData data in displayData)
-            {
-                InstantiateDisplayEntity(data);
-            }
-        }
-
         private void InstantiateDisplayEntity(DisplayData data)
         {
             GameObject @object = data.Entity.School != null ? data.Entity.School.gameObject : data.Entity.Object;
@@ -50,7 +37,7 @@ namespace Blue.Object
 
         public void SetDisplayEntity(DisplayData data, EntityData entity)
         {
-            if (data.MaxDisplayableSize <= entity.DisplaySize) throw new Exception("生物の展示に失敗");
+            if (data.MaxDisplayableSize < entity.DisplaySize) throw new Exception("生物の展示に失敗");
 
             if (entity.School != null)
             {

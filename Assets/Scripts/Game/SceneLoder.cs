@@ -11,22 +11,22 @@ namespace Blue.Game
 
         public static string CurrentSceneName => SceneManager.GetActiveScene().name;
 
-        public static void LoadScene(string sceneName, Action onComplete = null)
+        public static void LoadScene(string scene_name, Action on_complete = null)
         {
             if (runnerObj != null) return;
 
             runnerObj = new GameObject("SceneLoaderRunner");
             SceneLoaderRunner runner = runnerObj.AddComponent<SceneLoaderRunner>();
-            runner.StartLoading(sceneName, () =>
+            runner.StartLoading(scene_name, () =>
             {
-                onComplete?.Invoke();
+                on_complete?.Invoke();
                 runnerObj = null;
             });
         }
 
-        public static IEnumerator RunAsync(string sceneName, Action onComplete)
+        public static IEnumerator RunAsync(string scene_name, Action on_complete)
         {
-            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+            AsyncOperation operation = SceneManager.LoadSceneAsync(scene_name);
             operation.allowSceneActivation = true;
 
             while (!operation.isDone)
@@ -34,22 +34,22 @@ namespace Blue.Game
                 yield return null;
             }
 
-            onComplete?.Invoke();
+            on_complete?.Invoke();
         }
 
         private class SceneLoaderRunner : MonoBehaviour
         {
-            public void StartLoading(string sceneName, Action onComplete)
+            public void StartLoading(string scene_name, Action on_complete)
             {
                 DontDestroyOnLoad(gameObject);
 
                 Action wrapped = () =>
                 {
-                    onComplete?.Invoke();
+                    on_complete?.Invoke();
                     Destroy(gameObject);
                 };
 
-                StartCoroutine(RunAsync(sceneName, wrapped));
+                StartCoroutine(RunAsync(scene_name, wrapped));
             }
         }
     }

@@ -6915,9 +6915,9 @@ MonoBehaviour:
   displayData:
   - spawnPoint: {fileID: 198283536}
     isSchool: 1
-    maxDisplayableSize: 0
-    entity: {fileID: 11400000, guid: f6495b183781074489f13b0f8099bc3a, type: 2}
-    habitation: 0
+    maxDisplayableSize: 3
+    entity: {fileID: 0}
+    habitation: 1
 --- !u!1001 &1151361463
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11107,6 +11107,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6953364561088171395, guid: 9a9f38be517496f4291e2fa43091fb5e, type: 3}
   m_PrefabInstance: {fileID: 1053507866}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1998504647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1998504649}
+  - component: {fileID: 1998504648}
+  m_Layer: 0
+  m_Name: AquariumSceneController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1998504648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998504647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6c8308d923023840abcb0c528ccb43f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aquaria:
+  - {fileID: 1143413657}
+--- !u!4 &1998504649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998504647}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 12.72421, y: 2.7677963, z: -1.233975}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1999232581 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4725149739997410526, guid: 4c33c3a23413ec04dab6b24a4e187284, type: 3}
@@ -12293,3 +12339,4 @@ SceneRoots:
   - {fileID: 12335091}
   - {fileID: 587296796}
   - {fileID: 2084369720}
+  - {fileID: 1998504649}
