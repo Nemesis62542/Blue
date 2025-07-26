@@ -1,3 +1,4 @@
+using Blue.UI;
 using UnityEngine;
 
 namespace Blue.Game
@@ -8,7 +9,7 @@ namespace Blue.Game
 
         public void TriggerEvent()
         {
-            Debug.Log("イベント発生！");
+            SubtitleUIController.Instance.ShowMessage("イベントが発生");
 
             // ムービー開始 or 任意の演出
             if (cinematicObject != null)
