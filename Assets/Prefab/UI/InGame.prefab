@@ -1134,6 +1134,7 @@ MonoBehaviour:
   hpSliderShadow: {fileID: 1227213063162698488}
   oxygenSliderShadow: {fileID: 2874621804201376389}
   depth: {fileID: 7969357631164211548}
+  tweenDuration: 0.5
 --- !u!1 &4892155955030977344
 GameObject:
   m_ObjectHideFlags: 0

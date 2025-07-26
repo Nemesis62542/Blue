@@ -9,7 +9,8 @@ namespace Blue.Input
         None,
         Player,
         Menu,
-        Inventory
+        Inventory,
+        Movie,
     }
 
     public class PlayerInputHandler
@@ -36,8 +37,24 @@ namespace Blue.Input
         public InputAction GetRegisterAction() => inputActions.Inventory.Register;
         public InputAction GetRemoveAction() => inputActions.Inventory.Remove;
 
-        public PlayerInputHandler()
+        public static PlayerInputHandler Instance { get; private set; }
+
+        public static void Initialize()
         {
+            if (Instance == null)
+            {
+                Instance = new PlayerInputHandler();
+            }
+        }
+
+        private PlayerInputHandler()
+        {
+            if (Instance != null && Instance != this)
+            {
+                return;
+            }
+            Instance = this;
+
             inputActions = new PlayerInputActions();
 
             inputActions.Player.Move.performed += OnMove;
@@ -177,6 +194,10 @@ namespace Blue.Input
 
                 case InputMapType.Inventory:
                     inputActions.Inventory.Enable();
+                    break;
+
+                case InputMapType.Movie:
+                    inputActions.Movie.Enable();
                     break;
 
                 case InputMapType.None:

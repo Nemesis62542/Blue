@@ -7,5 +7,6 @@ namespace Blue.UI.Screen
         Inventory,  // インベントリ画面
         Pause,      // ポーズ画面
         Settings,   // 設定画面
+        Movie,      // ムービーシーン
     }
 }

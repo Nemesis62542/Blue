@@ -8,7 +8,6 @@ namespace Blue.Player
     public class PlayerView : BaseEntityView
     {
         [SerializeField] private Transform heldItemAnchor;
-        [SerializeField] private MessageView messageView;
 
         private ItemUseHandler currentHeldItem;
 
@@ -33,7 +32,7 @@ namespace Blue.Player
 
         public void AddMessage(MessageData data)
         {
-            messageView.ShowMessage(data);
+            MessageView.Instance.ShowMessage(data);
         }
     }
 }

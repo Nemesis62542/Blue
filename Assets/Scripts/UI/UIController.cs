@@ -9,14 +9,24 @@ namespace Blue.UI
     public class UIController : MonoBehaviour
     {
         [SerializeField] private List<CanvasGroup> screenCanvasGroups;
+
         private Dictionary<ScreenState, CanvasGroup> screenDictionary;
         private ScreenState currentScreenState = ScreenState.None;
 
         public ScreenState CurrentScreenState => currentScreenState;
         public event Action<ScreenState> OnScreenStateChanged;
 
+        public static UIController Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
             InitializeScreenDictionary();
             ShowScreen(ScreenState.Ingame);
         }
