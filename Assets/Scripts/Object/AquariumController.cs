@@ -9,28 +9,35 @@ namespace Blue.Object
     {
         [SerializeField] private List<DisplayData> displayData = new List<DisplayData>();
 
-        private void Start()
-        {
-            //Initialize();
-        }
-
-        private void Initialize()
-        {
-            foreach (DisplayData data in displayData)
-            {
-                InstantiateDisplayEntity(data);
-            }
-        }
-
         private void InstantiateDisplayEntity(DisplayData data)
         {
             GameObject @object = data.Entity.School != null ? data.Entity.School.gameObject : data.Entity.Object;
             Instantiate(@object, data.SpawnPoint.position, Quaternion.identity, transform);
         }
 
-        private void SetDisplayEntity(DisplayData data, EntityData entity)
+        public DisplayData FirstEnptyDisplayData(HabitationArea habitation, bool isSchool = false)
         {
-            if (data.MaxDisplayableSize <= entity.DisplaySize) throw new Exception("生物の展示に失敗");
+            foreach (DisplayData data in displayData)
+            {
+                if (data.Entity != null) continue;
+                if (data.Habitation != habitation) continue;
+
+                if (isSchool)
+                {
+                    if (data.IsSchool) return data;
+                }
+                else
+                {
+                    return data;
+                }
+            }
+
+            return null;
+        }
+
+        public void SetDisplayEntity(DisplayData data, EntityData entity)
+        {
+            if (data.MaxDisplayableSize < entity.DisplaySize) throw new Exception("生物の展示に失敗");
 
             if (entity.School != null)
             {
@@ -56,10 +63,12 @@ namespace Blue.Object
         [SerializeField] private bool isSchool;
         [SerializeField] private int maxDisplayableSize;
         [SerializeField] private EntityData entity;
+        [SerializeField] private HabitationArea habitation;
 
         public Transform SpawnPoint => spawnPoint;
         public bool IsSchool => isSchool;
         public int MaxDisplayableSize => maxDisplayableSize;
+        public HabitationArea Habitation => habitation;
 
         public EntityData Entity { get => entity; set => entity = value; }
     }

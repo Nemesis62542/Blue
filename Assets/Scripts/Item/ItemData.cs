@@ -8,7 +8,7 @@ namespace Blue.Item
     public class ItemData : ScriptableObject
     {
         [SerializeField] private new string name;    // アイテムの名前
-        [SerializeField] private string description; // 説明
+        [SerializeField, TextArea] private string description; // 説明
         [SerializeField] private Sprite icon;        // アイコン
         [SerializeField] private ItemType type;  // アイテムの種類
         [SerializeField] private bool isStackable;   // スタックできるか

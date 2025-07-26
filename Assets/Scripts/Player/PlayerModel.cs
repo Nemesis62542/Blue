@@ -10,7 +10,7 @@ namespace Blue.Player
     public class PlayerModel : BaseEntityModel
     {
         private InventoryModel inventory = new InventoryModel();
-        private Dictionary<EntityData, int> capturedEntity = new Dictionary<EntityData, int>();
+        private Dictionary<EntityData, int> capturedEntities = new Dictionary<EntityData, int>();
         private QuickSlotHandler quickSlotHandler;
         private int maxOxygen = 100;
         private int oxygen;
@@ -68,14 +68,19 @@ namespace Blue.Player
 
         public void AddCapturedEntity(EntityData entity)
         {
-            if (capturedEntity.ContainsKey(entity))
+            if (capturedEntities.ContainsKey(entity))
             {
-                capturedEntity[entity]++;
+                capturedEntities[entity]++;
             }
             else
             {
-                capturedEntity.Add(entity, 1);
+                capturedEntities.Add(entity, 1);
             }
+        }
+
+        public PlayerTransferData CreateTransferData()
+        {
+            return new PlayerTransferData(capturedEntities);
         }
     }
 }

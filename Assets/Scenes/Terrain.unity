@@ -3060,6 +3060,63 @@ MonoBehaviour:
   mesh1: {fileID: 4300000, guid: 0fc93b18a9388ab43af9f608bea6cdd2, type: 2}
   mesh2: {fileID: 1066432209}
   nextMeshIsMesh1: 0
+--- !u!1001 &1553905321
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 722.94055
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 71.826
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 613.8251
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 225070275555649106, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 600188855417453800, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
+      propertyPath: m_Name
+      value: CaputureGun
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f53a40c68d886ef449189f69ce45183a, type: 3}
 --- !u!1001 &1571189419
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3452,7 +3509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424724188950865022, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.005201152
+      value: -0.0039427243
       objectReference: {fileID: 0}
     - target: {fileID: 7624444497065843833, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4822,3 +4879,4 @@ SceneRoots:
   - {fileID: 522108794}
   - {fileID: 245899910}
   - {fileID: 8713586970980963754}
+  - {fileID: 1553905321}
