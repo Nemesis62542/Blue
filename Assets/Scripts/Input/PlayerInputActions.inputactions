@@ -571,6 +571,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Movie",
+            "id": "6c042383-1258-4392-a021-44ddcca1280a",
+            "actions": [
+                {
+                    "name": "Skip",
+                    "type": "Button",
+                    "id": "dcd76c64-95e7-474c-aea1-23fabc037897",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7a6d2353-a8c6-4a26-bd58-e0a32c5b5de6",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

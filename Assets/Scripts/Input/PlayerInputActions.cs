@@ -593,6 +593,34 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Movie"",
+            ""id"": ""6c042383-1258-4392-a021-44ddcca1280a"",
+            ""actions"": [
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""dcd76c64-95e7-474c-aea1-23fabc037897"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7a6d2353-a8c6-4a26-bd58-e0a32c5b5de6"",
+                    ""path"": ""<Keyboard>/anyKey"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -621,6 +649,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_Close = m_Menu.FindAction("Close", throwIfNotFound: true);
+        // Movie
+        m_Movie = asset.FindActionMap("Movie", throwIfNotFound: true);
+        m_Movie_Skip = m_Movie.FindAction("Skip", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -628,6 +659,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInputActions.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Inventory.enabled, "This will cause a leak and performance issues, PlayerInputActions.Inventory.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Menu.enabled, "This will cause a leak and performance issues, PlayerInputActions.Menu.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Movie.enabled, "This will cause a leak and performance issues, PlayerInputActions.Movie.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -943,6 +975,52 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public MenuActions @Menu => new MenuActions(this);
+
+    // Movie
+    private readonly InputActionMap m_Movie;
+    private List<IMovieActions> m_MovieActionsCallbackInterfaces = new List<IMovieActions>();
+    private readonly InputAction m_Movie_Skip;
+    public struct MovieActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public MovieActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Skip => m_Wrapper.m_Movie_Skip;
+        public InputActionMap Get() { return m_Wrapper.m_Movie; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MovieActions set) { return set.Get(); }
+        public void AddCallbacks(IMovieActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MovieActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MovieActionsCallbackInterfaces.Add(instance);
+            @Skip.started += instance.OnSkip;
+            @Skip.performed += instance.OnSkip;
+            @Skip.canceled += instance.OnSkip;
+        }
+
+        private void UnregisterCallbacks(IMovieActions instance)
+        {
+            @Skip.started -= instance.OnSkip;
+            @Skip.performed -= instance.OnSkip;
+            @Skip.canceled -= instance.OnSkip;
+        }
+
+        public void RemoveCallbacks(IMovieActions instance)
+        {
+            if (m_Wrapper.m_MovieActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMovieActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MovieActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MovieActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MovieActions @Movie => new MovieActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -969,5 +1047,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface IMenuActions
     {
         void OnClose(InputAction.CallbackContext context);
+    }
+    public interface IMovieActions
+    {
+        void OnSkip(InputAction.CallbackContext context);
     }
 }

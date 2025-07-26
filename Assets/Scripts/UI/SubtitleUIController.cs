@@ -6,8 +6,6 @@ namespace Blue.UI
 {
     public class SubtitleUIController : MonoBehaviour
     {
-        public static SubtitleUIController Instance { get; private set; }
-
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private TMP_Text messageText;
         [SerializeField] private float defaultShowDuration = 3f;
@@ -17,6 +15,8 @@ namespace Blue.UI
         private Coroutine currentCoroutine;
         private Tween typeTween;
         private Tween fadeTween;
+
+        public static SubtitleUIController Instance { get; private set; }
 
         private void Awake()
         {

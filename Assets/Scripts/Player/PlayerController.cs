@@ -49,7 +49,8 @@ namespace Blue.Player
         protected override void Awake()
         {
             base.Awake();
-            inputHandler = new PlayerInputHandler();
+            PlayerInputHandler.Initialize();
+            inputHandler = PlayerInputHandler.Instance;
             model = new PlayerModel(data);
 
             model.Status.OnHPChanged += HandleHPChanged;
