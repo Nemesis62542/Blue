@@ -7,6 +7,19 @@ namespace Blue.UI
         [SerializeField] private MessageSlot messagePrefab;
         [SerializeField] private float messageDuration = 2.0f;
 
+        public static MessageView Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
         public void ShowMessage(MessageData data)
         {
             MessageSlot slot = Instantiate(messagePrefab, transform);
