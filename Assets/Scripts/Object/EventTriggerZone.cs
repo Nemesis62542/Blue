@@ -7,13 +7,14 @@ namespace Blue.Object
     public class EventTriggerZone : MonoBehaviour
     {
         [SerializeField] private GameEventController eventController;
+        [SerializeField] private EventID triggerEventID;
 
         private void OnTriggerEnter(Collider other)
         {
             if (!other.CompareTag("Player")) return;
 
-            eventController.TriggerEvent();
-            gameObject.SetActive(false); // 一度だけ発動
+            eventController.TriggerEvent(triggerEventID);
+            gameObject.SetActive(false);
         }
     }
 }

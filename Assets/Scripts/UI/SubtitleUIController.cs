@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using System.Collections;
 
 namespace Blue.UI
 {
@@ -8,13 +9,14 @@ namespace Blue.UI
     {
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private TMP_Text messageText;
-        [SerializeField] private float defaultShowDuration = 3f;
         [SerializeField] private float typeSpeed = 0.05f;
         [SerializeField] private float fadeDuration = 0.3f;
+        [SerializeField] private float autoFadeTime = 4f;
 
-        private Coroutine currentCoroutine;
         private Tween typeTween;
-        private Tween fadeTween;
+        private Coroutine typeCoroutine;
+        private Coroutine fadeCoroutine;
+        private float lastUpdateTime = -1f;
 
         public static SubtitleUIController Instance { get; private set; }
 
@@ -30,28 +32,23 @@ namespace Blue.UI
             canvasGroup.alpha = 0f;
         }
 
-        public void ShowMessage(string message, float duration = -1f)
+        public void ShowMessage(string message)
         {
-            if (currentCoroutine != null)
-            {
-                StopCoroutine(currentCoroutine);
-            }
-
+            if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
+            if (typeCoroutine != null) StopCoroutine(typeCoroutine);
             if (typeTween != null && typeTween.IsActive()) typeTween.Kill();
-            if (fadeTween != null && fadeTween.IsActive()) fadeTween.Kill();
 
-            currentCoroutine = StartCoroutine(ShowRoutine(message, duration > 0f ? duration : defaultShowDuration));
-        }
-
-        private System.Collections.IEnumerator ShowRoutine(string message, float duration)
-        {
-            canvasGroup.alpha = 0f;
-            fadeTween = canvasGroup.DOFade(1f, fadeDuration);
-            yield return fadeTween.WaitForCompletion();
-
+            canvasGroup.DOFade(1f, fadeDuration);
             messageText.text = message;
             messageText.maxVisibleCharacters = 0;
 
+            lastUpdateTime = Time.time;
+            typeCoroutine = StartCoroutine(TypeTextRoutine(message));
+            fadeCoroutine = StartCoroutine(AutoFadeOutRoutine());
+        }
+
+        private IEnumerator TypeTextRoutine(string message)
+        {
             int total_chars = message.Length;
             float type_duration = total_chars * typeSpeed;
 
@@ -63,13 +60,19 @@ namespace Blue.UI
             );
 
             yield return typeTween.WaitForCompletion();
+        }
 
-            yield return new WaitForSeconds(duration);
-
-            fadeTween = canvasGroup.DOFade(0f, fadeDuration);
-            yield return fadeTween.WaitForCompletion();
-
-            currentCoroutine = null;
+        private IEnumerator AutoFadeOutRoutine()
+        {
+            while (true)
+            {
+                if (Time.time - lastUpdateTime > autoFadeTime)
+                {
+                    canvasGroup.DOFade(0f, fadeDuration);
+                    yield break;
+                }
+                yield return null;
+            }
         }
     }
 }

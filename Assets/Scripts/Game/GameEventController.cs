@@ -1,27 +1,71 @@
-using Blue.UI;
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.Playables;
+using Blue.UI;
+using Blue.Input;
+using Blue.Game;
+using UnityEngine.Timeline;
+using System.Collections;
+using Blue.UI.Screen;
 
-namespace Blue.Game
+public class GameEventController : MonoBehaviour
 {
-    public class GameEventController : MonoBehaviour
+    [SerializeField] private List<GameEventData> eventList;
+    [SerializeField] private PlayableDirector director;
+
+    private GameEventData currentEvent;
+    private int dialogueIndex = 0;
+    private Dictionary<EventID, GameEventData> eventDict;
+
+    private void Awake()
     {
-        [SerializeField] private GameObject cinematicObject; // ムービー用オブジェクト（Timeline等）
-
-        public void TriggerEvent()
+        eventDict = new Dictionary<EventID, GameEventData>();
+        foreach (GameEventData data in eventList)
         {
-            SubtitleUIController.Instance.ShowMessage("イベントが発生");
-
-            // ムービー開始 or 任意の演出
-            if (cinematicObject != null)
+            if (!eventDict.ContainsKey(data.ID))
             {
-                cinematicObject.SetActive(true);
+                eventDict.Add(data.ID, data);
             }
-
-            // 必要に応じて：
-            // - プレイヤー操作停止
-            // - カメラ切り替え
-            // - SE/BGM変更
-            // - UIの非表示
         }
+    }
+
+    public void TriggerEvent(EventID id)
+    {
+        if (!eventDict.TryGetValue(id, out GameEventData eventData)) return;
+
+        currentEvent = eventData;
+        dialogueIndex = 0;
+
+        ShowNextDialogueLine();
+    }
+
+    public void ShowNextDialogueLine()
+    {
+        if (currentEvent == null || dialogueIndex >= currentEvent.DialogueLines.Count)
+        {
+            EndEvent();
+            return;
+        }
+
+        string message = currentEvent.DialogueLines[dialogueIndex].text;
+        SubtitleUIController.Instance.ShowMessage(message);
+
+        dialogueIndex++;
+    }
+
+    private void EndEvent()
+    {
+        currentEvent = null;
+        UIController.Instance.ShowScreen(ScreenState.Ingame);
+        PlayerInputHandler.Instance.SetInputMap(InputMapType.Player);
+    }
+
+    private void PlayTimeline(TimelineAsset timeline)
+    {
+        UIController.Instance.ShowScreen(ScreenState.Movie);
+        PlayerInputHandler.Instance.SetInputMap(InputMapType.Movie);
+
+        director.playableAsset = timeline;
+        director.Play();
     }
 }
