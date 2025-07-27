@@ -18,7 +18,6 @@ namespace Blue.Player
     {
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
-        [SerializeField] private UIController uiController;
         [SerializeField] private ScannerController scannerController;
         [SerializeField] private PlayerStatusView playerStatusView;
         [Header("プレイヤーの情報")]
@@ -30,6 +29,7 @@ namespace Blue.Player
         [SerializeField] private float interactDistance = 3.0f;
 
         private PlayerInputHandler inputHandler;
+        private UIController uiController;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
         private float waterLevel = 0;
@@ -51,6 +51,7 @@ namespace Blue.Player
             base.Awake();
             PlayerInputHandler.Initialize();
             inputHandler = PlayerInputHandler.Instance;
+            uiController = UIController.Instance;
             model = new PlayerModel(data);
 
             model.Status.OnHPChanged += HandleHPChanged;
