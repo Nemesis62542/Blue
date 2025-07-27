@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &718894429180662373
+--- !u!1 &2941315838792679574
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,55 +8,55 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 49922069897803081}
-  - component: {fileID: 8332584915972963582}
+  - component: {fileID: 7380469940533884004}
+  - component: {fileID: 2140745494137631999}
   m_Layer: 0
-  m_Name: SardineSchool
+  m_Name: JerryFish_School_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &49922069897803081
+--- !u!4 &7380469940533884004
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 718894429180662373}
+  m_GameObject: {fileID: 2941315838792679574}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.7351, y: 6.2, z: -3.069}
+  m_LocalPosition: {x: 880.7952, y: 90.64, z: 867.0714}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8332584915972963582
+--- !u!114 &2140745494137631999
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 718894429180662373}
+  m_GameObject: {fileID: 2941315838792679574}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9dd308086043c5446a9c6d26a0f8e42c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _childPrefab:
-  - {fileID: 630366693248861759, guid: 92c418530b3c1374eaa1583fe4884451, type: 3}
+  - {fileID: -7526636099259334995, guid: 5ff2571d86a6e714f9d14edaa6b83ce6, type: 3}
   _groupChildToNewTransform: 0
   _groupTransform: {fileID: 0}
   _groupName: 
   _groupChildToSchool: 1
-  _childAmount: 500
-  _spawnSphere: 1
-  _spawnSphereDepth: 1
-  _spawnSphereHeight: 3
+  _childAmount: 8
+  _spawnSphere: 2
+  _spawnSphereDepth: 2
+  _spawnSphereHeight: 1
   _childSpeedMultipler: 0.71
-  _minSpeed: 1
-  _maxSpeed: 5
+  _minSpeed: 0
+  _maxSpeed: 0.1
   _speedCurveMultiplier:
     serializedVersion: 2
     m_Curve:
@@ -83,25 +83,25 @@ MonoBehaviour:
     m_RotationOrder: 4
   _minScale: 0.5
   _maxScale: 1
-  _minDamping: 0.8
-  _maxDamping: 1
+  _minDamping: 0
+  _maxDamping: 0.1
   _waypointDistance: 0.67
   _minAnimationSpeed: 0.125
   _maxAnimationSpeed: 0.125
-  _randomPositionTimerMax: 5
-  _randomPositionTimerMin: 3
-  _acceleration: 0.025
-  _brake: 0.01
-  _positionSphere: 4
-  _positionSphereDepth: 4
-  _positionSphereHeight: 0.1
+  _randomPositionTimerMax: 50
+  _randomPositionTimerMin: 30
+  _acceleration: 0.001
+  _brake: 0.001
+  _positionSphere: 2
+  _positionSphereDepth: 2
+  _positionSphereHeight: 1
   _childTriggerPos: 1
-  _forceChildWaypoints: 1
+  _forceChildWaypoints: 0
   _autoRandomPosition: 1
-  _forcedRandomDelay: 2
+  _forcedRandomDelay: 30
   _schoolSpeed: 0
   _roamers: []
-  _posBuffer: {x: 11.7351, y: 6.2, z: -3.069}
+  _posBuffer: {x: 880.7952, y: 90.64, z: 867.0714}
   _posOffset: {x: 0, y: 0, z: 0}
   _avoidance: 1
   _avoidAngle: 0.35
@@ -111,10 +111,10 @@ MonoBehaviour:
   _stopSpeedMultiplier: 2
   _avoidanceMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 4294967295
   _push: 0
-  _pushDistance: 0
-  _pushForce: 5
+  _pushDistance: 0.1
+  _pushForce: 0.01
   _updateDivisor: 1
   _newDelta: 0
   _updateCounter: 0

@@ -222,7 +222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   view: {fileID: 1275374153513072296}
   data: {fileID: 11400000, guid: 6a1213083b84f5148a8d0f36bd99ca11, type: 2}
-  circleRadius: 25
+  circleRadius: 15
   circleSpeed: 0.5
   chargeSpeed: 20
   attackHitbox: {fileID: 8855493890615738685}
