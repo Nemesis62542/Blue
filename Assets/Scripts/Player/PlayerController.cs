@@ -122,7 +122,14 @@ namespace Blue.Player
             if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
             {
                 oxygenDecreaseTimer = 0f;
-                model.ConsumeOxygen(oxygenDecreaseAmount);
+                if (model.Oxygen == 0)
+                {
+                    model.Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
+                }
+                else
+                {
+                    model.ConsumeOxygen(oxygenDecreaseAmount);
+                }
             }
         }
 

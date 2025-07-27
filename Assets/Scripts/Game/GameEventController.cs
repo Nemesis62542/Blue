@@ -36,13 +36,14 @@ public class GameEventController : MonoBehaviour
         currentEvent = eventData;
         dialogueIndex = 0;
 
-        ShowNextDialogueLine();
+        PlayTimeline(eventData.TimelineAsset, eventData.IsMovie);
     }
 
     public void ShowNextDialogueLine()
     {
         if (currentEvent == null || dialogueIndex >= currentEvent.DialogueLines.Count)
         {
+            ForwardIngame();
             EndEvent();
             return;
         }
@@ -53,17 +54,26 @@ public class GameEventController : MonoBehaviour
         dialogueIndex++;
     }
 
-    private void EndEvent()
+    public void ForwardIngame()
     {
-        currentEvent = null;
         UIController.Instance.ShowScreen(ScreenState.Ingame);
         PlayerInputHandler.Instance.SetInputMap(InputMapType.Player);
     }
 
-    private void PlayTimeline(TimelineAsset timeline)
+    public void ForwardMovie()
     {
         UIController.Instance.ShowScreen(ScreenState.Movie);
         PlayerInputHandler.Instance.SetInputMap(InputMapType.Movie);
+    }
+
+    public void EndEvent()
+    {
+        currentEvent = null;
+    }
+
+    private void PlayTimeline(TimelineAsset timeline, bool is_movie)
+    {
+        if (is_movie) ForwardMovie();
 
         director.playableAsset = timeline;
         director.Play();
