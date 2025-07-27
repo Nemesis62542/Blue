@@ -35,6 +35,9 @@ namespace Blue.Player
         private float waterLevel = 0;
         private float mouseLookSensitivity = 10f;
         private float controllerLookSensitivity = 10f;
+        private float oxygenDecreaseInterval = 3.0f;
+        private float oxygenDecreaseTimer = 0.0f;
+        private int oxygenDecreaseAmount = 1;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -113,6 +116,13 @@ namespace Blue.Player
                     SceneLoader.LoadScene("Aquarium");
                 }
                 if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Terrain");
+            }
+
+            oxygenDecreaseTimer += Time.deltaTime;
+            if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
+            {
+                oxygenDecreaseTimer = 0f;
+                model.ConsumeOxygen(oxygenDecreaseAmount);
             }
         }
 
@@ -196,14 +206,19 @@ namespace Blue.Player
             playerStatusView.SetDepth(depth);
         }
 
+        public void SetOxygenMax()
+        {
+            model.RefillOxygen(model.MaxOxygen);
+        }
+
         private void Attack()
         {
             InventoryItem item = QuickSlot.CurrentInventoryItem;
             int attack_power = 1;
 
-            if (item != null && item.ItemData.HasAttribute(Item.ItemAttribute.AttackPower))
+            if (item != null && item.ItemData.HasAttribute(ItemAttribute.AttackPower))
             {
-                attack_power = item.ItemData.GetAttributeValue(Item.ItemAttribute.AttackPower);
+                attack_power = item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
             }
 
             if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
