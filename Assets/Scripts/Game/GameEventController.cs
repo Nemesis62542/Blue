@@ -66,6 +66,11 @@ public class GameEventController : MonoBehaviour
         PlayerInputHandler.Instance.SetInputMap(InputMapType.Movie);
     }
 
+    public void EmergencyMessage()
+    {
+        MessageView.Instance.ShowMessage(new MessageData("周囲に大型の動態反応を検知。危険度：<color=red>高</color>"), 5.0f);
+    }
+
     public void EndEvent()
     {
         currentEvent = null;

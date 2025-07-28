@@ -26,6 +26,7 @@ namespace Blue.Game
         GasCylinder,
         CaptureGun,
         IntoTheCave,
+        FallInTheHole,
     }
 
     [System.Serializable]
