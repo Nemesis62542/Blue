@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: AmarylisJerryFish
   m_EditorClassIdentifier: 
-  name: 
+  name: "\u30AB\u30A4\u30E8\u30A6\u30D2\u30AC\u30F3\u30D0\u30CA"
   hp: 1
   attackPower: 0
-  displaySize: 0
+  displaySize: 1
   habitation: 1
-  object: {fileID: 0}
-  school: {fileID: 0}
+  object: {fileID: 2047442325691957912, guid: 5ff2571d86a6e714f9d14edaa6b83ce6, type: 3}
+  school: {fileID: 2140745494137631999, guid: ba654abcde6f4a647830ac52dcaf8ff0, type: 3}
