@@ -26,15 +26,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bd789c529d517aa4ebfa178497215347, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.9986076
+      value: 746.8515
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bd789c529d517aa4ebfa178497215347, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3
+      value: 63.6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bd789c529d517aa4ebfa178497215347, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.7222166
+      value: 856.4276
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bd789c529d517aa4ebfa178497215347, type: 3}
       propertyPath: m_LocalRotation.w
@@ -222,10 +222,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   view: {fileID: 1275374153513072296}
   data: {fileID: 11400000, guid: 6a1213083b84f5148a8d0f36bd99ca11, type: 2}
-  circleRadius: 15
+  circleRadius: 17
   circleSpeed: 0.5
   chargeSpeed: 20
+  chargePrepTime: 1
   attackHitbox: {fileID: 8855493890615738685}
+  centerPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &1275374153513072296
 MonoBehaviour:
   m_ObjectHideFlags: 0

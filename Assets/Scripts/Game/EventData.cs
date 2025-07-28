@@ -27,6 +27,7 @@ namespace Blue.Game
         CaptureGun,
         IntoTheCave,
         FallInTheHole,
+        BattleStart,
     }
 
     [System.Serializable]

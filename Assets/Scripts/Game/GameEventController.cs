@@ -5,13 +5,14 @@ using Blue.UI;
 using Blue.Input;
 using Blue.Game;
 using UnityEngine.Timeline;
-using System.Collections;
 using Blue.UI.Screen;
+using Blue.Entity;
 
 public class GameEventController : MonoBehaviour
 {
     [SerializeField] private List<GameEventData> eventList;
     [SerializeField] private PlayableDirector director;
+    [SerializeField] private MecaSharkController shark;
 
     private GameEventData currentEvent;
     private int dialogueIndex = 0;
@@ -69,6 +70,12 @@ public class GameEventController : MonoBehaviour
     public void EmergencyMessage()
     {
         MessageView.Instance.ShowMessage(new MessageData("周囲に大型の動態反応を検知。危険度：<color=red>高</color>"), 5.0f);
+    }
+
+    public void BattleStart()
+    {
+        shark.StartBattle();
+        MessageView.Instance.ShowMessage(new MessageData("大型の動態反応がこちらを察知。速やかな対応を推奨。"), 5.0f);
     }
 
     public void EndEvent()
