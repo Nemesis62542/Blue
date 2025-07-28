@@ -7726,7 +7726,6 @@ MonoBehaviour:
     m_Signals:
     - {fileID: 11400000, guid: 14e815a16ec3f374cbd899a8a125c2bf, type: 2}
     - {fileID: 11400000, guid: 4daf3c9fdae372349bbc6ec031d3203d, type: 2}
-    - {fileID: 11400000, guid: f2e8dbf54492e4447a348e893e820417, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -7756,8 +7755,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls: []
 --- !u!320 &1013392017
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -7767,7 +7764,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1013392015}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 0}
+  m_PlayableAsset: {fileID: 11400000, guid: d20d9513a9e6bcb4aa743ebce711abb9, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -7776,6 +7773,8 @@ PlayableDirector:
   - key: {fileID: 7128019132469690507, guid: 9b085f58d3eaa3c4b874f35e545aefb6, type: 2}
     value: {fileID: 1013392016}
   - key: {fileID: 6531367735257458689, guid: 232eb6d5b13e1ce4aa5a875fa6ae47ca, type: 2}
+    value: {fileID: 1013392016}
+  - key: {fileID: -947065311220187126, guid: d20d9513a9e6bcb4aa743ebce711abb9, type: 2}
     value: {fileID: 1013392016}
   m_ExposedReferences:
     m_References: []
@@ -8039,7 +8038,7 @@ PrefabInstance:
       objectReference: {fileID: 1013392017}
     - target: {fileID: 3961173095662079296, guid: dce1a1674a8d821408372ff8505cf3c5, type: 3}
       propertyPath: eventList.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3961173095662079296, guid: dce1a1674a8d821408372ff8505cf3c5, type: 3}
       propertyPath: 'eventList.Array.data[0]'
@@ -8049,6 +8048,10 @@ PrefabInstance:
       propertyPath: 'eventList.Array.data[1]'
       value: 
       objectReference: {fileID: 11400000, guid: b0ad7d3b235864043986e2facdd8b938, type: 2}
+    - target: {fileID: 3961173095662079296, guid: dce1a1674a8d821408372ff8505cf3c5, type: 3}
+      propertyPath: 'eventList.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 769517050335b3642abdcef9698c9f35, type: 2}
     - target: {fileID: 4357798803324376752, guid: dce1a1674a8d821408372ff8505cf3c5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 707.06134
@@ -10381,7 +10384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1302071479
 Transform:
   m_ObjectHideFlags: 0
@@ -10853,7 +10856,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424724188950865022, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0071209907
+      value: 0.008587352
       objectReference: {fileID: 0}
     - target: {fileID: 7572315621613004497, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -11245,6 +11248,11 @@ MonoBehaviour:
   worldPosition: {x: 750, y: 32, z: 812.5}
   sizeInWorld: {x: 62.5, y: 32, z: 62.5}
   hasVisualMesh: 1
+--- !u!4 &1418887430 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2928249673335014812, guid: 673f43c250df28d44a71728554f62ec4, type: 3}
+  m_PrefabInstance: {fileID: 6288965808149853242}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1422096338
 Mesh:
   m_ObjectHideFlags: 0
@@ -18451,6 +18459,74 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1969870026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1969870027}
+  - component: {fileID: 1969870029}
+  - component: {fileID: 1969870028}
+  m_Layer: 0
+  m_Name: EventTrigger (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1969870027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969870026}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7204885, z: -0, w: 0.6934669}
+  m_LocalPosition: {x: -0.761831, y: 1.2820791, z: 4.555351}
+  m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1418887430}
+  m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
+--- !u!114 &1969870028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969870026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83ac7ecd13073ed41a98b20b1c5147fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventController: {fileID: 1013392018}
+  triggerEventID: 3
+--- !u!65 &1969870029
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969870026}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 8, y: 8, z: 8}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1970848641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19791,7 +19867,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2121378463
 Transform:
   m_ObjectHideFlags: 0
@@ -20187,6 +20263,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2928249673335014812, guid: 673f43c250df28d44a71728554f62ec4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1969870027}
     - targetCorrespondingSourceObject: {fileID: 3850718221460591214, guid: 673f43c250df28d44a71728554f62ec4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 305574191}

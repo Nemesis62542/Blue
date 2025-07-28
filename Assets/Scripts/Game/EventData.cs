@@ -24,6 +24,7 @@ namespace Blue.Game
         None,
         IntroCutscene,
         GasCylinder,
+        CaptureGun,
     }
 
     [System.Serializable]
