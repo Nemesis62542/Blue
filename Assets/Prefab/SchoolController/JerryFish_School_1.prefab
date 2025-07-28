@@ -51,8 +51,8 @@ MonoBehaviour:
   _groupName: 
   _groupChildToSchool: 1
   _childAmount: 8
-  _spawnSphere: 2
-  _spawnSphereDepth: 2
+  _spawnSphere: 1
+  _spawnSphereDepth: 1
   _spawnSphereHeight: 1
   _childSpeedMultipler: 0.71
   _minSpeed: 0
@@ -92,8 +92,8 @@ MonoBehaviour:
   _randomPositionTimerMin: 30
   _acceleration: 0.001
   _brake: 0.001
-  _positionSphere: 2
-  _positionSphereDepth: 2
+  _positionSphere: 1
+  _positionSphereDepth: 1
   _positionSphereHeight: 1
   _childTriggerPos: 1
   _forceChildWaypoints: 0
