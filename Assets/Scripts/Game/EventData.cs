@@ -25,6 +25,7 @@ namespace Blue.Game
         IntroCutscene,
         GasCylinder,
         CaptureGun,
+        IntoTheCave,
     }
 
     [System.Serializable]
