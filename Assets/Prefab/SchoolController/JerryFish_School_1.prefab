@@ -50,10 +50,10 @@ MonoBehaviour:
   _groupTransform: {fileID: 0}
   _groupName: 
   _groupChildToSchool: 1
-  _childAmount: 8
+  _childAmount: 3
   _spawnSphere: 1
   _spawnSphereDepth: 1
-  _spawnSphereHeight: 1
+  _spawnSphereHeight: 0.5
   _childSpeedMultipler: 0.71
   _minSpeed: 0
   _maxSpeed: 0.1
@@ -92,9 +92,9 @@ MonoBehaviour:
   _randomPositionTimerMin: 30
   _acceleration: 0.001
   _brake: 0.001
-  _positionSphere: 1
-  _positionSphereDepth: 1
-  _positionSphereHeight: 1
+  _positionSphere: 0.8
+  _positionSphereDepth: 0.8
+  _positionSphereHeight: 0.8
   _childTriggerPos: 1
   _forceChildWaypoints: 0
   _autoRandomPosition: 1

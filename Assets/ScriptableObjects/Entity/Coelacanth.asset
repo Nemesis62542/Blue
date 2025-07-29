@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: Coelacanth
   m_EditorClassIdentifier: 
+  id: 4
   name: "\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30B9"
   hp: 10
   attackPower: 0
-  aquariumSize: 0
+  displaySize: 5
+  habitation: 2
   object: {fileID: 4468465858061347204, guid: b3125446a5e372e4e89e999b844fa1ec, type: 3}
   school: {fileID: 0}

@@ -78,6 +78,8 @@ namespace Blue.Player
 
         private void OnDestroy()
         {
+            if (PlayerInputHandler.Instance != inputHandler) return;
+            
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnDepthChanged -= HandleDepthChanged;
@@ -110,7 +112,7 @@ namespace Blue.Player
             //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Terrain");
+                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Tutorial");
             }
 
             oxygenDecreaseTimer += Time.deltaTime;
@@ -164,7 +166,7 @@ namespace Blue.Player
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.CompareTag("Ground"))
+            if (collision.gameObject.layer == 8)
             {
                 isGrounded = true;
             }
@@ -188,6 +190,7 @@ namespace Blue.Player
 
         private void Scan()
         {
+            if (SceneLoader.CurrentSceneName != "Tutorial")
             scannerController.Scan(camTransform.position, camTransform.forward);
         }
 

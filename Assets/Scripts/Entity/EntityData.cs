@@ -6,6 +6,7 @@ namespace Blue.Entity
     [CreateAssetMenu(fileName = "EntityData", menuName = "Blue/ScriptableObject/EntityData")]
     public class EntityData : ScriptableObject
     {
+        [SerializeField] int id;
         [SerializeField] private new string name;
         [SerializeField] private int hp;
         [SerializeField] private int attackPower;
@@ -14,6 +15,7 @@ namespace Blue.Entity
         [SerializeField] private GameObject @object;
         [SerializeField] private SchoolController school;
 
+        public int ID => id;
         public string Name => name;
         public int HP => hp;
         public int AttackPower => attackPower;

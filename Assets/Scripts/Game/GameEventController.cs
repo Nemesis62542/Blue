@@ -95,6 +95,8 @@ public class GameEventController : MonoBehaviour
 
     public void ForwardAquariumScene()
     {
+        ForwardIngame();
+        EndEvent();
         SceneLoader.LoadScene("Aquarium");
     }
 
