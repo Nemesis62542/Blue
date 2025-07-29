@@ -53,7 +53,8 @@ namespace Blue.Entity.Common
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-            currentSpeed = Mathf.Lerp(currentSpeed, moveSpeed, tParam);
+            tParam = Mathf.Min(tParam + Time.deltaTime * 0.5f, 1f); // Adjust acceleration rate as needed
+            currentSpeed = Mathf.Lerp(0f, moveSpeed, tParam);
             tParam = Mathf.Min(tParam + Time.deltaTime, 1f);
 
             transform.position += transform.forward * currentSpeed * Time.deltaTime;
@@ -62,6 +63,7 @@ namespace Blue.Entity.Common
         protected void SetRandomWaypoint()
         {
             tParam = 0f;
+            currentSpeed = 0f; // Reset speed for natural acceleration
             Vector3 offset = new Vector3(
                 Random.Range(-roamArea.x, roamArea.x),
                 Random.Range(-roamArea.y, roamArea.y),
@@ -78,15 +80,14 @@ namespace Blue.Entity.Common
             Vector3 forward = transform.forward;
             Vector3 right = transform.right;
             Vector3 up = transform.up;
-            Vector3 down = -transform.up;
-
-            if (Physics.Raycast(transform.position, down + forward * 0.1f, out hit, avoidDistance, avoidanceMask))
+            if (Physics.Raycast(transform.position, -up + forward * 0.1f, avoidDistance, avoidanceMask))
             {
                 Vector3 euler = rotation.eulerAngles;
                 euler.x += avoidStrength * Time.deltaTime;
                 rotation = Quaternion.Euler(euler);
                 return true;
             }
+
             if (Physics.Raycast(transform.position, up + forward * 0.1f, out hit, avoidDistance, avoidanceMask))
             {
                 Vector3 euler = rotation.eulerAngles;
@@ -105,7 +106,7 @@ namespace Blue.Entity.Common
 
             if (Physics.Raycast(transform.position, forward + right * 0.35f, out hit, avoidDistance, avoidanceMask))
             {
-                rotation = Quaternion.Euler(0, transform.eulerAngles.y - avoidStrength, 0);
+                rotation = Quaternion.Euler(0, transform.eulerAngles.y - avoidStrength * Time.deltaTime, 0);
                 return true;
             }
 

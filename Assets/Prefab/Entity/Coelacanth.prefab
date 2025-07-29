@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 828.12384
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 79.209
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 824.69
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -368,19 +368,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe30b2726165f854ea9bffd7cbb3cf68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0.05
-  rotationSpeed: 0.1
+  moveSpeed: 0
+  rotationSpeed: 0
   waypointDistance: 1
   useAvoidance: 1
   avoidDistance: 2
   avoidStrength: 75
   avoidanceMask:
     serializedVersion: 2
-    m_Bits: 20
+    m_Bits: 4294967295
   pushDistance: 1
   pushForce: 2
   roamCenter: {x: 0, y: 0, z: 0}
-  roamArea: {x: 5, y: 2, z: 5}
+  roamArea: {x: 0, y: 0, z: 0}
 --- !u!95 &7181221044441098564 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: f54d1d167d291b345a8474da7b2528f1, type: 3}
