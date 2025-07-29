@@ -25,7 +25,7 @@ namespace Blue.Object
             if (battery < maxBattery) return;
             battery = 0;
             slider.value = 0;
-            shark.Damage(new Attack.AttackData(null, shark, 100, Attack.AttackType.Magic, shark.transform.position));
+            shark.Damage(new Attack.AttackData(null, shark, 40, Attack.AttackType.Magic, shark.transform.position));
         }
 
         void Update()

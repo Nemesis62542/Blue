@@ -21,11 +21,18 @@ namespace Blue.Game
 
         private void InitializeAquaria(List<EntityData> entities)
         {
-            for (int i = 0; i < aquaria.Count; i++)
-            {
-                EntityData entity = entities[i];
-                AquariumController aquarium = aquaria[i];
+            // for (int i = 0; i < aquaria.Count; i++)
+            // {
+            //     EntityData entity = entities[i];
+            //     AquariumController aquarium = aquaria[i];
 
+            //     aquarium.SetDisplayEntity(aquarium.FirstEnptyDisplayData(entity.Habitation, entity.School != null), entity);
+            // }
+
+            foreach (EntityData entity in entities)
+            {
+                Debug.Log(entity.Name);
+                AquariumController aquarium = aquaria[entity.ID];
                 aquarium.SetDisplayEntity(aquarium.FirstEnptyDisplayData(entity.Habitation, entity.School != null), entity);
             }
         }

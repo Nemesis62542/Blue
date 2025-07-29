@@ -53,7 +53,7 @@ MonoBehaviour:
   _childAmount: 500
   _spawnSphere: 1
   _spawnSphereDepth: 1
-  _spawnSphereHeight: 3
+  _spawnSphereHeight: 2
   _childSpeedMultipler: 0.71
   _minSpeed: 1
   _maxSpeed: 5
@@ -83,8 +83,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   _minScale: 0.5
   _maxScale: 1
-  _minDamping: 0.8
-  _maxDamping: 1
+  _minDamping: 1
+  _maxDamping: 2
   _waypointDistance: 0.67
   _minAnimationSpeed: 0.125
   _maxAnimationSpeed: 0.125
@@ -101,7 +101,7 @@ MonoBehaviour:
   _forcedRandomDelay: 2
   _schoolSpeed: 0
   _roamers: []
-  _posBuffer: {x: 11.7351, y: 6.2, z: -3.069}
+  _posBuffer: {x: -7.46, y: 4.79, z: -10.29}
   _posOffset: {x: 0, y: 0, z: 0}
   _avoidance: 1
   _avoidAngle: 0.35
