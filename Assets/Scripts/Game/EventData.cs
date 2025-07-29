@@ -28,6 +28,7 @@ namespace Blue.Game
         IntoTheCave,
         FallInTheHole,
         BattleStart,
+        GetMegalo,
     }
 
     [System.Serializable]

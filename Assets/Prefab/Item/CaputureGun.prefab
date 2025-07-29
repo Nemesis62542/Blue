@@ -4968,7 +4968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d7f0d03218661cc48b8921f4423efe04, type: 3}
       propertyPath: m_Layer
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4998,7 +4998,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c25c07be753b814c8a77e2a86cc2d1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  captureDistance: 10
   captureBullet: {fileID: 2433776756987366298}
   captureEffect: {fileID: 6149381452723853819, guid: 9b9e747c89074ed4a87a89be8f0f4a48, type: 3}
 --- !u!4 &2251764179061474731 stripped

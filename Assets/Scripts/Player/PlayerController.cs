@@ -110,11 +110,6 @@ namespace Blue.Player
             //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                if (SceneLoader.CurrentSceneName == "Terrain")
-                {
-                    SceneDataBridge.TransferData = model.CreateTransferData();
-                    SceneLoader.LoadScene("Aquarium");
-                }
                 if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Terrain");
             }
 
@@ -317,6 +312,10 @@ namespace Blue.Player
         {
             model.AddCapturedEntity(captured);
             view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
+
+            SceneDataBridge.TransferData = model.CreateTransferData();
+
+            if (captured.Name == "ME-G4L0") GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
         }
 
         public void OnPickUpItem(ItemData item)

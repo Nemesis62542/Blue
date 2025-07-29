@@ -17,9 +17,19 @@ public class GameEventController : MonoBehaviour
     private GameEventData currentEvent;
     private int dialogueIndex = 0;
     private Dictionary<EventID, GameEventData> eventDict;
+    
+    public static GameEventController Instance { get; private set; }
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         eventDict = new Dictionary<EventID, GameEventData>();
         foreach (GameEventData data in eventList)
         {
@@ -75,12 +85,17 @@ public class GameEventController : MonoBehaviour
     public void BattleStart()
     {
         shark.StartBattle();
-        MessageView.Instance.ShowMessage(new MessageData("ME-G4LOの敵対反応を検知。速やかな対応を推奨"), 8.0f);
+        MessageView.Instance.ShowMessage(new MessageData("ME-G4L0の敵対反応を検知。速やかな対応を推奨"), 8.0f);
     }
 
     public void FoundEMP()
     {
-        MessageView.Instance.ShowMessage(new MessageData("付近にEMP装置を検知。ME-G4LOに対し有効"), 8.0f);
+        MessageView.Instance.ShowMessage(new MessageData("付近にEMP装置を検知。ME-G4L0に対し有効"), 8.0f);
+    }
+
+    public void ForwardAquariumScene()
+    {
+        SceneLoader.LoadScene("Aquarium");
     }
 
     public void EndEvent()
