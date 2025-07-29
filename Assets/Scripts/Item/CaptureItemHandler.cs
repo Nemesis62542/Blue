@@ -29,6 +29,7 @@ public class CaptureItemHandler : ItemUseHandler
 
         if (other.TryGetComponent(out ICapturable capturable))
         {
+            if (!capturable.IsCapturable) return;
             player.CaptureEntity(capturable.EntityData);
             Instantiate(captureEffect, other.transform.position, Quaternion.identity);
             Destroy(other);
