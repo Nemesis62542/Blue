@@ -84,6 +84,15 @@ namespace Blue.UI
                     break;
             }
 
+            if (data.isCapturable)
+            {
+                detail += "捕獲可能";
+            }
+            else
+            {
+                detail += "捕獲不可。体力を減らしてください";
+            }
+
             return detail;
         }
     }

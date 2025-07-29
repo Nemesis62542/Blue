@@ -101,7 +101,7 @@ MonoBehaviour:
   _forcedRandomDelay: 2
   _schoolSpeed: 0
   _roamers: []
-  _posBuffer: {x: 2.5900002, y: 4.7599998, z: -9.71}
+  _posBuffer: {x: 11.7351, y: 6.2, z: -3.069}
   _posOffset: {x: 0, y: 0, z: 0}
   _avoidance: 1
   _avoidAngle: 0.35

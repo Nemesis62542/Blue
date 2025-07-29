@@ -10,10 +10,12 @@ namespace Blue.Game
         [SerializeField] private EventID id;
         [SerializeField] private List<DialogueLine> dialogueLines;
         [SerializeField] private TimelineAsset timelineAsset;
+        [SerializeField] private bool isMovie;
 
         public EventID ID => id;
         public List<DialogueLine> DialogueLines => dialogueLines;
         public TimelineAsset TimelineAsset => timelineAsset;
+        public bool IsMovie => isMovie;
     }
 
     [System.Serializable]
@@ -21,8 +23,12 @@ namespace Blue.Game
     {
         None,
         IntroCutscene,
-        DeepSeaWarning,
-        CoralDiscovery,
+        GasCylinder,
+        CaptureGun,
+        IntoTheCave,
+        FallInTheHole,
+        BattleStart,
+        GetMegalo,
     }
 
     [System.Serializable]

@@ -28,6 +28,14 @@ namespace Blue.UI
             Destroy(slot.gameObject, messageDuration);
         }
 
+        public void ShowMessage(MessageData data, float duration)
+        {
+            MessageSlot slot = Instantiate(messagePrefab, transform);
+            slot.Initialize(data);
+
+            Destroy(slot.gameObject, duration);
+        }
+
         public void ShowMessage(string message)
         {
             ShowMessage(new MessageData(message));

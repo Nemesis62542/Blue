@@ -18,7 +18,6 @@ namespace Blue.Player
     {
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
-        [SerializeField] private UIController uiController;
         [SerializeField] private ScannerController scannerController;
         [SerializeField] private PlayerStatusView playerStatusView;
         [Header("プレイヤーの情報")]
@@ -30,11 +29,15 @@ namespace Blue.Player
         [SerializeField] private float interactDistance = 3.0f;
 
         private PlayerInputHandler inputHandler;
+        private UIController uiController;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
         private float waterLevel = 0;
         private float mouseLookSensitivity = 10f;
         private float controllerLookSensitivity = 10f;
+        private float oxygenDecreaseInterval = 3.0f;
+        private float oxygenDecreaseTimer = 0.0f;
+        private int oxygenDecreaseAmount = 1;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -51,6 +54,7 @@ namespace Blue.Player
             base.Awake();
             PlayerInputHandler.Initialize();
             inputHandler = PlayerInputHandler.Instance;
+            uiController = UIController.Instance;
             model = new PlayerModel(data);
 
             model.Status.OnHPChanged += HandleHPChanged;
@@ -106,12 +110,21 @@ namespace Blue.Player
             //デバッグ用
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
-                if (SceneLoader.CurrentSceneName == "Terrain")
-                {
-                    SceneDataBridge.TransferData = model.CreateTransferData();
-                    SceneLoader.LoadScene("Aquarium");
-                }
                 if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Terrain");
+            }
+
+            oxygenDecreaseTimer += Time.deltaTime;
+            if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
+            {
+                oxygenDecreaseTimer = 0f;
+                if (model.Oxygen == 0)
+                {
+                    model.Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
+                }
+                else
+                {
+                    model.ConsumeOxygen(oxygenDecreaseAmount);
+                }
             }
         }
 
@@ -195,14 +208,19 @@ namespace Blue.Player
             playerStatusView.SetDepth(depth);
         }
 
+        public void SetOxygenMax()
+        {
+            model.RefillOxygen(model.MaxOxygen);
+        }
+
         private void Attack()
         {
             InventoryItem item = QuickSlot.CurrentInventoryItem;
             int attack_power = 1;
 
-            if (item != null && item.ItemData.HasAttribute(Item.ItemAttribute.AttackPower))
+            if (item != null && item.ItemData.HasAttribute(ItemAttribute.AttackPower))
             {
-                attack_power = item.ItemData.GetAttributeValue(Item.ItemAttribute.AttackPower);
+                attack_power = item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
             }
 
             if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
@@ -294,6 +312,10 @@ namespace Blue.Player
         {
             model.AddCapturedEntity(captured);
             view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
+
+            SceneDataBridge.TransferData = model.CreateTransferData();
+
+            if (captured.Name == "ME-G4L0") GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
         }
 
         public void OnPickUpItem(ItemData item)

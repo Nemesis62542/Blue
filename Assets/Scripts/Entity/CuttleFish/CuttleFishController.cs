@@ -19,7 +19,7 @@ namespace Blue.Entity
         private bool isSpitting = false;
 
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
-        public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety);
+        public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety, true);
         public EntityData EntityData => model.Data;
 
         protected override void Awake()

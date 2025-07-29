@@ -15,6 +15,7 @@ MonoBehaviour:
   name: ME-G4L0
   hp: 100
   attackPower: 10
-  aquariumSize: 0
+  displaySize: 0
+  habitation: 1
   object: {fileID: 8882036559786868035, guid: ba0c85f8cdacd65439439d400758335c, type: 3}
   school: {fileID: 0}

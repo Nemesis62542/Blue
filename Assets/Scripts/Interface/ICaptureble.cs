@@ -1,5 +1,4 @@
 using Blue.Entity;
-using Blue.Item;
 
 namespace Blue.Interface
 {
@@ -7,5 +6,6 @@ namespace Blue.Interface
     {
         Status Status { get; }
         EntityData EntityData { get; }
+        bool IsCapturable { get; }
     }
 }
