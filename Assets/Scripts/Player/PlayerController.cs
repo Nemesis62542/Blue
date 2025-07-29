@@ -22,6 +22,7 @@ namespace Blue.Player
         [SerializeField] private PlayerStatusView playerStatusView;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
+        [SerializeField] private UIController uiController;
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpStrength = 5f;
@@ -29,7 +30,6 @@ namespace Blue.Player
         [SerializeField] private float interactDistance = 3.0f;
 
         private PlayerInputHandler inputHandler;
-        private UIController uiController;
         private bool isGrounded;
         private float camVerticalRotation = 0f;
         private float waterLevel = 0;
@@ -41,8 +41,9 @@ namespace Blue.Player
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
-
         public Status Status => model.Status;
+
+        public static PlayerController Instance;
 
         public void SetWaterLevel(float level)
         {
@@ -51,10 +52,14 @@ namespace Blue.Player
 
         protected override void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                return;
+            }
+            Instance = this;
+            
             base.Awake();
-            PlayerInputHandler.Initialize();
-            inputHandler = PlayerInputHandler.Instance;
-            uiController = UIController.Instance;
+            inputHandler = new PlayerInputHandler();
             model = new PlayerModel(data);
 
             model.Status.OnHPChanged += HandleHPChanged;
@@ -78,8 +83,6 @@ namespace Blue.Player
 
         private void OnDestroy()
         {
-            if (PlayerInputHandler.Instance != inputHandler) return;
-            
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnDepthChanged -= HandleDepthChanged;
@@ -128,6 +131,18 @@ namespace Blue.Player
                     model.ConsumeOxygen(oxygenDecreaseAmount);
                 }
             }
+        }
+
+        public void ForwardIngame()
+        {
+            uiController.ShowScreen(ScreenState.Ingame);
+            inputHandler.SetInputMap(InputMapType.Player);
+        }
+
+        public void ForwardMovie()
+        {
+            uiController.ShowScreen(ScreenState.Movie);
+            inputHandler.SetInputMap(InputMapType.Movie);
         }
 
         private void HandleMove()

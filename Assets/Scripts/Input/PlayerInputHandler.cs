@@ -37,24 +37,8 @@ namespace Blue.Input
         public InputAction GetRegisterAction() => inputActions.Inventory.Register;
         public InputAction GetRemoveAction() => inputActions.Inventory.Remove;
 
-        public static PlayerInputHandler Instance { get; private set; }
-
-        public static void Initialize()
+        public PlayerInputHandler()
         {
-            if (Instance == null)
-            {
-                Instance = new PlayerInputHandler();
-            }
-        }
-
-        private PlayerInputHandler()
-        {
-            if (Instance != null && Instance != this)
-            {
-                return;
-            }
-            Instance = this;
-
             inputActions = new PlayerInputActions();
 
             inputActions.Player.Move.performed += OnMove;

@@ -7,6 +7,7 @@ using Blue.Game;
 using UnityEngine.Timeline;
 using Blue.UI.Screen;
 using Blue.Entity;
+using Blue.Player;
 
 public class GameEventController : MonoBehaviour
 {
@@ -67,14 +68,12 @@ public class GameEventController : MonoBehaviour
 
     public void ForwardIngame()
     {
-        UIController.Instance.ShowScreen(ScreenState.Ingame);
-        PlayerInputHandler.Instance.SetInputMap(InputMapType.Player);
+        PlayerController.Instance.ForwardIngame();
     }
 
     public void ForwardMovie()
     {
-        UIController.Instance.ShowScreen(ScreenState.Movie);
-        PlayerInputHandler.Instance.SetInputMap(InputMapType.Movie);
+        PlayerController.Instance.ForwardMovie();
     }
 
     public void EmergencyMessage()
