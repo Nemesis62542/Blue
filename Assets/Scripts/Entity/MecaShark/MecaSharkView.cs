@@ -17,5 +17,10 @@ namespace Blue.Entity
         {
             animator.SetBool("LockOn", is_lock_on);
         }
+
+        public void OnDead()
+        {
+            animator.speed = 0;
+        }
     }
 }

@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class MecaSharkController : BaseEntityController<MecaSharkModel, MecaSharkView>, IScannable
+    public class MecaSharkController : BaseEntityController<MecaSharkModel, MecaSharkView>, IScannable, IAttackable, ICapturable
     {
         private enum BossState
         {
             Circling,
             PreparingToCharge,
             Charging,
+            Dead,
         }
 
         [SerializeField] private float circleRadius = 10.0f;
@@ -28,9 +29,10 @@ namespace Blue.Entity
         private Vector3 chargeTarget;
 
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
-        public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Danger);
+        public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Danger, IsCapturable);
         public Status Status => model.Status;
         public EntityData EntityData => model.Data;
+        public bool IsCapturable => model.Status.IsDead;
 
         protected override void Awake()
         {
@@ -149,6 +151,20 @@ namespace Blue.Entity
         public void OnScanStart()
         {
             view.EnableHighlight();
+        }
+
+        public void Damage(AttackData attack_data)
+        {
+            model.Damage(attack_data);
+            Debug.Log($"{attack_data.Attacker}から{attack_data.Power}ダメージを受けた");
+
+            if (model.IsDead) OnDead();
+        }
+
+        private void OnDead()
+        {
+            state = BossState.Dead;
+            view.OnDead();
         }
     }
 }

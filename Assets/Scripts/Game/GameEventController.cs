@@ -75,7 +75,12 @@ public class GameEventController : MonoBehaviour
     public void BattleStart()
     {
         shark.StartBattle();
-        MessageView.Instance.ShowMessage(new MessageData("大型の動態反応がこちらを察知。速やかな対応を推奨。"), 5.0f);
+        MessageView.Instance.ShowMessage(new MessageData("ME-G4LOの敵対反応を検知。速やかな対応を推奨"), 8.0f);
+    }
+
+    public void FoundEMP()
+    {
+        MessageView.Instance.ShowMessage(new MessageData("付近にEMP装置を検知。ME-G4LOに対し有効"), 8.0f);
     }
 
     public void EndEvent()

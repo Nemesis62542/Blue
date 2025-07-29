@@ -16,5 +16,5 @@ MonoBehaviour:
   dialogueLines:
   - text: "( \u30B5\u30E1\u306E...\u30ED\u30DC\u30C3\u30C8...!?\n   \u4EF2\u826F\u304F\u306F\u3067\u304D\u306A\u3055\u305D\u3046\u3060...
       )"
-  timelineAsset: {fileID: 0}
+  timelineAsset: {fileID: 11400000, guid: dd3c33325b0953b46a658cd3c1d88721, type: 2}
   isMovie: 0

@@ -1,5 +1,3 @@
-using Blue.Inventory;
-using Blue.Item;
 using UnityEngine;
 
 namespace Blue.Object
