@@ -205,7 +205,7 @@ namespace Blue.Player
 
         private void Scan()
         {
-            if (SceneLoader.CurrentSceneName != "Tutorial")
+            if (SceneLoader.CurrentSceneName != "Tutorial") return;
             scannerController.Scan(camTransform.position, camTransform.forward);
         }
 
