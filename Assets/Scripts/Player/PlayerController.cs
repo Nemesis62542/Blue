@@ -67,6 +67,7 @@ namespace Blue.Player
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
+            inputHandler.OnJumpEvent += HandleJump;
             inputHandler.OnInteractEvent += InteractObject;
             inputHandler.OnScanEvent += Scan;
             inputHandler.OnAttackEvent += Attack;
@@ -87,6 +88,7 @@ namespace Blue.Player
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnDepthChanged -= HandleDepthChanged;
 
+            inputHandler.OnJumpEvent -= HandleJump;
             inputHandler.OnInteractEvent -= InteractObject;
             inputHandler.OnScanEvent -= Scan;
             inputHandler.OnAttackEvent -= Attack;
@@ -105,7 +107,6 @@ namespace Blue.Player
             HandleMove();
             HandleViewRotation();
             model.SetDepth(waterLevel - transform.position.y);
-            HandleJump();
             DecreaseOxygen();
 
 #if UNITY_EDITOR
@@ -118,11 +119,7 @@ namespace Blue.Player
 
         private void HandleJump()
         {
-            if (inputHandler.JumpPressed && isGrounded)
-            {
-                Jump();
-                inputHandler.ResetJumpFlag();
-            }
+            if (isGrounded) Jump();
         }
 
         private void DecreaseOxygen()
