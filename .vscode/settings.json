@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Blue.sln"
+    "dotnet.defaultSolution": "Blue.sln",
+    "claudeCodeChat.permissions.yoloMode": true
 }
