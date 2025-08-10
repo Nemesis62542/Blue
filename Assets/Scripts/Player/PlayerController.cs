@@ -105,19 +105,28 @@ namespace Blue.Player
             HandleMove();
             HandleViewRotation();
             model.SetDepth(waterLevel - transform.position.y);
+            HandleJump();
+            DecreaseOxygen();
 
+#if UNITY_EDITOR
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            {
+                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Tutorial");
+            }
+#endif
+        }
+
+        private void HandleJump()
+        {
             if (inputHandler.JumpPressed && isGrounded)
             {
                 Jump();
                 inputHandler.ResetJumpFlag();
             }
+        }
 
-            //デバッグ用
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
-            {
-                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Tutorial");
-            }
-
+        private void DecreaseOxygen()
+        {
             oxygenDecreaseTimer += Time.deltaTime;
             if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
             {
