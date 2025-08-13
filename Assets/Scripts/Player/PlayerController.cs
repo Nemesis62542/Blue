@@ -302,7 +302,7 @@ namespace Blue.Player
 
         private void OpenInventory()
         {
-            inventoryController.UpdateInventory();
+            inventoryController.RefreshInventoryUI();
             uiController.ShowScreen(ScreenState.Inventory);
             inputHandler.SetInputMap(InputMapType.Inventory);
         }
