@@ -23,8 +23,8 @@ namespace Blue.Input
 
         public Vector2 MoveInput => moveInput;
         public Vector2 LookInput => lookInput;
-        public bool JumpPressed => jumpPressed;
 
+        public event Action OnJumpEvent;
         public event Action OnAttackEvent;
         public event Action OnInventoryToggleEvent;
         public event Action OnPauseToggleEvent;
@@ -92,7 +92,7 @@ namespace Blue.Input
 
         private void OnJump(InputAction.CallbackContext context)
         {
-            jumpPressed = true;
+            OnJumpEvent?.Invoke();
         }
 
         private void OnLook(InputAction.CallbackContext context)
@@ -143,11 +143,6 @@ namespace Blue.Input
         private void OnQuickSlot4(InputAction.CallbackContext context)
         {
             OnQuickSlotChangeEvent?.Invoke(3);
-        }
-
-        public void ResetJumpFlag()
-        {
-            jumpPressed = false;
         }
 
         public void DisableInput()

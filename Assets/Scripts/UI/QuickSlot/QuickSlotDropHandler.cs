@@ -26,6 +26,7 @@ namespace Blue.UI.QuickSlot
                 event_data.pointerDrag.TryGetComponent(out ItemSlotDragHandler dragged_item_slot))
             {
                 quickSlotHandler?.Register(slotIndex, dragged_item_slot.CurrentItem);
+                dragged_item_slot.OnEndDrag(event_data);
             }
 
             slotImage.color = defaultColor;

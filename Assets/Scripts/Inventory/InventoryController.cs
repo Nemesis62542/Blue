@@ -15,29 +15,22 @@ namespace Blue.Inventory
             this.model = model;
             quickSlotHandler = quick_slot_handler;
 
-            quickSlotHandler.OnQuickSlotUpdated += RefreshQuickSlotUI;
+            quickSlotHandler.OnQuickSlotUpdated += RefreshInventoryUI;
 
-            view.Initialize(model, quick_slot_handler, input_handler);
-        }
-
-        public void UpdateInventory()
-        {
-            view.UpdateInventoryUI();
+            view.Initialize(this.model, quick_slot_handler, input_handler);
         }
 
         private void OnDisable()
         {
             if (quickSlotHandler != null)
             {
-                quickSlotHandler.OnQuickSlotUpdated -= RefreshQuickSlotUI;
+                quickSlotHandler.OnQuickSlotUpdated -= RefreshInventoryUI;
             }
-
-            view.RemoveEventAllToModel();
         }
 
-        private void RefreshQuickSlotUI()
+        public void RefreshInventoryUI()
         {
-            view.RefreshQuickSlotUI();
+            view.UpdateInventoryUI();
         }
     }
 }

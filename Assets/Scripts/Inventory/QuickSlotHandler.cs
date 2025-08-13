@@ -29,9 +29,8 @@ namespace Blue.Inventory
             if (IsValidSlot(index))
             {
                 quickSlots[index] = item;
-
+                inventory.RemoveItem(item, 1);
                 if (index == currentSlotIndex) OnQuickSlotChanged?.Invoke(index, item);
-
                 OnQuickSlotUpdated?.Invoke();
             }
         }
@@ -40,6 +39,7 @@ namespace Blue.Inventory
         {
             if (IsValidSlot(index))
             {
+                inventory.AddItem(quickSlots[index], 1);
                 quickSlots[index] = null;
                 OnQuickSlotChanged?.Invoke(index, null);
                 OnQuickSlotUpdated?.Invoke();

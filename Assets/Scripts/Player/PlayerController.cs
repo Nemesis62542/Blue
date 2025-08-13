@@ -67,6 +67,7 @@ namespace Blue.Player
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
+            inputHandler.OnJumpEvent += HandleJump;
             inputHandler.OnInteractEvent += InteractObject;
             inputHandler.OnScanEvent += Scan;
             inputHandler.OnAttackEvent += Attack;
@@ -87,6 +88,7 @@ namespace Blue.Player
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnDepthChanged -= HandleDepthChanged;
 
+            inputHandler.OnJumpEvent -= HandleJump;
             inputHandler.OnInteractEvent -= InteractObject;
             inputHandler.OnScanEvent -= Scan;
             inputHandler.OnAttackEvent -= Attack;
@@ -105,19 +107,23 @@ namespace Blue.Player
             HandleMove();
             HandleViewRotation();
             model.SetDepth(waterLevel - transform.position.y);
+            DecreaseOxygen();
 
-            if (inputHandler.JumpPressed && isGrounded)
-            {
-                Jump();
-                inputHandler.ResetJumpFlag();
-            }
-
-            //デバッグ用
+#if UNITY_EDITOR
             if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
             {
                 if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Tutorial");
             }
+#endif
+        }
 
+        private void HandleJump()
+        {
+            if (isGrounded) Jump();
+        }
+
+        private void DecreaseOxygen()
+        {
             oxygenDecreaseTimer += Time.deltaTime;
             if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
             {
@@ -296,7 +302,7 @@ namespace Blue.Player
 
         private void OpenInventory()
         {
-            inventoryController.UpdateInventory();
+            inventoryController.RefreshInventoryUI();
             uiController.ShowScreen(ScreenState.Inventory);
             inputHandler.SetInputMap(InputMapType.Inventory);
         }

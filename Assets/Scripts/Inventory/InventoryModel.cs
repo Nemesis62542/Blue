@@ -25,6 +25,7 @@ namespace Blue.Inventory
                 new_item.ModifyQuantity(quantity);
                 inventoryItems.Add(new_item);
             }
+            Debug.Log($"アイテム取得: {item_data.Name}");
 
             OnPickUpItem?.Invoke(item_data);
         }

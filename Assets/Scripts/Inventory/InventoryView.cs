@@ -18,7 +18,7 @@ namespace Blue.Inventory
         [SerializeField] private InventoryItemSelectHandler itemSelectHandler;
         [SerializeField] private QuickSlotSelectHandler quickSlotSelectHandler;
 
-        private Dictionary<ItemData, ItemSlot> itemSlots = new Dictionary<ItemData, ItemSlot>();
+        private List<ItemSlot> itemSlots = new List<ItemSlot>();
         private List<ItemSlot> quickSlotSlots = new List<ItemSlot>();
         private QuickSlotHandler quickSlotHandler;
         private InventoryModel model;
@@ -30,20 +30,9 @@ namespace Blue.Inventory
             this.model = model; 
             quickSlotHandler = quick_slot_handler;
 
-            quickSlotHandler.OnQuickSlotChanged += UpdateQuickSlotUI;
-            quickSlotHandler.OnQuickSlotUpdated += RefreshQuickSlotUI;
-
             quickSlotSelectHandler.SetQuickSlotHandler(quickSlotHandler);
             itemSelectHandler.SetupInput(input_handler);
             quickSlotSelectHandler.SetupInput(input_handler);
-        }
-
-        public void RemoveEventAllToModel()
-        {
-            if (quickSlotHandler == null) return;
-
-            quickSlotHandler.OnQuickSlotChanged -= UpdateQuickSlotUI;
-            quickSlotHandler.OnQuickSlotUpdated -= RefreshQuickSlotUI;
         }
 
         public void UpdateInventoryUI()
@@ -68,33 +57,29 @@ namespace Blue.Inventory
             {
                 drag_handler.Initialize(item_data);
             }
-            itemSlots[item_data] = new_item_slot;
         }
 
         private ItemSlot GetOrCreateItemSlot()
         {
+            ItemSlot slot;
             if (itemSlotPool.Count > 0)
             {
-                ItemSlot slot = itemSlotPool.Dequeue();
+                slot = itemSlotPool.Dequeue();
                 slot.gameObject.SetActive(true);
                 return slot;
             }
-            return Instantiate(itemSlotPrefab, itemSlotParent);
+            slot = Instantiate(itemSlotPrefab, itemSlotParent);
+            itemSlots.Add(slot);
+            return slot;
         }
 
         private void ReleaseAllItemSlots()
         {
-            foreach (Transform child in itemSlotParent)
+            foreach (ItemSlot child in itemSlots)
             {
                 child.gameObject.SetActive(false);
-                itemSlotPool.Enqueue(child.GetComponent<ItemSlot>());
+                itemSlotPool.Enqueue(child);
             }
-            itemSlots.Clear();
-        }
-
-        public void UpdateQuickSlotUI(int slot_index, ItemData item)
-        {
-            RefreshQuickSlotUI();
         }
 
         private ItemSlot GetOrCreateQuickSlot()
@@ -129,7 +114,14 @@ namespace Blue.Inventory
             {
                 ItemData item_data = quickSlotHandler.GetItem(i);
                 ItemSlot quick_slot = GetOrCreateQuickSlot();
-                quick_slot.SetItem(item_data, item_data != null ? 1 : 0);
+                
+                int quantity = 0;
+                if (item_data != null)
+                {
+                    InventoryItem inventoryItem = quickSlotHandler.GetInventoryItem(i);
+                    quantity = inventoryItem?.Quantity ?? 0;
+                }
+                quick_slot.SetItem(item_data, quantity);
 
                 if (quick_slot.HoverArea.TryGetComponent(out QuickSlotDropHandler drop_handler))
                 {
