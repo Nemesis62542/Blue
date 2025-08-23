@@ -5,6 +5,7 @@ namespace Blue.Object
     public class BoxObject : MonoBehaviour, IInteractable
     {
         [SerializeField] private Animator animator;
+        [SerializeField] private ParticleSystem bubble;
 
         private string objectName;
 
@@ -14,6 +15,7 @@ namespace Blue.Object
         {
             gameObject.GetComponent<Collider>().enabled = false;
             animator.SetBool("Open", true);
+            bubble.Play();
         }
     }
 }
