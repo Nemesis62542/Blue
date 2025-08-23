@@ -20,6 +20,7 @@ namespace Blue.Player
         [SerializeField] private Transform camTransform;
         [SerializeField] private ScannerController scannerController;
         [SerializeField] private PlayerStatusView playerStatusView;
+        [SerializeField] private ParticleSystem cloudOfDust;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
         [SerializeField] private UIController uiController;
@@ -189,6 +190,12 @@ namespace Blue.Player
         {
             if (collision.gameObject.layer == 8)
             {
+                if (!isGrounded)
+                {
+                    Vector3 pos = transform.position;
+                    pos.y -= 0.8f;
+                    Instantiate(cloudOfDust, pos, Quaternion.identity);
+                }
                 isGrounded = true;
             }
         }
