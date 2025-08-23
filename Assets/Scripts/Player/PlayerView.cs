@@ -10,6 +10,7 @@ namespace Blue.Player
     {
         [SerializeField] private Transform heldItemAnchor;
         [SerializeField] private TMP_Text inspectText;
+        [SerializeField] private ParticleSystem bubble;
 
         private ItemUseHandler currentHeldItem;
 
@@ -40,6 +41,11 @@ namespace Blue.Player
         public void SetInspectText(string text)
         {
             inspectText.text = text;
+        }
+
+        public void PlayBubble()
+        {
+            bubble.Play();
         }
     }
 }

@@ -109,12 +109,12 @@ namespace Blue.Player
             HandleMove();
             HandleViewRotation();
             model.SetDepth(waterLevel - transform.position.y);
-            DecreaseOxygen();
 
 #if UNITY_EDITOR
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            if (SceneLoader.CurrentSceneName == "Aquarium")
             {
-                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Tutorial");
+                DecreaseOxygen();
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Tutorial");
             }
 #endif
         }
@@ -137,6 +137,7 @@ namespace Blue.Player
                 else
                 {
                     model.ConsumeOxygen(oxygenDecreaseAmount);
+                    view.PlayBubble();
                 }
             }
         }
