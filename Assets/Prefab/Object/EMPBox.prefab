@@ -501,4 +501,4 @@ MonoBehaviour:
   objectName: "EMP\u767A\u751F\u88C5\u7F6E"
   shark: {fileID: 0}
   slider: {fileID: 3412127713616595860}
-  maxBattery: 30
+  maxBattery: 20
