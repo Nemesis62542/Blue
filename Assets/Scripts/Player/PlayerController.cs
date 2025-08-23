@@ -105,6 +105,7 @@ namespace Blue.Player
 
         private void Update()
         {
+            LookingObject();
             HandleMove();
             HandleViewRotation();
             model.SetDepth(waterLevel - transform.position.y);
@@ -203,6 +204,23 @@ namespace Blue.Player
         private bool IsUsingGamepad()
         {
             return Gamepad.current != null && Gamepad.current.enabled;
+        }
+
+        private void LookingObject()
+        {
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IInteractable interactable))
+            {
+                if (hit.collider.TryGetComponent(out ItemObject item))
+                {
+                    view.SetInspectText($"右クリック：{item.ItemData.Name}を入手");
+                    return;
+                }
+                else
+                {
+                    view.SetInspectText($"右クリック：{interactable.ObjectName}を調べる");
+                }
+            }
+            else view.SetInspectText("");
         }
 
         private void InteractObject()
