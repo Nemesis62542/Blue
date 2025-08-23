@@ -587,6 +587,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""b7c8e282-7563-4910-a201-7951e3d2d282"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Close"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""891be84a-3ef1-41e9-88cc-447f9e924def"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
