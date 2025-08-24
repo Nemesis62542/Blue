@@ -20,6 +20,7 @@ namespace Blue.Player
         [SerializeField] private Transform camTransform;
         [SerializeField] private ScannerController scannerController;
         [SerializeField] private PlayerStatusView playerStatusView;
+        [SerializeField] private ParticleSystem cloudOfDust;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
         [SerializeField] private UIController uiController;
@@ -104,15 +105,16 @@ namespace Blue.Player
 
         private void Update()
         {
+            LookingObject();
             HandleMove();
             HandleViewRotation();
             model.SetDepth(waterLevel - transform.position.y);
-            DecreaseOxygen();
 
 #if UNITY_EDITOR
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Tab))
+            if (SceneLoader.CurrentSceneName == "Aquarium")
             {
-                if (SceneLoader.CurrentSceneName == "Aquarium") SceneLoader.LoadScene("Tutorial");
+                DecreaseOxygen();
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Tutorial");
             }
 #endif
         }
@@ -135,6 +137,7 @@ namespace Blue.Player
                 else
                 {
                     model.ConsumeOxygen(oxygenDecreaseAmount);
+                    view.PlayBubble();
                 }
             }
         }
@@ -189,6 +192,12 @@ namespace Blue.Player
         {
             if (collision.gameObject.layer == 8)
             {
+                if (!isGrounded)
+                {
+                    Vector3 pos = transform.position;
+                    pos.y -= 0.8f;
+                    Instantiate(cloudOfDust, pos, Quaternion.identity);
+                }
                 isGrounded = true;
             }
         }
@@ -196,6 +205,23 @@ namespace Blue.Player
         private bool IsUsingGamepad()
         {
             return Gamepad.current != null && Gamepad.current.enabled;
+        }
+
+        private void LookingObject()
+        {
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IInteractable interactable))
+            {
+                if (hit.collider.TryGetComponent(out ItemObject item))
+                {
+                    view.SetInspectText($"右クリック：{item.ItemData.Name}を入手");
+                    return;
+                }
+                else
+                {
+                    view.SetInspectText($"右クリック：{interactable.ObjectName}を調べる");
+                }
+            }
+            else view.SetInspectText("");
         }
 
         private void InteractObject()

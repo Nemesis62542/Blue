@@ -7,9 +7,10 @@ namespace Blue.Visual
         [SerializeField] private Renderer targetRenderer;
         [SerializeField] private Material highlightMaterial;
 
-        private Material[] baseMaterials;
         private Material[] highlightedMaterials;
         private bool isHighlighted = false;
+
+        public Material[] baseMaterials;
 
         private void Awake()
         {

@@ -2,12 +2,15 @@ using UnityEngine;
 using Blue.Item;
 using Blue.Entity;
 using Blue.UI;
+using TMPro;
 
 namespace Blue.Player
 {
     public class PlayerView : BaseEntityView
     {
         [SerializeField] private Transform heldItemAnchor;
+        [SerializeField] private TMP_Text inspectText;
+        [SerializeField] private ParticleSystem bubble;
 
         private ItemUseHandler currentHeldItem;
 
@@ -33,6 +36,16 @@ namespace Blue.Player
         public void AddMessage(MessageData data)
         {
             MessageView.Instance.ShowMessage(data);
+        }
+
+        public void SetInspectText(string text)
+        {
+            inspectText.text = text;
+        }
+
+        public void PlayBubble()
+        {
+            bubble.Play();
         }
     }
 }

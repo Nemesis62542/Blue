@@ -26,7 +26,6 @@ namespace Blue.Player
             IEnumerable<IScannable> hits = Physics.OverlapSphere(origin, scanRadius)
                 .Select(hit => hit.GetComponent<IScannable>())
                 .Where(scannable => scannable != null && 
-                                    IsWithinFieldOfView(origin, forward, ((MonoBehaviour)scannable).transform.position) &&
                                     !scannedObjects.Contains(scannable));
 
             foreach (IScannable scannable in hits)

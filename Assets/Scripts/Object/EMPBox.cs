@@ -1,4 +1,5 @@
 using Blue.Entity;
+using Blue.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ namespace Blue.Object
             battery = 0;
             slider.value = 0;
             shark.Damage(new Attack.AttackData(null, shark, 40, Attack.AttackType.Magic, shark.transform.position));
+            MessageView.Instance.ShowMessage(new MessageData("ME-G4L0へダメージを確認"), 5.0f);
         }
 
         void Update()

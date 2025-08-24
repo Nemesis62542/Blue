@@ -8,6 +8,7 @@ namespace Blue.Entity
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         [SerializeField] private Animator animator;
         [SerializeField] private HighlightController highlightController;
+        [SerializeField] private Material deadMaterial;
 
         public SkinnedMeshRenderer Renderer => skinnedMeshRenderer;
         public void EnableHighlight() => highlightController.EnableHighlight();
@@ -20,6 +21,14 @@ namespace Blue.Entity
 
         public void OnDead()
         {
+            Material[] materials = skinnedMeshRenderer.materials;
+            if (materials.Length > 0)
+            {
+                materials[0] = deadMaterial;
+                skinnedMeshRenderer.materials = materials;
+                highlightController.baseMaterials = materials;
+            }
+            
             animator.speed = 0;
         }
     }

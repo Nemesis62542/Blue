@@ -89,7 +89,7 @@ public class GameEventController : MonoBehaviour
 
     public void FoundEMP()
     {
-        MessageView.Instance.ShowMessage(new MessageData("付近にEMP装置を検知。ME-G4L0に対し有効"), 8.0f);
+        MessageView.Instance.ShowMessage(new MessageData("付近にEMP装置を検知。ME-G4L0に対し有効"), 15.0f);
     }
 
     public void ForwardAquariumScene()
