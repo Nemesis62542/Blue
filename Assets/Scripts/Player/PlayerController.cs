@@ -371,7 +371,7 @@ namespace Blue.Player
 
         public void OnPickUpItem(ItemData item)
         {
-            view.AddMessage(new MessageData($"{item.Name}を入手しました"));
+            view.AddMessage(new MessageData($"{item.Name}を入手：Eキーで確認"));
         }
     }
 }
