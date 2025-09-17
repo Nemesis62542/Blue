@@ -111,13 +111,10 @@ namespace Blue.Player
             if (SceneLoader.CurrentSceneName == "Tutorial") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
 
-#if UNITY_EDITOR
             if (SceneLoader.CurrentSceneName == "Aquarium")
             {
-                
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Tutorial");
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Title");
             }
-#endif
         }
 
         private void HandleJump()
