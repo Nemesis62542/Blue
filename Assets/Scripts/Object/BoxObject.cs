@@ -7,7 +7,7 @@ namespace Blue.Object
         [SerializeField] private Animator animator;
         [SerializeField] private ParticleSystem bubble;
 
-        private string objectName;
+        [SerializeField] private string objectName;
 
         public string ObjectName => objectName;
 

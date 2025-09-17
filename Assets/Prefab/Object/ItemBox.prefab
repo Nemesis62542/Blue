@@ -250,6 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 9098141256226463718}
   bubble: {fileID: 1490964881936195159}
+  objectName: "\u6295\u4E0B\u3055\u308C\u305F\u7269\u8CC7"
 --- !u!65 &6940224917225666305
 BoxCollider:
   m_ObjectHideFlags: 0
