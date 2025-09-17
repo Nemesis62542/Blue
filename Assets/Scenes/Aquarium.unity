@@ -13351,7 +13351,7 @@ Transform:
   m_GameObject: {fileID: 1780295054}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 41.489998, y: 4.54, z: 21.259998}
+  m_LocalPosition: {x: 41.489998, y: 4.54, z: 26.19}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14638,7 +14638,7 @@ MonoBehaviour:
   - spawnPoint: {fileID: 1780295055}
     isSchool: 0
     maxDisplayableSize: 40
-    entity: {fileID: 11400000, guid: 6a1213083b84f5148a8d0f36bd99ca11, type: 2}
+    entity: {fileID: 0}
     habitation: 1
 --- !u!1 &1964972773
 GameObject:
