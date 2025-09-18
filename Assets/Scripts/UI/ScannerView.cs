@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Blue.Interface;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Blue.UI
@@ -51,11 +50,11 @@ namespace Blue.UI
             }
         }
 
-        public void UpdateDetailUI(IScannable scannable)
+        public void UpdateDetailUI(IScannable scannable, bool enabled)
         {
             if (details.TryGetValue(scannable, out ScanUIElement element))
             {
-                bool is_visible = IsVisibleInViewport(element.Target.position);
+                bool is_visible = IsVisibleInViewport(element.Target.position) && enabled;
 
                 if (element.gameObject.activeSelf != is_visible)
                 {
@@ -111,7 +110,7 @@ namespace Blue.UI
             }
         }
 
-        public void ReflashScanUI()
+        public void HideScanUIAll()
         {
             foreach (ScanUIElement element in details.Values)
             {

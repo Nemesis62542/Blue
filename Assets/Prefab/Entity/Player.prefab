@@ -5360,9 +5360,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bdce22e5b690894883554271e5dfee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scanRadius: 8
+  scanRadius: 12
+  scanDisableDistance: 18
   fieldOfViewAngle: 60
   view: {fileID: 1772258156854996019}
+  effectView: {fileID: 723085438577249413, guid: 969c8ecc5489f504487fff68f4c30366, type: 3}
 --- !u!1001 &612928373320117747
 PrefabInstance:
   m_ObjectHideFlags: 0

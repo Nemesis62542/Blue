@@ -3,36 +3,63 @@ using System.Linq;
 using UnityEngine;
 using Blue.Interface;
 using Blue.UI;
+using System.Collections;
 
 namespace Blue.Player
 {
     public class ScannerController : MonoBehaviour
     {
         [Header("Scan Settings")]
-        [SerializeField] private float scanRadius = 8f;
+        [SerializeField] private float scanRadius = 12f;
+        [SerializeField] private float scanDisableDistance = 18f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private ScannerView view;
+        [SerializeField] private ScannerEffectView effectView;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
         private IScannable lookingScannable = null;
+        private ScannerEffectView playingScanEffect = null;
+
+        private readonly WaitForSeconds scanDelay = new WaitForSeconds(0.5f);
+        private readonly WaitForSeconds itemDelay = new WaitForSeconds(0.05f);
+
+        private void Awake()
+        {
+            playingScanEffect = Instantiate(effectView, transform.position, Quaternion.identity);
+        }
 
         public void Scan(Vector3 origin, Vector3 forward)
         {
+            if (playingScanEffect.gameObject.activeSelf) return;
+
             CancelScan();
             ToggleLookingScannable(null);
             RemoveScannableAll();
-            view.ReflashScanUI();
+            view.HideScanUIAll();
+
+            playingScanEffect.transform.position = transform.position;
+            playingScanEffect.gameObject.SetActive(true);
+            playingScanEffect.PlayOnce();
 
             IEnumerable<IScannable> hits = Physics.OverlapSphere(origin, scanRadius)
                 .Select(hit => hit.GetComponent<IScannable>())
-                .Where(scannable => scannable != null && 
+                .Where(scannable => scannable != null &&
                                     !scannedObjects.Contains(scannable));
 
-            foreach (IScannable scannable in hits)
+            StartCoroutine(AddScannables(hits));
+        }
+        
+        private IEnumerator AddScannables(IEnumerable<IScannable> scannables)
+        {
+            yield return scanDelay;
+            List<IScannable> scannableList = scannables.ToList();
+
+            foreach (IScannable scannable in scannableList)
             {
+                yield return itemDelay;
                 AddScannable(scannable);
             }
-        }
+        } 
 
         private bool FindSameSchool(SchoolChild obj)
         {
@@ -59,15 +86,16 @@ namespace Blue.Player
 
         private void Update()
         {
-            foreach (IScannable scannable in scannedObjects)
+            for (int i = scannedObjects.Count - 1; i >= 0; i--)
             {
+                IScannable scannable = scannedObjects[i];
                 MonoBehaviour target = (MonoBehaviour)scannable;
+
                 if (target == null)
                 {
-                    scannedObjects.Remove(scannable);
-                    return;
+                    RemoveScannable(scannable, i);
                 }
-                view.UpdateDetailUI(scannable);
+                view.UpdateDetailUI(scannable, Vector3.Distance(transform.position, target.transform.position) < scanDisableDistance);
             }
         }
 
