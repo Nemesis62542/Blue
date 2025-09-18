@@ -5363,6 +5363,7 @@ MonoBehaviour:
   scanRadius: 8
   fieldOfViewAngle: 60
   view: {fileID: 1772258156854996019}
+  effectView: {fileID: 723085438577249413, guid: 969c8ecc5489f504487fff68f4c30366, type: 3}
 --- !u!1001 &612928373320117747
 PrefabInstance:
   m_ObjectHideFlags: 0

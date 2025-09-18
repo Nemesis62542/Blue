@@ -9,19 +9,32 @@ namespace Blue.Player
     public class ScannerController : MonoBehaviour
     {
         [Header("Scan Settings")]
-        [SerializeField] private float scanRadius = 8f;
+        [SerializeField] private float scanRadius = 12f;
         [SerializeField] private float fieldOfViewAngle = 60f;
         [SerializeField] private ScannerView view;
+        [SerializeField] private ScannerEffectView effectView;
 
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
         private IScannable lookingScannable = null;
+        private ScannerEffectView playingScanEffect = null;
+
+        private void Awake()
+        {
+            playingScanEffect = Instantiate(effectView, transform.position, Quaternion.identity);
+        }
 
         public void Scan(Vector3 origin, Vector3 forward)
         {
+            if (playingScanEffect.gameObject.activeSelf) return;
+
             CancelScan();
             ToggleLookingScannable(null);
             RemoveScannableAll();
             view.ReflashScanUI();
+
+            playingScanEffect.transform.position = transform.position;
+            playingScanEffect.gameObject.SetActive(true);
+            playingScanEffect.PlayOnce();
 
             IEnumerable<IScannable> hits = Physics.OverlapSphere(origin, scanRadius)
                 .Select(hit => hit.GetComponent<IScannable>())
