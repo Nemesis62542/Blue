@@ -23,6 +23,9 @@ namespace Blue.Player
 
         private float elapsed = 0.0f;
         private bool isPlaying = false;
+        private float lastRevealRadius = -1f;
+        private float cachedDeltaTime;
+        private int currentPhase = 0;
 
         private void Reset()
         {
@@ -40,7 +43,7 @@ namespace Blue.Player
 
             if (material == null)
             {
-                material = projector.material; // このProjector専用のマテリアルインスタンス
+                material = projector.material;
                 if (material == null)
                 {
                     Debug.LogError("[ScannerEffectView] Material is not assigned.", this);
@@ -51,7 +54,7 @@ namespace Blue.Player
 
             if (setAspectFromProjector)
             {
-                Vector3 size = projector.size; // (W,H,Depth)
+                Vector3 size = projector.size;
                 float aspect = (size.y > 0.0f) ? (size.x / size.y) : 1.0f;
                 material.SetFloat(ID_Aspect, aspect);
             }
@@ -65,37 +68,61 @@ namespace Blue.Player
         {
             isPlaying = true;
             elapsed = 0.0f;
+            currentPhase = 0;
             projector.fadeFactor = 1.0f;
             material.SetFloat(ID_RevealRadius, startRadius);
+            lastRevealRadius = startRadius;
         }
 
         private void Update()
         {
             if (!isPlaying) return;
 
-            if (elapsed < expandDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / expandDuration);
-                float r = Mathf.Lerp(startRadius, endRadius, t);
-                material.SetFloat(ID_RevealRadius, r);
-                return;
-            }
+            cachedDeltaTime = Time.deltaTime;
+            elapsed += cachedDeltaTime;
 
-            if (elapsed < expandDuration + holdTime)
+            switch (currentPhase)
             {
-                elapsed += Time.deltaTime;
-                return;
-            }
+                case 0:
+                    if (elapsed < expandDuration)
+                    {
+                        float t = elapsed / expandDuration;
+                        float r = Mathf.Lerp(startRadius, endRadius, t);
+                        if (Mathf.Abs(r - lastRevealRadius) > 0.001f)
+                        {
+                            material.SetFloat(ID_RevealRadius, r);
+                            lastRevealRadius = r;
+                        }
+                    }
+                    else
+                    {
+                        material.SetFloat(ID_RevealRadius, endRadius);
+                        lastRevealRadius = endRadius;
+                        currentPhase = 1;
+                    }
+                    break;
 
-            float tFade = (elapsed - (expandDuration + holdTime)) / Mathf.Max(fadeDuration, 1e-5f);
-            projector.fadeFactor = 1.0f - Mathf.Clamp01(tFade);
-            elapsed += Time.deltaTime;
+                case 1:
+                    if (elapsed >= expandDuration + holdTime)
+                    {
+                        currentPhase = 2;
+                    }
+                    break;
 
-            if (tFade >= 1.0f)
-            {
-                isPlaying = false;
-                gameObject.SetActive(false);
+                case 2:
+                    float fade_elapsed = elapsed - (expandDuration + holdTime);
+                    float t_fade = fade_elapsed / fadeDuration;
+
+                    if (t_fade >= 1.0f)
+                    {
+                        isPlaying = false;
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        projector.fadeFactor = 1.0f - t_fade;
+                    }
+                    break;
             }
         }
     }
