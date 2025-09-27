@@ -93,7 +93,8 @@ namespace Blue.Player
 
                 if (target == null)
                 {
-                    RemoveScannable(scannable, i);
+                    scannedObjects.RemoveAt(i);
+                    continue;
                 }
                 view.UpdateDetailUI(scannable, Vector3.Distance(transform.position, target.transform.position) < scanDisableDistance);
             }
