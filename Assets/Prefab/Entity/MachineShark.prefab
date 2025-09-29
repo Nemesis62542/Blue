@@ -110,6 +110,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7451501971767092323, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
   m_PrefabInstance: {fileID: 8457253026737092546}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &5603839210918792264 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+  m_PrefabInstance: {fileID: 8457253026737092546}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8611512373614592018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -362,6 +367,7 @@ MonoBehaviour:
   animator: {fileID: 2803676899907042691}
   highlightController: {fileID: 6622853833866743523}
   deadMaterial: {fileID: 2100000, guid: 09f1ab595246d3b4bb991badf9e9b4a3, type: 2}
+  erectric: {fileID: 5603839210918792264}
 --- !u!114 &6622853833866743523
 MonoBehaviour:
   m_ObjectHideFlags: 0
