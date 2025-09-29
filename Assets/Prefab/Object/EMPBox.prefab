@@ -462,6 +462,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1185708583077571307}
   m_SourcePrefab: {fileID: 100100000, guid: 7e71f9c5d04a87e478650e2e28c9ed78, type: 3}
+--- !u!23 &2543265573574050222 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 7e71f9c5d04a87e478650e2e28c9ed78, type: 3}
+  m_PrefabInstance: {fileID: 3786097035279473962}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3675027785900063425 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7e71f9c5d04a87e478650e2e28c9ed78, type: 3}
@@ -518,9 +523,69 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3675027785900063425}
     m_Modifications:
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.arc.mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.m_Scale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.m_Scale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.placementMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.m_MeshRenderer
+      value: 
+      objectReference: {fileID: 2543265573574050222}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.m_UseMeshColors
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.radiusThickness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: ShapeModule.m_MeshSpawn.spread
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078823941584108426, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7239680983150346539, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
       propertyPath: m_Name
       value: Electric
+      objectReference: {fileID: 0}
+    - target: {fileID: 7451501971767092323, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7451501971767092323, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7451501971767092323, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7451501971767092323, guid: e8310bd74feeb1d4993b10196e5db84f, type: 3}
       propertyPath: m_LocalPosition.x
