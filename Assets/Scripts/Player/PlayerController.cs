@@ -53,13 +53,22 @@ namespace Blue.Player
 
         protected override void Awake()
         {
+            base.Awake();
+            Initialize();
+        }
+
+        private void OnDestroy()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
             if (Instance != null && Instance != this)
             {
                 return;
             }
             Instance = this;
-            
-            base.Awake();
             inputHandler = new PlayerInputHandler();
             model = new PlayerModel(data);
 
@@ -82,8 +91,8 @@ namespace Blue.Player
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(InputMapType.Player);
         }
-
-        private void OnDestroy()
+        
+        private void Cleanup()
         {
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
