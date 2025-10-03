@@ -34,21 +34,21 @@ namespace Blue.Game
             Vector3 velocity = targetRigidbody.linearVelocity;
 
             // 重力を適用
-            Vector3 gravityForce = Vector3.down * gravityStrength;
+            Vector3 gravity_force = Vector3.down * gravityStrength;
 
             // 浮力を適用
             if (buoyancy > 0f)
             {
-                gravityForce += Vector3.up * buoyancy;
+                gravity_force += Vector3.up * buoyancy;
             }
 
             // 抵抗力を適用（Y軸の速度に対して）
             if (dragCoefficient > 0f)
             {
-                Vector3 dragForce = -velocity * dragCoefficient;
-                dragForce.x = 0f; // X,Z軸の移動には影響しない
-                dragForce.z = 0f;
-                gravityForce += dragForce;
+                Vector3 drag_force = -velocity * dragCoefficient;
+                drag_force.x = 0f; // X,Z軸の移動には影響しない
+                drag_force.z = 0f;
+                gravity_force += drag_force;
             }
 
             // 最大落下速度を制限
@@ -56,15 +56,15 @@ namespace Blue.Game
             targetRigidbody.linearVelocity = velocity;
 
             // 重力とその他の力を適用
-            targetRigidbody.AddForce(gravityForce, ForceMode.Acceleration);
+            targetRigidbody.AddForce(gravity_force, ForceMode.Acceleration);
         }
 
-        public void SetGravitySettings(float gravity, float drag, float buoyancyForce, float maxFallSpeed)
+        public void SetGravitySettings(float gravity, float drag, float buoyancy_force, float max_fallSpeed)
         {
             gravityStrength = gravity;
             dragCoefficient = drag;
-            buoyancy = buoyancyForce;
-            terminalVelocity = maxFallSpeed;
+            buoyancy = buoyancy_force;
+            terminalVelocity = max_fallSpeed;
         }
 
         public void SetAquaticMode()
