@@ -2,8 +2,17 @@ using UnityEngine;
 
 namespace Blue.Game
 {
+    public enum GravityMode
+    {
+        Aquatic,
+        Terrestrial
+    }
+
     public class GravityController : MonoBehaviour
     {
+        [Header("モード設定")]
+        [SerializeField] private GravityMode mode = GravityMode.Aquatic;
+
         [Header("重力設定")]
         [SerializeField] private float gravityStrength = 9.8f;
         [SerializeField] private float terminalVelocity = 50f;
@@ -11,6 +20,7 @@ namespace Blue.Game
         [SerializeField] private float buoyancy = 0f;
 
         private Rigidbody targetRigidbody;
+        private GravityMode currentMode;
 
         private void Awake()
         {
@@ -21,11 +31,33 @@ namespace Blue.Game
             }
         }
 
+        private void OnValidate()
+        {
+            if (currentMode != mode)
+            {
+                ApplyMode();
+            }
+        }
+
         private void FixedUpdate()
         {
             if (targetRigidbody != null)
             {
                 ApplyCustomGravity();
+            }
+        }
+
+        private void ApplyMode()
+        {
+            currentMode = mode;
+            switch (mode)
+            {
+                case GravityMode.Aquatic:
+                    SetAquaticMode();
+                    break;
+                case GravityMode.Terrestrial:
+                    SetTerrestrialMode();
+                    break;
             }
         }
 
@@ -71,7 +103,7 @@ namespace Blue.Game
         {
             gravityStrength = 2.0f;
             dragCoefficient = 5.0f;
-            buoyancy = 3.0f;
+            buoyancy = 0f;
             terminalVelocity = 10f;
         }
 

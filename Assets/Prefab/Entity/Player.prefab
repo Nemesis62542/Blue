@@ -5378,9 +5378,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf47b343ae2dd2740b4d2522691812a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Game.GravityController
-  gravityStrength: 9.8
-  terminalVelocity: 50
-  dragCoefficient: 0.1
+  mode: 0
+  gravityStrength: 2
+  terminalVelocity: 10
+  dragCoefficient: 5
   buoyancy: 0
 --- !u!1001 &612928373320117747
 PrefabInstance:
