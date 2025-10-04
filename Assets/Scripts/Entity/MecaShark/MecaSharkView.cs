@@ -9,6 +9,7 @@ namespace Blue.Entity
         [SerializeField] private Animator animator;
         [SerializeField] private HighlightController highlightController;
         [SerializeField] private Material deadMaterial;
+        [SerializeField] private ParticleSystem erectric;
 
         public SkinnedMeshRenderer Renderer => skinnedMeshRenderer;
         public void EnableHighlight() => highlightController.EnableHighlight();
@@ -28,8 +29,9 @@ namespace Blue.Entity
                 skinnedMeshRenderer.materials = materials;
                 highlightController.baseMaterials = materials;
             }
-            
+
             animator.speed = 0;
+            erectric.Play();
         }
     }
 }
