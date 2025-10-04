@@ -5331,6 +5331,8 @@ MonoBehaviour:
   inventoryController: {fileID: 1031699587672444242}
   uiController: {fileID: 2170802234579872290}
   moveSpeed: 3
+  acceleration: 10
+  deceleration: 4
   jumpStrength: 5
   maxLookUpAngle: 80
   interactDistance: 3
