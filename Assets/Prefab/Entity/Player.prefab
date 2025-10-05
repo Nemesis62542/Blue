@@ -5230,6 +5230,7 @@ GameObject:
   - component: {fileID: 4045347652537651356}
   - component: {fileID: 6702476828333239595}
   - component: {fileID: 2531166024297944478}
+  - component: {fileID: 941909501785763490}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -5303,7 +5304,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
@@ -5330,6 +5331,8 @@ MonoBehaviour:
   inventoryController: {fileID: 1031699587672444242}
   uiController: {fileID: 2170802234579872290}
   moveSpeed: 3
+  acceleration: 10
+  deceleration: 4
   jumpStrength: 5
   maxLookUpAngle: 80
   interactDistance: 3
@@ -5365,6 +5368,23 @@ MonoBehaviour:
   fieldOfViewAngle: 60
   view: {fileID: 1772258156854996019}
   effectView: {fileID: 723085438577249413, guid: 969c8ecc5489f504487fff68f4c30366, type: 3}
+--- !u!114 &941909501785763490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7313897020923085528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf47b343ae2dd2740b4d2522691812a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Game.GravityController
+  mode: 0
+  gravityStrength: 2
+  terminalVelocity: 10
+  dragCoefficient: 5
+  buoyancy: 0
 --- !u!1001 &612928373320117747
 PrefabInstance:
   m_ObjectHideFlags: 0

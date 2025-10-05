@@ -26,6 +26,8 @@ namespace Blue.Player
         [SerializeField] private UIController uiController;
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
+        [SerializeField] private float acceleration = 10f;
+        [SerializeField] private float deceleration = 4f;
         [SerializeField] private float jumpStrength = 5f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
@@ -53,13 +55,22 @@ namespace Blue.Player
 
         protected override void Awake()
         {
+            base.Awake();
+            Initialize();
+        }
+
+        private void OnDestroy()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
             if (Instance != null && Instance != this)
             {
                 return;
             }
             Instance = this;
-            
-            base.Awake();
             inputHandler = new PlayerInputHandler();
             model = new PlayerModel(data);
 
@@ -82,8 +93,8 @@ namespace Blue.Player
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(InputMapType.Player);
         }
-
-        private void OnDestroy()
+        
+        private void Cleanup()
         {
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
@@ -163,8 +174,23 @@ namespace Blue.Player
             right.Normalize();
 
             Vector3 move_direction = (forward * move_input.y + right * move_input.x).normalized;
-            Vector3 targetPosition = rb.position + move_direction * moveSpeed * Time.deltaTime;
-            rb.MovePosition(targetPosition);
+            Vector3 current_velocity = rb.linearVelocity;
+            Vector3 target_velocity = move_direction * moveSpeed;
+            target_velocity.y = current_velocity.y;
+
+            if (move_input.sqrMagnitude > 0.01f)
+            {
+                // 入力がある場合は加速
+                Vector3 new_velocity = Vector3.MoveTowards(current_velocity, target_velocity, acceleration * Time.deltaTime);
+                rb.linearVelocity = new_velocity;
+            }
+            else
+            {
+                // 入力がない場合は減速（慣性）
+                Vector3 horizontal_velocity = new Vector3(current_velocity.x, 0f, current_velocity.z);
+                horizontal_velocity = Vector3.MoveTowards(horizontal_velocity, Vector3.zero, deceleration * Time.deltaTime);
+                rb.linearVelocity = new Vector3(horizontal_velocity.x, current_velocity.y, horizontal_velocity.z);
+            }
         }
 
         private void HandleViewRotation()
