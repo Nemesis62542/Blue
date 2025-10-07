@@ -29,6 +29,8 @@ namespace Blue.Player
         [SerializeField] private float acceleration = 10f;
         [SerializeField] private float deceleration = 4f;
         [SerializeField] private float jumpStrength = 5f;
+        [SerializeField] private float boostForce = 8f;
+        [SerializeField] private float fuelConsumptionRate = 10f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
 
@@ -76,6 +78,7 @@ namespace Blue.Player
 
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
+            model.OnFuelChanged += HandleFuelChanged;
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
@@ -98,6 +101,7 @@ namespace Blue.Player
         {
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
+            model.OnFuelChanged -= HandleFuelChanged;
             model.OnDepthChanged -= HandleDepthChanged;
 
             inputHandler.OnJumpEvent -= HandleJump;
@@ -119,6 +123,7 @@ namespace Blue.Player
             LookingObject();
             HandleMove();
             HandleViewRotation();
+            HandleBoost();
             if (SceneLoader.CurrentSceneName == "Tutorial") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
 
@@ -212,6 +217,16 @@ namespace Blue.Player
             isGrounded = false;
         }
 
+        private void HandleBoost()
+        {
+            if (inputHandler.BoostHeld && !isGrounded && model.Fuel > 0)
+            {
+                float fuelConsumption = fuelConsumptionRate * Time.deltaTime;
+                model.ConsumeFuel(fuelConsumption);
+                rb.AddForce(Vector3.up * boostForce, ForceMode.Force);
+            }
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.layer == 8)
@@ -275,6 +290,12 @@ namespace Blue.Player
         {
             float ratio = current / max;
             playerStatusView.SetOxygenRatio(ratio);
+        }
+
+        private void HandleFuelChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetFuelRatio(ratio);
         }
 
         private void HandleDepthChanged(float depth)

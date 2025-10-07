@@ -9,13 +9,16 @@ namespace Blue.UI
     {
         [SerializeField] private Slider hpSlider;
         [SerializeField] private Slider oxygenSlider;
+        [SerializeField] private Slider fuelSlider;
         [SerializeField] private Slider hpSliderShadow;
         [SerializeField] private Slider oxygenSliderShadow;
+        [SerializeField] private Slider fuelSliderShadow;
         [SerializeField] private TextMeshProUGUI depth;
         [SerializeField] private float tweenDuration = 1.5f;
 
         private float currentHPRatio = 1.0f;
         private float currentOxygenRatio = 1.0f;
+        private float currentFuelRatio = 1.0f;
 
         public void SetHPRatio(float ratio)
         {
@@ -27,6 +30,12 @@ namespace Blue.UI
         {
             UpdateGaugeView(oxygenSlider, oxygenSliderShadow, currentOxygenRatio, ratio);
             currentOxygenRatio = Mathf.Clamp01(ratio);
+        }
+
+        public void SetFuelRatio(float ratio)
+        {
+            UpdateGaugeView(fuelSlider, fuelSliderShadow, currentFuelRatio, ratio);
+            currentFuelRatio = Mathf.Clamp01(ratio);
         }
 
         public void UpdateGaugeView(Slider front, Slider shadow, float current_ratio, float ratio)
