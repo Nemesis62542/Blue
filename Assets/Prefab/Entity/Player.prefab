@@ -5381,7 +5381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Game.GravityController
   mode: 0
-  gravityStrength: 2
+  gravityStrength: 5
   terminalVelocity: 10
   dragCoefficient: 5
   buoyancy: 0
