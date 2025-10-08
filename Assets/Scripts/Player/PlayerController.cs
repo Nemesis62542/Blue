@@ -129,20 +129,20 @@ namespace Blue.Player
             HandleMove();
             HandleViewRotation();
 
+            bool isBoosting = false;
+
             if (inputHandler.BoostHeld)
             {
-                HandleBoost(Vector3.up);
+                isBoosting = HandleBoost(Vector3.up);
             }
             else if (inputHandler.DownBoostHeld)
             {
-                HandleBoost(Vector3.down);
+                isBoosting = HandleBoost(Vector3.down);
             }
-            else
+
+            if (!isBoosting && boostEffect != null && boostEffect.isPlaying)
             {
-                if (boostEffect != null && boostEffect.isPlaying)
-                {
-                    boostEffect.Stop();
-                }
+                boostEffect.Stop();
             }
 
             HandleFuelRecovery();
@@ -240,9 +240,9 @@ namespace Blue.Player
             isGrounded = false;
         }
 
-        private void HandleBoost(Vector3 direction)
+        private bool HandleBoost(Vector3 direction)
         {
-            if (!isGrounded && model.Fuel > 0)
+            if (!isGrounded && model.Fuel > 0 && !fuelDepleted)
             {
                 float fuel_consumption = fuelConsumptionRate * Time.deltaTime;
                 model.ConsumeFuel(fuel_consumption);
@@ -254,12 +254,16 @@ namespace Blue.Player
                     if (!boostEffect.isPlaying) boostEffect.Play();
                 }
 
-                if (model.Fuel <= 0 && !fuelDepleted)
+                if (model.Fuel <= 0)
                 {
                     fuelDepleted = true;
                     fuelDepletedTimer = 0f;
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         private void HandleFuelRecovery()
