@@ -18,7 +18,6 @@ namespace Blue.Input
         private PlayerInputActions inputActions;
         private Vector2 moveInput;
         private Vector2 lookInput;
-        private bool jumpPressed;
         private bool boostHeld;
         private bool downBoostHeld;
         private InputMapType currentInputMap = InputMapType.None;

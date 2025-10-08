@@ -230,8 +230,8 @@ namespace Blue.Player
         {
             if (!isGrounded && model.Fuel > 0)
             {
-                float fuelConsumption = fuelConsumptionRate * Time.deltaTime;
-                model.ConsumeFuel(fuelConsumption);
+                float fuel_consumption = fuelConsumptionRate * Time.deltaTime;
+                model.ConsumeFuel(fuel_consumption);
                 rb.AddForce(direction * boostForce, ForceMode.Force);
             }
         }
