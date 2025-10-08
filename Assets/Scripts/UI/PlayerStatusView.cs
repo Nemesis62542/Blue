@@ -1,4 +1,3 @@
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,39 +8,60 @@ namespace Blue.UI
     {
         [SerializeField] private Slider hpSlider;
         [SerializeField] private Slider oxygenSlider;
+        [SerializeField] private Slider fuelSlider;
         [SerializeField] private Slider hpSliderShadow;
         [SerializeField] private Slider oxygenSliderShadow;
+        [SerializeField] private Slider fuelSliderShadow;
         [SerializeField] private TextMeshProUGUI depth;
-        [SerializeField] private float tweenDuration = 1.5f;
 
-        private float currentHPRatio = 1.0f;
-        private float currentOxygenRatio = 1.0f;
+        private float targetHPRatio = 1.0f;
+        private float targetOxygenRatio = 1.0f;
+        private float targetFuelRatio = 1.0f;
+        private float animationSpeed = 0.2f;
+
+        private void Start()
+        {
+            hpSlider.value = targetHPRatio;
+            hpSliderShadow.value = targetHPRatio;
+            oxygenSlider.value = targetOxygenRatio;
+            oxygenSliderShadow.value = targetOxygenRatio;
+            fuelSlider.value = targetFuelRatio;
+            fuelSliderShadow.value = targetFuelRatio;
+        }
+
+        private void Update()
+        {
+            UpdateGaugeAnimation(hpSlider, hpSliderShadow, targetHPRatio);
+            UpdateGaugeAnimation(oxygenSlider, oxygenSliderShadow, targetOxygenRatio);
+            UpdateGaugeAnimation(fuelSlider, fuelSliderShadow, targetFuelRatio);
+        }
 
         public void SetHPRatio(float ratio)
         {
-            UpdateGaugeView(hpSlider, hpSliderShadow, currentHPRatio, ratio);
-            currentHPRatio = Mathf.Clamp01(ratio);
+            targetHPRatio = Mathf.Clamp01(ratio);
         }
 
         public void SetOxygenRatio(float ratio)
         {
-            UpdateGaugeView(oxygenSlider, oxygenSliderShadow, currentOxygenRatio, ratio);
-            currentOxygenRatio = Mathf.Clamp01(ratio);
+            targetOxygenRatio = Mathf.Clamp01(ratio);
         }
 
-        public void UpdateGaugeView(Slider front, Slider shadow, float current_ratio, float ratio)
+        public void SetFuelRatio(float ratio)
         {
-            ratio = Mathf.Clamp01(ratio);
+            targetFuelRatio = Mathf.Clamp01(ratio);
+        }
 
-            if (ratio > current_ratio)
+        private void UpdateGaugeAnimation(Slider front, Slider shadow, float targetRatio)
+        {
+            if (targetRatio > front.value)
             {
-                shadow.value = ratio;
-                DOTween.To(() => front.value, x => front.value = x, ratio, tweenDuration);
+                shadow.value = targetRatio;
+                front.value = Mathf.MoveTowards(front.value, targetRatio, animationSpeed * Time.deltaTime);
             }
-            else if (ratio < current_ratio)
+            else if (targetRatio < shadow.value)
             {
-                front.value = ratio;
-                DOTween.To(() => shadow.value, x => shadow.value = x, ratio, tweenDuration);
+                front.value = targetRatio;
+                shadow.value = Mathf.MoveTowards(shadow.value, targetRatio, animationSpeed * Time.deltaTime);
             }
         }
 

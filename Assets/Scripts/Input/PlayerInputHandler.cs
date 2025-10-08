@@ -18,11 +18,14 @@ namespace Blue.Input
         private PlayerInputActions inputActions;
         private Vector2 moveInput;
         private Vector2 lookInput;
-        private bool jumpPressed;
+        private bool boostHeld;
+        private bool downBoostHeld;
         private InputMapType currentInputMap = InputMapType.None;
 
         public Vector2 MoveInput => moveInput;
         public Vector2 LookInput => lookInput;
+        public bool BoostHeld => boostHeld;
+        public bool DownBoostHeld => downBoostHeld;
 
         public event Action OnJumpEvent;
         public event Action OnAttackEvent;
@@ -44,6 +47,10 @@ namespace Blue.Input
             inputActions.Player.Move.performed += OnMove;
             inputActions.Player.Move.canceled += OnMove;
             inputActions.Player.Jump.performed += OnJump;
+            inputActions.Player.Jump.started += OnBoostStarted;
+            inputActions.Player.Jump.canceled += OnBoostCanceled;
+            inputActions.Player.DownBoost.started += OnDownBoostStarted;
+            inputActions.Player.DownBoost.canceled += OnDownBoostCanceled;
             inputActions.Player.Look.performed += OnLook;
             inputActions.Player.Look.canceled += OnLook;
             inputActions.Player.Interact.performed += OnInteract;
@@ -67,6 +74,10 @@ namespace Blue.Input
             inputActions.Player.Move.performed -= OnMove;
             inputActions.Player.Move.canceled -= OnMove;
             inputActions.Player.Jump.performed -= OnJump;
+            inputActions.Player.Jump.started -= OnBoostStarted;
+            inputActions.Player.Jump.canceled -= OnBoostCanceled;
+            inputActions.Player.DownBoost.started -= OnDownBoostStarted;
+            inputActions.Player.DownBoost.canceled -= OnDownBoostCanceled;
             inputActions.Player.Look.performed -= OnLook;
             inputActions.Player.Look.canceled -= OnLook;
             inputActions.Player.Interact.performed -= OnInteract;
@@ -143,6 +154,26 @@ namespace Blue.Input
         private void OnQuickSlot4(InputAction.CallbackContext context)
         {
             OnQuickSlotChangeEvent?.Invoke(3);
+        }
+
+        private void OnBoostStarted(InputAction.CallbackContext context)
+        {
+            boostHeld = true;
+        }
+
+        private void OnBoostCanceled(InputAction.CallbackContext context)
+        {
+            boostHeld = false;
+        }
+
+        private void OnDownBoostStarted(InputAction.CallbackContext context)
+        {
+            downBoostHeld = true;
+        }
+
+        private void OnDownBoostCanceled(InputAction.CallbackContext context)
+        {
+            downBoostHeld = false;
         }
 
         public void DisableInput()

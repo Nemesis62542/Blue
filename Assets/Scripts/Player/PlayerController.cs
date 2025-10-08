@@ -21,6 +21,7 @@ namespace Blue.Player
         [SerializeField] private ScannerController scannerController;
         [SerializeField] private PlayerStatusView playerStatusView;
         [SerializeField] private ParticleSystem cloudOfDust;
+        [SerializeField] private ParticleSystem boostEffect;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
         [SerializeField] private UIController uiController;
@@ -29,6 +30,10 @@ namespace Blue.Player
         [SerializeField] private float acceleration = 10f;
         [SerializeField] private float deceleration = 4f;
         [SerializeField] private float jumpStrength = 5f;
+        [SerializeField] private float boostForce = 8f;
+        [SerializeField] private float fuelConsumptionRate = 10f;
+        [SerializeField] private float fuelRecoveryRate = 5f;
+        [SerializeField] private float fuelDepletedCooldown = 5f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
 
@@ -41,6 +46,8 @@ namespace Blue.Player
         private float oxygenDecreaseInterval = 3.0f;
         private float oxygenDecreaseTimer = 0.0f;
         private int oxygenDecreaseAmount = 1;
+        private bool fuelDepleted = false;
+        private float fuelDepletedTimer = 0f;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -76,6 +83,7 @@ namespace Blue.Player
 
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
+            model.OnFuelChanged += HandleFuelChanged;
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
 
@@ -98,6 +106,7 @@ namespace Blue.Player
         {
             model.Status.OnHPChanged -= HandleHPChanged;
             model.OnOxygenChanged -= HandleOxygenChanged;
+            model.OnFuelChanged -= HandleFuelChanged;
             model.OnDepthChanged -= HandleDepthChanged;
 
             inputHandler.OnJumpEvent -= HandleJump;
@@ -119,7 +128,26 @@ namespace Blue.Player
             LookingObject();
             HandleMove();
             HandleViewRotation();
-            if (SceneLoader.CurrentSceneName == "Tutorial") DecreaseOxygen();
+
+            bool isBoosting = false;
+
+            if (inputHandler.BoostHeld)
+            {
+                isBoosting = HandleBoost(Vector3.up);
+            }
+            else if (inputHandler.DownBoostHeld)
+            {
+                isBoosting = HandleBoost(Vector3.down);
+            }
+
+            if (!isBoosting && boostEffect != null && boostEffect.isPlaying)
+            {
+                boostEffect.Stop();
+            }
+
+            HandleFuelRecovery();
+
+            if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
 
             if (SceneLoader.CurrentSceneName == "Aquarium")
@@ -212,6 +240,53 @@ namespace Blue.Player
             isGrounded = false;
         }
 
+        private bool HandleBoost(Vector3 direction)
+        {
+            if (!isGrounded && model.Fuel > 0 && !fuelDepleted)
+            {
+                float fuel_consumption = fuelConsumptionRate * Time.deltaTime;
+                model.ConsumeFuel(fuel_consumption);
+                rb.AddForce(direction * boostForce, ForceMode.Force);
+
+                if (boostEffect != null)
+                {
+                    boostEffect.transform.rotation = Quaternion.LookRotation(-direction);
+                    if (!boostEffect.isPlaying) boostEffect.Play();
+                }
+
+                if (model.Fuel <= 0)
+                {
+                    fuelDepleted = true;
+                    fuelDepletedTimer = 0f;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private void HandleFuelRecovery()
+        {
+            if (fuelDepleted)
+            {
+                if (isGrounded)
+                {
+                    fuelDepletedTimer += Time.deltaTime;
+                    if (fuelDepletedTimer >= fuelDepletedCooldown)
+                    {
+                        fuelDepleted = false;
+                    }
+                }
+            }
+
+            if (isGrounded && !fuelDepleted && model.Fuel < model.MaxFuel)
+            {
+                float recovery = fuelRecoveryRate * Time.deltaTime;
+                model.RefillFuel(recovery);
+            }
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.layer == 8)
@@ -223,6 +298,14 @@ namespace Blue.Player
                     Instantiate(cloudOfDust, pos, Quaternion.identity);
                 }
                 isGrounded = true;
+            }
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            if (collision.gameObject.layer == 8)
+            {
+                isGrounded = false;
             }
         }
 
@@ -261,7 +344,6 @@ namespace Blue.Player
 
         private void Scan()
         {
-            if (SceneLoader.CurrentSceneName != "Tutorial") return;
             scannerController.Scan(camTransform.position, camTransform.forward);
         }
 
@@ -275,6 +357,12 @@ namespace Blue.Player
         {
             float ratio = current / max;
             playerStatusView.SetOxygenRatio(ratio);
+        }
+
+        private void HandleFuelChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetFuelRatio(ratio);
         }
 
         private void HandleDepthChanged(float depth)

@@ -101,7 +101,7 @@ namespace Blue.Game
 
         public void SetAquaticMode()
         {
-            gravityStrength = 2.0f;
+            gravityStrength = 5.0f;
             dragCoefficient = 5.0f;
             buoyancy = 0f;
             terminalVelocity = 10f;

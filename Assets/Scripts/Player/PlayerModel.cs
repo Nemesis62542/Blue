@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Blue.Entity;
 using Blue.Inventory;
 using UnityEngine;
@@ -14,6 +13,8 @@ namespace Blue.Player
         private QuickSlotHandler quickSlotHandler;
         private int maxOxygen = 100;
         private int oxygen;
+        private float maxFuel = 100f;
+        private float fuel;
         private float depth;
 
         public PlayerModel(EntityData data, InventoryModel inventory = null, int? initialOxygen = null) : base(data)
@@ -21,6 +22,7 @@ namespace Blue.Player
             this.inventory = inventory ?? new InventoryModel();
             quickSlotHandler = new QuickSlotHandler(this.inventory);
             oxygen = initialOxygen ?? maxOxygen;
+            fuel = maxFuel;
         }
 
         public InventoryModel Inventory => inventory;
@@ -35,9 +37,20 @@ namespace Blue.Player
             get => oxygen;
             private set => SetOxygen(value);
         }
+        public float MaxFuel
+        {
+            get => maxFuel;
+            set => maxFuel = value;
+        }
+        public float Fuel
+        {
+            get => fuel;
+            private set => SetFuel(value);
+        }
         public float Depth => depth;
 
         public event Action<float, float> OnOxygenChanged;
+        public event Action<float, float> OnFuelChanged;
         public event Action<float> OnDepthChanged;
 
         public void ConsumeOxygen(int amount)
@@ -63,6 +76,26 @@ namespace Blue.Player
             {
                 oxygen = clamped;
                 OnOxygenChanged?.Invoke(oxygen, maxOxygen);
+            }
+        }
+
+        public void ConsumeFuel(float amount)
+        {
+            SetFuel(fuel - amount);
+        }
+
+        public void RefillFuel(float amount)
+        {
+            SetFuel(fuel + amount);
+        }
+
+        private void SetFuel(float value)
+        {
+            float clamped = Mathf.Clamp(value, 0f, maxFuel);
+            if (!Mathf.Approximately(fuel, clamped))
+            {
+                fuel = clamped;
+                OnFuelChanged?.Invoke(fuel, maxFuel);
             }
         }
 
