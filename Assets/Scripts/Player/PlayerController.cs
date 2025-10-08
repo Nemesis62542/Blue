@@ -123,7 +123,16 @@ namespace Blue.Player
             LookingObject();
             HandleMove();
             HandleViewRotation();
-            HandleBoost();
+
+            if (inputHandler.BoostHeld)
+            {
+                HandleBoost(Vector3.up);
+            }
+            else if (inputHandler.DownBoostHeld)
+            {
+                HandleBoost(Vector3.down);
+            }
+
             if (SceneLoader.CurrentSceneName == "Tutorial") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
 
@@ -217,13 +226,13 @@ namespace Blue.Player
             isGrounded = false;
         }
 
-        private void HandleBoost()
+        private void HandleBoost(Vector3 direction)
         {
-            if (inputHandler.BoostHeld && !isGrounded && model.Fuel > 0)
+            if (!isGrounded && model.Fuel > 0)
             {
                 float fuelConsumption = fuelConsumptionRate * Time.deltaTime;
                 model.ConsumeFuel(fuelConsumption);
-                rb.AddForce(Vector3.up * boostForce, ForceMode.Force);
+                rb.AddForce(direction * boostForce, ForceMode.Force);
             }
         }
 
