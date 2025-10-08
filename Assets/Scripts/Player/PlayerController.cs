@@ -21,6 +21,7 @@ namespace Blue.Player
         [SerializeField] private ScannerController scannerController;
         [SerializeField] private PlayerStatusView playerStatusView;
         [SerializeField] private ParticleSystem cloudOfDust;
+        [SerializeField] private ParticleSystem boostEffect;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
         [SerializeField] private UIController uiController;
@@ -132,6 +133,13 @@ namespace Blue.Player
             {
                 HandleBoost(Vector3.down);
             }
+            else
+            {
+                if (boostEffect != null && boostEffect.isPlaying)
+                {
+                    boostEffect.Stop();
+                }
+            }
 
             if (SceneLoader.CurrentSceneName == "Tutorial") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
@@ -233,6 +241,12 @@ namespace Blue.Player
                 float fuel_consumption = fuelConsumptionRate * Time.deltaTime;
                 model.ConsumeFuel(fuel_consumption);
                 rb.AddForce(direction * boostForce, ForceMode.Force);
+
+                if (boostEffect != null)
+                {
+                    boostEffect.transform.rotation = Quaternion.LookRotation(-direction);
+                    if (!boostEffect.isPlaying) boostEffect.Play();
+                }
             }
         }
 
