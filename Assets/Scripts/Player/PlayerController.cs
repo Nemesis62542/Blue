@@ -32,6 +32,8 @@ namespace Blue.Player
         [SerializeField] private float jumpStrength = 5f;
         [SerializeField] private float boostForce = 8f;
         [SerializeField] private float fuelConsumptionRate = 10f;
+        [SerializeField] private float fuelRecoveryRate = 5f;
+        [SerializeField] private float fuelDepletedCooldown = 5f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
 
@@ -44,6 +46,8 @@ namespace Blue.Player
         private float oxygenDecreaseInterval = 3.0f;
         private float oxygenDecreaseTimer = 0.0f;
         private int oxygenDecreaseAmount = 1;
+        private bool fuelDepleted = false;
+        private float fuelDepletedTimer = 0f;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotHandler QuickSlot => model.QuickSlot;
@@ -140,6 +144,8 @@ namespace Blue.Player
                     boostEffect.Stop();
                 }
             }
+
+            HandleFuelRecovery();
 
             if (SceneLoader.CurrentSceneName == "Tutorial") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
@@ -247,6 +253,33 @@ namespace Blue.Player
                     boostEffect.transform.rotation = Quaternion.LookRotation(-direction);
                     if (!boostEffect.isPlaying) boostEffect.Play();
                 }
+
+                if (model.Fuel <= 0 && !fuelDepleted)
+                {
+                    fuelDepleted = true;
+                    fuelDepletedTimer = 0f;
+                }
+            }
+        }
+
+        private void HandleFuelRecovery()
+        {
+            if (fuelDepleted)
+            {
+                if (isGrounded)
+                {
+                    fuelDepletedTimer += Time.deltaTime;
+                    if (fuelDepletedTimer >= fuelDepletedCooldown)
+                    {
+                        fuelDepleted = false;
+                    }
+                }
+            }
+
+            if (isGrounded && !fuelDepleted && model.Fuel < model.MaxFuel)
+            {
+                float recovery = fuelRecoveryRate * Time.deltaTime;
+                model.RefillFuel(recovery);
             }
         }
 
