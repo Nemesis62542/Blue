@@ -5370,6 +5370,8 @@ MonoBehaviour:
   jumpStrength: 5
   boostForce: 8
   fuelConsumptionRate: 10
+  fuelRecoveryRate: 5
+  fuelDepletedCooldown: 5
   maxLookUpAngle: 80
   interactDistance: 3
 --- !u!114 &6702476828333239595
@@ -5812,7 +5814,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5296547887548432377, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00017335109
+      value: 0.00035513935
       objectReference: {fileID: 0}
     - target: {fileID: 5349675700954290547, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -6369,15 +6371,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2071346619252426567, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2071346619252426567, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2071346619252426567, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2071346619252426567, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6401,7 +6403,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: ShapeModule.type
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: NoiseModule.enabled
@@ -6417,7 +6419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: ShapeModule.m_Scale.z
-      value: 1
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: EmissionModule.enabled
@@ -6425,7 +6427,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: ShapeModule.m_Rotation.x
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: ShapeModule.m_Rotation.y
@@ -6437,6 +6439,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: ShapeModule.radiusThickness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
@@ -6452,8 +6458,24 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
+      propertyPath: InitialModule.startSpeed.minScalar
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
+      propertyPath: InitialModule.startSpeed.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: InitialModule.startLifetime.minScalar
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
+      propertyPath: InitialModule.gravityModifier.minMaxState
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4174422562425167052, guid: b52ee306f596af4449ee2b7d173994f7, type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
