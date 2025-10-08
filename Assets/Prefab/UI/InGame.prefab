@@ -1567,10 +1567,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hpSlider: {fileID: 7250012381592679649}
   oxygenSlider: {fileID: 172446805222308806}
-  fuelSlider: {fileID: 0}
+  fuelSlider: {fileID: 8455945294016465187}
   hpSliderShadow: {fileID: 1227213063162698488}
   oxygenSliderShadow: {fileID: 2874621804201376389}
-  fuelSliderShadow: {fileID: 0}
+  fuelSliderShadow: {fileID: 5487516287081112642}
   depth: {fileID: 7969357631164211548}
   tweenDuration: 0.5
 --- !u!1 &4888095843637136354
