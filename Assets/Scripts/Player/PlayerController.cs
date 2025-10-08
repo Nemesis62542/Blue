@@ -301,6 +301,14 @@ namespace Blue.Player
             }
         }
 
+        private void OnCollisionExit(Collision collision)
+        {
+            if (collision.gameObject.layer == 8)
+            {
+                isGrounded = false;
+            }
+        }
+
         private bool IsUsingGamepad()
         {
             return Gamepad.current != null && Gamepad.current.enabled;
