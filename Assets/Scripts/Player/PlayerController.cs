@@ -45,7 +45,7 @@ namespace Blue.Player
         private float controllerLookSensitivity = 10f;
         private float oxygenDecreaseInterval = 3.0f;
         private float oxygenDecreaseTimer = 0.0f;
-        private int oxygenDecreaseAmount = 10;
+        private int oxygenDecreaseAmount = 1;
         private bool fuelDepleted = false;
         private float fuelDepletedTimer = 0f;
 
