@@ -147,7 +147,7 @@ namespace Blue.Player
 
             HandleFuelRecovery();
 
-            DecreaseOxygen();
+            if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
 
             if (SceneLoader.CurrentSceneName == "Aquarium")
@@ -344,7 +344,6 @@ namespace Blue.Player
 
         private void Scan()
         {
-            //if (SceneLoader.CurrentSceneName != "Tutorial") return;
             scannerController.Scan(camTransform.position, camTransform.forward);
         }
 
