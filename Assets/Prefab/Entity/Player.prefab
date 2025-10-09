@@ -5364,11 +5364,11 @@ MonoBehaviour:
   boostEffect: {fileID: 5992443219477759902}
   inventoryController: {fileID: 1031699587672444242}
   uiController: {fileID: 2170802234579872290}
-  moveSpeed: 3
+  moveSpeed: 1.5
   acceleration: 10
   deceleration: 4
   jumpStrength: 5
-  boostForce: 8
+  boostForce: 4
   fuelConsumptionRate: 10
   fuelRecoveryRate: 5
   fuelDepletedCooldown: 5
@@ -5419,8 +5419,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Game.GravityController
   mode: 0
-  gravityStrength: 5
-  terminalVelocity: 10
+  gravityStrength: 9.8
+  terminalVelocity: 50
   dragCoefficient: 5
   buoyancy: 0
 --- !u!1001 &612928373320117747
