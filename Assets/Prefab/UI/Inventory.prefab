@@ -292,6 +292,8 @@ GameObject:
   - component: {fileID: 3223675499941455173}
   - component: {fileID: 1864717236694568129}
   - component: {fileID: 2736368102397275120}
+  - component: {fileID: 5140866329889117391}
+  - component: {fileID: 1139641952534687302}
   m_Layer: 5
   m_Name: Equipments
   m_TagString: Untagged
@@ -385,6 +387,34 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &5140866329889117391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833720858645806358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e46629e00866d2429afbe9d83797311, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.QuickSlot.QuickSlotController
+  view: {fileID: 1139641952534687302}
+  selectHandler: {fileID: 1507867249437460467}
+--- !u!114 &1139641952534687302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833720858645806358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04614b10917037648a05071a787b5d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.QuickSlot.QuickSlotView
+  quickSlotParent: {fileID: 5549733730827462580}
+  quickSlotPrefab: {fileID: 2828921105939965642, guid: fdf28d1dc52aecc4095b77c30c31d269, type: 3}
 --- !u!1 &3351103310779256751
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +867,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5127663095140984128}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999986
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1224,7 +1254,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0007152676}
+  m_AnchoredPosition: {x: 0, y: -0.000059985767}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &944368578415010612
@@ -1734,11 +1764,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSlotParent: {fileID: 5549733730827462580}
   itemSlotPrefab: {fileID: 720836241039303844, guid: ea8d5809afee03b4bba8a8fe45a2e0fe, type: 3}
-  quickSlotParent: {fileID: 5978366111529734043}
-  quickSlotPrefab: {fileID: 2828921105939965642, guid: fdf28d1dc52aecc4095b77c30c31d269, type: 3}
   navigator: {fileID: 5513956622650760407}
   itemSelectHandler: {fileID: 4701030784271845986}
-  quickSlotSelectHandler: {fileID: 1507867249437460467}
 --- !u!114 &4701030784271845986
 MonoBehaviour:
   m_ObjectHideFlags: 0
