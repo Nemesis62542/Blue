@@ -17,8 +17,8 @@ namespace Blue.UI.QuickSlot
 
             quickSlotHandler.OnQuickSlotUpdated += RefreshQuickSlotUI;
 
-            selectHandler.SetQuickSlotHandler(quickSlotHandler);
-            selectHandler.SetupInput(inputHandler);
+            //selectHandler.SetQuickSlotHandler(quickSlotHandler);
+            //selectHandler.SetupInput(inputHandler);
 
             view.Initialize(quickSlotHandler);
         }
