@@ -8,24 +8,11 @@ namespace Blue.Inventory
         [SerializeField] private InventoryView view;
 
         private InventoryModel model;
-        private QuickSlotHandler quickSlotHandler;
 
-        public void Initialize(InventoryModel model, QuickSlotHandler quick_slot_handler, PlayerInputHandler input_handler)
+        public void Initialize(InventoryModel model, PlayerInputHandler input_handler)
         {
             this.model = model;
-            quickSlotHandler = quick_slot_handler;
-
-            quickSlotHandler.OnQuickSlotUpdated += RefreshInventoryUI;
-
-            view.Initialize(this.model, quick_slot_handler, input_handler);
-        }
-
-        private void OnDisable()
-        {
-            if (quickSlotHandler != null)
-            {
-                quickSlotHandler.OnQuickSlotUpdated -= RefreshInventoryUI;
-            }
+            view.Initialize(this.model, input_handler);
         }
 
         public void RefreshInventoryUI()

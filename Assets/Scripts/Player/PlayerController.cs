@@ -7,6 +7,7 @@ using Blue.Inventory;
 using Blue.Item;
 using Blue.Object;
 using Blue.UI;
+using Blue.UI.QuickSlot;
 using Blue.UI.Screen;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,6 +25,7 @@ namespace Blue.Player
         [SerializeField] private ParticleSystem boostEffect;
         [Header("プレイヤーの情報")]
         [SerializeField] private InventoryController inventoryController;
+        [SerializeField] private QuickSlotController quickSlotController;
         [SerializeField] private UIController uiController;
         [Header("プレイヤーの操作に関する値")]
         [SerializeField] private float moveSpeed = 5f;
@@ -85,7 +87,8 @@ namespace Blue.Player
             model.OnOxygenChanged += HandleOxygenChanged;
             model.OnFuelChanged += HandleFuelChanged;
             model.OnDepthChanged += HandleDepthChanged;
-            inventoryController.Initialize(Inventory, QuickSlot, inputHandler);
+            inventoryController.Initialize(Inventory, inputHandler);
+            quickSlotController.Initialize(QuickSlot, inputHandler);
 
             inputHandler.OnJumpEvent += HandleJump;
             inputHandler.OnInteractEvent += InteractObject;
@@ -441,6 +444,7 @@ namespace Blue.Player
         private void OpenInventory()
         {
             inventoryController.RefreshInventoryUI();
+            quickSlotController.RefreshQuickSlotUI();
             uiController.ShowScreen(ScreenState.Inventory);
             inputHandler.SetInputMap(InputMapType.Inventory);
         }
