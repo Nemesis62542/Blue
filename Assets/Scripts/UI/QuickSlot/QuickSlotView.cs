@@ -26,8 +26,8 @@ namespace Blue.UI.QuickSlot
 
             ReleaseAllQuickSlots();
 
-            int slotCount = quickSlotHandler.QuickSlots.Count;
-            for (int i = 0; i < slotCount; i++)
+            int slot_count = quickSlotHandler.QuickSlots.Count;
+            for (int i = 0; i < slot_count; i++)
             {
                 ItemData item_data = quickSlotHandler.GetItem(i);
                 ItemSlot quick_slot = GetOrCreateQuickSlot();
@@ -35,8 +35,8 @@ namespace Blue.UI.QuickSlot
                 int quantity = 0;
                 if (item_data != null)
                 {
-                    InventoryItem inventoryItem = quickSlotHandler.GetInventoryItem(i);
-                    quantity = inventoryItem?.Quantity ?? 0;
+                    InventoryItem inventory_item = quickSlotHandler.GetInventoryItem(i);
+                    quantity = inventory_item?.Quantity ?? 0;
                 }
                 quick_slot.SetItem(item_data, quantity);
 
@@ -58,7 +58,7 @@ namespace Blue.UI.QuickSlot
         {
             if (quickSlotPool.Count > 0)
             {
-                var slot = quickSlotPool.Dequeue();
+                ItemSlot slot = quickSlotPool.Dequeue();
                 slot.gameObject.SetActive(true);
                 return slot;
             }
