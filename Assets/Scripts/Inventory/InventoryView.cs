@@ -21,7 +21,7 @@ namespace Blue.Inventory
         public void Initialize(InventoryModel model, PlayerInputHandler input_handler)
         {
             this.model = model;
-            //itemSelectHandler.SetupInput(input_handler);
+            itemSelectHandler.SetupInput(input_handler);
         }
 
         public void UpdateInventoryUI()
@@ -34,7 +34,7 @@ namespace Blue.Inventory
             {
                 AddItemToUI(item.Key, item.Value);
             }
-            //navigator.InitializeSelection();
+            navigator.InitializeSelection();
         }
 
         private void AddItemToUI(ItemData item_data, int count)

@@ -1,4 +1,6 @@
+using Blue.Input;
 using Blue.Inventory;
+using Blue.Item;
 using Blue.UI.QuickSlot;
 using UnityEngine;
 
@@ -9,22 +11,25 @@ namespace Blue.UI.Garage.Strage
         [SerializeField] private InventoryController strageInventory;
         [SerializeField] private InventoryController playerInventory;
         [SerializeField] private QuickSlotController quickSlot;
+        [SerializeField] private ItemData item;
 
-        private void Awake()
-        {
-            Initialize();
-            InitializeView();
-        }
+        private PlayerInputHandler playerInput;
 
-        private void Initialize()
+        public void Initialize(PlayerInputHandler player_input)
         {
+            playerInput = player_input;
+            playerInput.SetInputMap(InputMapType.Inventory);
+
             //仮の実装で一旦Newする
             InventoryModel strage_inventory = new InventoryModel();
             InventoryModel player_inventory = new InventoryModel();
+            player_inventory.AddItem(item);
 
-            strageInventory.Initialize(strage_inventory, null);
-            playerInventory.Initialize(player_inventory, null);
-            quickSlot.Initialize(new QuickSlotHandler(player_inventory), null);
+            strageInventory.Initialize(strage_inventory, playerInput);
+            playerInventory.Initialize(player_inventory, playerInput);
+            quickSlot.Initialize(new QuickSlotHandler(player_inventory), playerInput);
+
+            InitializeView();
         }
 
         private void InitializeView()
