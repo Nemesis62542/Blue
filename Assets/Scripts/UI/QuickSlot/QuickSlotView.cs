@@ -49,8 +49,6 @@ namespace Blue.UI.QuickSlot
                 {
                     click_handler.Setup(quickSlotHandler, i);
                 }
-
-                quickSlotSlots.Add(quick_slot);
             }
         }
 
@@ -62,17 +60,18 @@ namespace Blue.UI.QuickSlot
                 slot.gameObject.SetActive(true);
                 return slot;
             }
-            return Instantiate(quickSlotPrefab, quickSlotParent);
+            ItemSlot new_slot = Instantiate(quickSlotPrefab, quickSlotParent);
+            quickSlotSlots.Add(new_slot);
+            return new_slot;
         }
 
         private void ReleaseAllQuickSlots()
         {
-            foreach (Transform child in quickSlotParent)
+            foreach (ItemSlot slot in quickSlotSlots)
             {
-                child.gameObject.SetActive(false);
-                quickSlotPool.Enqueue(child.GetComponent<ItemSlot>());
+                slot.gameObject.SetActive(false);
+                quickSlotPool.Enqueue(slot);
             }
-            quickSlotSlots.Clear();
         }
     }
 }
