@@ -4,7 +4,6 @@ using Blue.Item;
 using Blue.Input;
 using Blue.UI.Common;
 using Blue.UI.Inventory;
-using Blue.UI.QuickSlot;
 
 namespace Blue.Inventory
 {
@@ -12,27 +11,17 @@ namespace Blue.Inventory
     {
         [SerializeField] private Transform itemSlotParent;
         [SerializeField] private ItemSlot itemSlotPrefab;
-        [SerializeField] private Transform quickSlotParent;
-        [SerializeField] private ItemSlot quickSlotPrefab;
         [SerializeField] private UISelectableNavigator navigator;
         [SerializeField] private InventoryItemSelectHandler itemSelectHandler;
-        [SerializeField] private QuickSlotSelectHandler quickSlotSelectHandler;
 
         private List<ItemSlot> itemSlots = new List<ItemSlot>();
-        private List<ItemSlot> quickSlotSlots = new List<ItemSlot>();
-        private QuickSlotHandler quickSlotHandler;
         private InventoryModel model;
         private Queue<ItemSlot> itemSlotPool = new Queue<ItemSlot>();
-        private Queue<ItemSlot> quickSlotPool = new Queue<ItemSlot>();
 
-        public void Initialize(InventoryModel model, QuickSlotHandler quick_slot_handler, PlayerInputHandler input_handler)
+        public void Initialize(InventoryModel model, PlayerInputHandler input_handler)
         {
-            this.model = model; 
-            quickSlotHandler = quick_slot_handler;
-
-            quickSlotSelectHandler.SetQuickSlotHandler(quickSlotHandler);
+            this.model = model;
             itemSelectHandler.SetupInput(input_handler);
-            quickSlotSelectHandler.SetupInput(input_handler);
         }
 
         public void UpdateInventoryUI()
@@ -46,7 +35,6 @@ namespace Blue.Inventory
                 AddItemToUI(item.Key, item.Value);
             }
             navigator.InitializeSelection();
-            RefreshQuickSlotUI();
         }
 
         private void AddItemToUI(ItemData item_data, int count)
@@ -79,61 +67,6 @@ namespace Blue.Inventory
             {
                 child.gameObject.SetActive(false);
                 itemSlotPool.Enqueue(child);
-            }
-        }
-
-        private ItemSlot GetOrCreateQuickSlot()
-        {
-            if (quickSlotPool.Count > 0)
-            {
-                var slot = quickSlotPool.Dequeue();
-                slot.gameObject.SetActive(true);
-                return slot;
-            }
-            return Instantiate(quickSlotPrefab, quickSlotParent);
-        }
-
-        private void ReleaseAllQuickSlots()
-        {
-            foreach (Transform child in quickSlotParent)
-            {
-                child.gameObject.SetActive(false);
-                quickSlotPool.Enqueue(child.GetComponent<ItemSlot>());
-            }
-            quickSlotSlots.Clear();
-        }
-
-        public void RefreshQuickSlotUI()
-        {
-            if (quickSlotHandler == null) return;
-
-            ReleaseAllQuickSlots();
-
-            int slotCount = quickSlotHandler.QuickSlots.Count;
-            for (int i = 0; i < slotCount; i++)
-            {
-                ItemData item_data = quickSlotHandler.GetItem(i);
-                ItemSlot quick_slot = GetOrCreateQuickSlot();
-                
-                int quantity = 0;
-                if (item_data != null)
-                {
-                    InventoryItem inventoryItem = quickSlotHandler.GetInventoryItem(i);
-                    quantity = inventoryItem?.Quantity ?? 0;
-                }
-                quick_slot.SetItem(item_data, quantity);
-
-                if (quick_slot.HoverArea.TryGetComponent(out QuickSlotDropHandler drop_handler))
-                {
-                    drop_handler.Setup(quickSlotHandler, i);
-                }
-
-                if (quick_slot.HoverArea.TryGetComponent(out QuickSlotClickHandler click_handler))
-                {
-                    click_handler.Setup(quickSlotHandler, i);
-                }
-
-                quickSlotSlots.Add(quick_slot);
             }
         }
     }
