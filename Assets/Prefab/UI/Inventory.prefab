@@ -413,7 +413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04614b10917037648a05071a787b5d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.QuickSlot.QuickSlotView
-  quickSlotParent: {fileID: 5549733730827462580}
+  quickSlotParent: {fileID: 5978366111529734043}
   quickSlotPrefab: {fileID: 2828921105939965642, guid: fdf28d1dc52aecc4095b77c30c31d269, type: 3}
 --- !u!1 &3351103310779256751
 GameObject:

@@ -444,6 +444,7 @@ namespace Blue.Player
         private void OpenInventory()
         {
             inventoryController.RefreshInventoryUI();
+            quickSlotController.RefreshQuickSlotUI();
             uiController.ShowScreen(ScreenState.Inventory);
             inputHandler.SetInputMap(InputMapType.Inventory);
         }
