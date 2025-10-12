@@ -1,3 +1,4 @@
+using System;
 using Blue.Input;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace Blue.Inventory
         public void Initialize(InventoryModel model, PlayerInputHandler input_handler)
         {
             this.model = model;
+            this.model.OnValueChanged += RefreshInventoryUI;
             view.Initialize(this.model, input_handler);
         }
 
