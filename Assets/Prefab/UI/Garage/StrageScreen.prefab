@@ -952,6 +952,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2010725167168003183}
   - component: {fileID: 4038134543059290420}
+  - component: {fileID: 2013150436197016629}
+  - component: {fileID: 4774140588642972604}
+  - component: {fileID: 4544545150386778087}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1002,6 +1005,57 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!222 &2013150436197016629
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3638180975591392190}
+  m_CullTransparentMesh: 1
+--- !u!114 &4774140588642972604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3638180975591392190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4544545150386778087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3638180975591392190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b4262d55cd3362439e61d9f7be7415e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.DragAndDrop.GenericItemDropHandler
+  highlightImage: {fileID: 4774140588642972604}
 --- !u!1 &3695279053161499061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1579,6 +1633,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2941763715411949892}
   - component: {fileID: 8671583640182817631}
+  - component: {fileID: 8711484437316803245}
+  - component: {fileID: 2683864761014208435}
+  - component: {fileID: 1873942220090125466}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1629,6 +1686,57 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &8711484437316803245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714011033264599807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b4262d55cd3362439e61d9f7be7415e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.DragAndDrop.GenericItemDropHandler
+  highlightImage: {fileID: 1873942220090125466}
+--- !u!222 &2683864761014208435
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714011033264599807}
+  m_CullTransparentMesh: 1
+--- !u!114 &1873942220090125466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714011033264599807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5897755592816366067
 GameObject:
   m_ObjectHideFlags: 0
@@ -2042,8 +2150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   quickSlotNavigator: {fileID: 2031767735404807389}
-  inventoryNavigator: {fileID: 4204971344270062631}
-  inventoryHandler: {fileID: 6487265419418543532}
+  inventoryNavigator: {fileID: 0}
+  inventoryHandler: {fileID: 0}
 --- !u!1 &7745640686404789439
 GameObject:
   m_ObjectHideFlags: 0
@@ -2353,4 +2461,6 @@ MonoBehaviour:
   strageInventory: {fileID: 1113200272275058218}
   playerInventory: {fileID: 4696773864712537355}
   quickSlot: {fileID: 6094617201470137804}
+  strageDropHandler: {fileID: 8711484437316803245}
+  playerDropHandler: {fileID: 4544545150386778087}
   item: {fileID: 11400000, guid: 9ab7f6a67a6f7f64ebf2617a6dc8e4e7, type: 2}
