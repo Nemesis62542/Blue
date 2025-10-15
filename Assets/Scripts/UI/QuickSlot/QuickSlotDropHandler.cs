@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Blue.Inventory;
 using Blue.Item;
 using Blue.UI.DragAndDrop;
+using Blue.UI.Inventory;
 
 namespace Blue.UI.QuickSlot
 {
@@ -35,6 +36,12 @@ namespace Blue.UI.QuickSlot
 
                 if (CanAcceptItem(item_data, quantity))
                 {
+                    // ドラッグ中のスロットを即座にプールに戻せるように、先にフラグを降ろす
+                    if (event_data.pointerDrag.TryGetComponent(out ItemSlotDragHandler drag_handler))
+                    {
+                        drag_handler.ForceEndDrag();
+                    }
+
                     OnItemDropped(item_data, quantity, draggable.GetSourceContainer());
                 }
             }
@@ -64,15 +71,13 @@ namespace Blue.UI.QuickSlot
 
         public bool CanAcceptItem(ItemData item_data, int quantity)
         {
-            // 使用可能なアイテムのみ受け入れ
-            // 今後、ItemTypeで制限を追加する可能性あり
             return quickSlotHandler != null && item_data != null;
         }
 
         public void OnItemDropped(ItemData item_data, int quantity, IItemContainer source_container)
         {
-            // クイックスロットは参照のみなので、元のコンテナからは削除しない
-            quickSlotHandler?.Register(slotIndex, item_data);
+            quickSlotHandler?.Register(slotIndex, item_data, quantity);
+            source_container?.UpdateView();
         }
     }
 }
