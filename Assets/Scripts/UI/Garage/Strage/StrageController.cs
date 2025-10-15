@@ -23,6 +23,7 @@ namespace Blue.UI.Garage.Strage
             //仮の実装で一旦Newする
             InventoryModel strage_inventory = new InventoryModel();
             InventoryModel player_inventory = new InventoryModel();
+            //デバッグ用にアイテムを追加
             player_inventory.AddItem(item);
 
             strageInventory.Initialize(strage_inventory, playerInput);
