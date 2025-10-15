@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Blue.Item;
+using Blue.UI.Inventory;
 
 namespace Blue.UI.DragAndDrop
 {
@@ -36,6 +37,13 @@ namespace Blue.UI.DragAndDrop
 
                 if (CanAcceptItem(item_data, quantity))
                 {
+                    // ドラッグ中のスロットを即座にプールに戻せるように、先にフラグを降ろす
+                    if (event_data.pointerDrag.TryGetComponent(out ItemSlotDragHandler drag_handler))
+                    {
+                        drag_handler.ForceEndDrag();
+                    }
+
+                    // ドロップ処理を実行（この時点でisDragging = falseなので正しく更新される）
                     OnItemDropped(item_data, quantity, source_container);
                 }
             }

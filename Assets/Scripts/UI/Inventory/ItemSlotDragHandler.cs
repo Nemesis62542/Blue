@@ -13,8 +13,10 @@ namespace Blue.UI.Inventory
         private Transform originalParent;
         private Canvas canvas;
         private IItemContainer sourceContainer;
+        private bool isDragging = false;
 
         public ItemData CurrentItem => itemSlot.CurrentItem;
+        public bool IsDragging => isDragging;
 
         public void Initialize(IItemContainer container)
         {
@@ -46,6 +48,7 @@ namespace Blue.UI.Inventory
         {
             if (itemSlot.CurrentItem == null) return;
 
+            isDragging = true;
             originalParent = itemSlot.transform.parent;
             itemSlot.transform.SetParent(canvas.transform);
             canvasGroup.blocksRaycasts = false;
@@ -67,7 +70,28 @@ namespace Blue.UI.Inventory
 
         public void OnEndDrag(PointerEventData event_data)
         {
-            itemSlot.transform.SetParent(originalParent);
+            EndDragInternal();
+        }
+
+        /// <summary>
+        /// ドラッグを強制終了する（OnDropから呼ばれる）
+        /// </summary>
+        public void ForceEndDrag()
+        {
+            EndDragInternal();
+        }
+
+        private void EndDragInternal()
+        {
+            isDragging = false;
+
+            if (originalParent != null)
+            {
+                itemSlot.transform.SetParent(originalParent);
+                itemSlot.transform.localPosition = Vector3.zero;
+                itemSlot.transform.localRotation = Quaternion.identity;
+                itemSlot.transform.localScale = Vector3.one;
+            }
             canvasGroup.blocksRaycasts = true;
             canvasGroup.alpha = 1f;
         }
