@@ -380,12 +380,12 @@ namespace Blue.Player
 
         private void Attack()
         {
-            InventoryItem item = QuickSlot.CurrentInventoryItem;
+            QuickSlotItem quick_slot_item = QuickSlot.CurrentQuickSlotItem;
             int attack_power = 1;
 
-            if (item != null && item.ItemData.HasAttribute(ItemAttribute.AttackPower))
+            if (quick_slot_item != null && quick_slot_item.ItemData != null && quick_slot_item.ItemData.HasAttribute(ItemAttribute.AttackPower))
             {
-                attack_power = item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
+                attack_power = quick_slot_item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
             }
 
             if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))

@@ -15,6 +15,7 @@ namespace Blue.UI.Inventory
         private int currentItemCount;
 
         public ItemData CurrentItem => currentItemData;
+        public int CurrentItemCount => currentItemCount;
         public RectTransform HoverArea => hoverArea;
 
         public void SetItem(ItemData item_data, int count)

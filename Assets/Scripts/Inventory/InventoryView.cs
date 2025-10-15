@@ -4,6 +4,7 @@ using Blue.Item;
 using Blue.Input;
 using Blue.UI.Common;
 using Blue.UI.Inventory;
+using Blue.UI.DragAndDrop;
 
 namespace Blue.Inventory
 {
@@ -16,17 +17,22 @@ namespace Blue.Inventory
 
         private List<ItemSlot> itemSlots = new List<ItemSlot>();
         private InventoryModel model;
+        private IItemContainer container;
         private Queue<ItemSlot> itemSlotPool = new Queue<ItemSlot>();
 
-        public void Initialize(InventoryModel model, PlayerInputHandler input_handler)
+        public void Initialize(InventoryModel model, PlayerInputHandler input_handler, IItemContainer container)
         {
             this.model = model;
+            this.container = container;
             itemSelectHandler.SetupInput(input_handler);
         }
 
         public void UpdateInventoryUI()
         {
             if (model == null) return;
+
+            // 他のインベントリのプールに入っているスロットを回収
+            CleanupOrphanedSlots();
 
             ReleaseAllItemSlots();
 
@@ -37,13 +43,38 @@ namespace Blue.Inventory
             navigator.InitializeSelection();
         }
 
+        /// <summary>
+        /// 他のインベントリの親に属しているスロットを自分のプールに戻す
+        /// </summary>
+        private void CleanupOrphanedSlots()
+        {
+            for (int i = itemSlots.Count - 1; i >= 0; i--)
+            {
+                ItemSlot slot = itemSlots[i];
+                if (slot == null)
+                {
+                    itemSlots.RemoveAt(i);
+                    continue;
+                }
+
+                // 親が自分のitemSlotParentでない場合は、正しい親に戻す
+                if (slot.transform.parent != itemSlotParent)
+                {
+                    slot.transform.SetParent(itemSlotParent);
+                    slot.transform.localPosition = Vector3.zero;
+                    slot.transform.localRotation = Quaternion.identity;
+                    slot.transform.localScale = Vector3.one;
+                }
+            }
+        }
+
         private void AddItemToUI(ItemData item_data, int count)
         {
             ItemSlot new_item_slot = GetOrCreateItemSlot();
             new_item_slot.SetItem(item_data, count);
             if (new_item_slot.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
             {
-                drag_handler.Initialize(item_data);
+                drag_handler.Initialize(container);
             }
         }
 
@@ -54,6 +85,12 @@ namespace Blue.Inventory
             {
                 slot = itemSlotPool.Dequeue();
                 slot.gameObject.SetActive(true);
+
+                // プールから取り出す際にTransformをリセット
+                slot.transform.SetParent(itemSlotParent);
+                slot.transform.localPosition = Vector3.zero;
+                slot.transform.localRotation = Quaternion.identity;
+                slot.transform.localScale = Vector3.one;
                 return slot;
             }
             slot = Instantiate(itemSlotPrefab, itemSlotParent);
@@ -65,6 +102,15 @@ namespace Blue.Inventory
         {
             foreach (ItemSlot child in itemSlots)
             {
+                // ドラッグ中のスロットはプールに戻さない
+                if (child.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
+                {
+                    if (drag_handler.IsDragging)
+                    {
+                        continue;
+                    }
+                }
+
                 child.gameObject.SetActive(false);
                 itemSlotPool.Enqueue(child);
             }

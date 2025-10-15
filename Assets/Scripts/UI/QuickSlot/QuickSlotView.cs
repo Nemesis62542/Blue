@@ -29,16 +29,17 @@ namespace Blue.UI.QuickSlot
             int slot_count = quickSlotHandler.QuickSlots.Count;
             for (int i = 0; i < slot_count; i++)
             {
-                ItemData item_data = quickSlotHandler.GetItem(i);
+                QuickSlotItem slot_item = quickSlotHandler.GetQuickSlotItem(i);
                 ItemSlot quick_slot = GetOrCreateQuickSlot();
 
-                int quantity = 0;
-                if (item_data != null)
+                if (slot_item != null)
                 {
-                    InventoryItem inventory_item = quickSlotHandler.GetInventoryItem(i);
-                    quantity = inventory_item?.Quantity ?? 0;
+                    quick_slot.SetItem(slot_item.ItemData, slot_item.Quantity);
                 }
-                quick_slot.SetItem(item_data, quantity);
+                else
+                {
+                    quick_slot.SetItem(null, 0);
+                }
 
                 if (quick_slot.HoverArea.TryGetComponent(out QuickSlotDropHandler drop_handler))
                 {

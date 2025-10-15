@@ -12,6 +12,7 @@ namespace Blue.Inventory
 
         public ReadOnlyCollection<InventoryItem> InventoryItems => inventoryItems.AsReadOnly();
         public Action<ItemData> OnPickUpItem { private get; set; }
+        public event Action OnValueChanged;
 
         public void AddItem(ItemData item_data, int quantity = 1)
         {
@@ -28,6 +29,7 @@ namespace Blue.Inventory
             Debug.Log($"アイテム取得: {item_data.Name}");
 
             OnPickUpItem?.Invoke(item_data);
+            OnValueChanged?.Invoke();
         }
 
         public void RemoveItem(ItemData item_data, int quantity = 1)
@@ -47,6 +49,7 @@ namespace Blue.Inventory
                 {
                     Debug.Log($"アイテムの個数減少: {item_data.Name} x{quantity}");
                 }
+                OnValueChanged?.Invoke();
             }
         }
 

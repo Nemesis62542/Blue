@@ -1,23 +1,42 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Blue.Item;
+using Blue.UI.DragAndDrop;
 
 namespace Blue.UI.Inventory
 {
-    public class ItemSlotDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class ItemSlotDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDraggableItemSlot
     {
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private ItemSlot itemSlot;
 
         private Transform originalParent;
         private Canvas canvas;
-        private ItemData itemData;
+        private IItemContainer sourceContainer;
+        private bool isDragging = false;
 
-        public ItemData CurrentItem => itemData;
+        public ItemData CurrentItem => itemSlot.CurrentItem;
+        public bool IsDragging => isDragging;
 
-        public void Initialize(ItemData item)
+        public void Initialize(IItemContainer container)
         {
-            itemData = item;
+            sourceContainer = container;
+        }
+
+        // IDraggableItemSlot実装
+        public ItemData GetItemData()
+        {
+            return itemSlot.CurrentItem;
+        }
+
+        public int GetItemQuantity()
+        {
+            return itemSlot.CurrentItemCount;
+        }
+
+        public IItemContainer GetSourceContainer()
+        {
+            return sourceContainer;
         }
 
         private void Awake()
@@ -27,8 +46,9 @@ namespace Blue.UI.Inventory
 
         public void OnBeginDrag(PointerEventData event_data)
         {
-            if (itemData == null) return;
+            if (itemSlot.CurrentItem == null) return;
 
+            isDragging = true;
             originalParent = itemSlot.transform.parent;
             itemSlot.transform.SetParent(canvas.transform);
             canvasGroup.blocksRaycasts = false;
@@ -50,7 +70,28 @@ namespace Blue.UI.Inventory
 
         public void OnEndDrag(PointerEventData event_data)
         {
-            itemSlot.transform.SetParent(originalParent);
+            EndDragInternal();
+        }
+
+        /// <summary>
+        /// ドラッグを強制終了する（OnDropから呼ばれる）
+        /// </summary>
+        public void ForceEndDrag()
+        {
+            EndDragInternal();
+        }
+
+        private void EndDragInternal()
+        {
+            isDragging = false;
+
+            if (originalParent != null)
+            {
+                itemSlot.transform.SetParent(originalParent);
+                itemSlot.transform.localPosition = Vector3.zero;
+                itemSlot.transform.localRotation = Quaternion.identity;
+                itemSlot.transform.localScale = Vector3.one;
+            }
             canvasGroup.blocksRaycasts = true;
             canvasGroup.alpha = 1f;
         }
