@@ -4,6 +4,7 @@ using Blue.Item;
 using Blue.Input;
 using Blue.UI.Common;
 using Blue.UI.Inventory;
+using Blue.UI.DragAndDrop;
 
 namespace Blue.Inventory
 {
@@ -16,11 +17,13 @@ namespace Blue.Inventory
 
         private List<ItemSlot> itemSlots = new List<ItemSlot>();
         private InventoryModel model;
+        private IItemContainer container;
         private Queue<ItemSlot> itemSlotPool = new Queue<ItemSlot>();
 
-        public void Initialize(InventoryModel model, PlayerInputHandler input_handler)
+        public void Initialize(InventoryModel model, PlayerInputHandler input_handler, IItemContainer container)
         {
             this.model = model;
+            this.container = container;
             itemSelectHandler.SetupInput(input_handler);
         }
 
@@ -43,7 +46,7 @@ namespace Blue.Inventory
             new_item_slot.SetItem(item_data, count);
             if (new_item_slot.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
             {
-                drag_handler.Initialize(item_data);
+                drag_handler.Initialize(container);
             }
         }
 

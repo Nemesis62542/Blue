@@ -1,23 +1,40 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Blue.Item;
+using Blue.UI.DragAndDrop;
 
 namespace Blue.UI.Inventory
 {
-    public class ItemSlotDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class ItemSlotDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDraggableItemSlot
     {
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private ItemSlot itemSlot;
 
         private Transform originalParent;
         private Canvas canvas;
-        private ItemData itemData;
+        private IItemContainer sourceContainer;
 
-        public ItemData CurrentItem => itemData;
+        public ItemData CurrentItem => itemSlot.CurrentItem;
 
-        public void Initialize(ItemData item)
+        public void Initialize(IItemContainer container)
         {
-            itemData = item;
+            sourceContainer = container;
+        }
+
+        // IDraggableItemSlot実装
+        public ItemData GetItemData()
+        {
+            return itemSlot.CurrentItem;
+        }
+
+        public int GetItemQuantity()
+        {
+            return itemSlot.CurrentItemCount;
+        }
+
+        public IItemContainer GetSourceContainer()
+        {
+            return sourceContainer;
         }
 
         private void Awake()
@@ -27,7 +44,7 @@ namespace Blue.UI.Inventory
 
         public void OnBeginDrag(PointerEventData event_data)
         {
-            if (itemData == null) return;
+            if (itemSlot.CurrentItem == null) return;
 
             originalParent = itemSlot.transform.parent;
             itemSlot.transform.SetParent(canvas.transform);

@@ -2,6 +2,7 @@ using Blue.Input;
 using Blue.Inventory;
 using Blue.Item;
 using Blue.UI.QuickSlot;
+using Blue.UI.DragAndDrop;
 using UnityEngine;
 
 namespace Blue.UI.Garage.Strage
@@ -11,6 +12,8 @@ namespace Blue.UI.Garage.Strage
         [SerializeField] private InventoryController strageInventory;
         [SerializeField] private InventoryController playerInventory;
         [SerializeField] private QuickSlotController quickSlot;
+        [SerializeField] private GenericItemDropHandler strageDropHandler;
+        [SerializeField] private GenericItemDropHandler playerDropHandler;
         [SerializeField] private ItemData item;
 
         private PlayerInputHandler playerInput;
@@ -29,6 +32,16 @@ namespace Blue.UI.Garage.Strage
             strageInventory.Initialize(strage_inventory, playerInput);
             playerInventory.Initialize(player_inventory, playerInput);
             quickSlot.Initialize(new QuickSlotHandler(player_inventory), playerInput);
+
+            // ドロップハンドラのセットアップ
+            if (strageDropHandler != null)
+            {
+                strageDropHandler.Setup(strageInventory);
+            }
+            if (playerDropHandler != null)
+            {
+                playerDropHandler.Setup(playerInventory);
+            }
 
             InitializeView();
         }
