@@ -976,7 +976,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000021168336}
+  m_AnchoredPosition: {x: 0, y: 0.000024403414}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &4038134543059290420
@@ -1204,8 +1204,6 @@ GameObject:
   - component: {fileID: 8585455866394203944}
   - component: {fileID: 1113200272275058218}
   - component: {fileID: 3637097593052659853}
-  - component: {fileID: 8563153387344126277}
-  - component: {fileID: 2191761938293849329}
   m_Layer: 5
   m_Name: StrageInventory
   m_TagString: Untagged
@@ -1329,36 +1327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Inventory.InventoryView
   itemSlotParent: {fileID: 2941763715411949892}
   itemSlotPrefab: {fileID: 720836241039303844, guid: ea8d5809afee03b4bba8a8fe45a2e0fe, type: 3}
-  navigator: {fileID: 8563153387344126277}
-  itemSelectHandler: {fileID: 2191761938293849329}
---- !u!114 &8563153387344126277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4338126522320206460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeb6d5a0e4a8ea545a25d47125bb7f98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Common.UISelectableNavigator
-  contentRoot: {fileID: 2941763715411949892}
---- !u!114 &2191761938293849329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4338126522320206460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b8eb2597d3bae9448cca7d8c572168e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Inventory.InventoryItemSelectHandler
-  quickSlotNavigator: {fileID: 0}
-  inventoryNavigator: {fileID: 8563153387344126277}
-  quickSlotSelectHandler: {fileID: 0}
+  dropHandler: {fileID: 8711484437316803245}
 --- !u!1 &4627884981773866117
 GameObject:
   m_ObjectHideFlags: 0
@@ -1657,7 +1626,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000054619097}
+  m_AnchoredPosition: {x: 0, y: -0.000066872155}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8671583640182817631
@@ -1860,8 +1829,6 @@ GameObject:
   - component: {fileID: 2483771549672471052}
   - component: {fileID: 4696773864712537355}
   - component: {fileID: 2347354575624650005}
-  - component: {fileID: 6487265419418543532}
-  - component: {fileID: 4204971344270062631}
   m_Layer: 5
   m_Name: PlayerInventory
   m_TagString: Untagged
@@ -1985,36 +1952,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Inventory.InventoryView
   itemSlotParent: {fileID: 2010725167168003183}
   itemSlotPrefab: {fileID: 720836241039303844, guid: ea8d5809afee03b4bba8a8fe45a2e0fe, type: 3}
-  navigator: {fileID: 4204971344270062631}
-  itemSelectHandler: {fileID: 6487265419418543532}
---- !u!114 &6487265419418543532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6256813770807041362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b8eb2597d3bae9448cca7d8c572168e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Inventory.InventoryItemSelectHandler
-  quickSlotNavigator: {fileID: 0}
-  inventoryNavigator: {fileID: 4204971344270062631}
-  quickSlotSelectHandler: {fileID: 0}
---- !u!114 &4204971344270062631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6256813770807041362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeb6d5a0e4a8ea545a25d47125bb7f98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Common.UISelectableNavigator
-  contentRoot: {fileID: 2010725167168003183}
+  dropHandler: {fileID: 4544545150386778087}
 --- !u!1 &7353783989760090745
 GameObject:
   m_ObjectHideFlags: 0
@@ -2433,8 +2371,6 @@ MonoBehaviour:
   strageInventory: {fileID: 1113200272275058218}
   playerInventory: {fileID: 4696773864712537355}
   quickSlot: {fileID: 6094617201470137804}
-  strageDropHandler: {fileID: 8711484437316803245}
-  playerDropHandler: {fileID: 4544545150386778087}
   item: {fileID: 11400000, guid: 9ab7f6a67a6f7f64ebf2617a6dc8e4e7, type: 2}
 --- !u!1001 &55478596208890491
 PrefabInstance:

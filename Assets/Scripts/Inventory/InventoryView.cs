@@ -12,8 +12,7 @@ namespace Blue.Inventory
     {
         [SerializeField] private Transform itemSlotParent;
         [SerializeField] private ItemSlot itemSlotPrefab;
-        [SerializeField] private UISelectableNavigator navigator;
-        [SerializeField] private InventoryItemSelectHandler itemSelectHandler;
+        [SerializeField] private GenericItemDropHandler dropHandler;
 
         private List<ItemSlot> itemSlots = new List<ItemSlot>();
         private InventoryModel model;
@@ -24,7 +23,12 @@ namespace Blue.Inventory
         {
             this.model = model;
             this.container = container;
-            itemSelectHandler.SetupInput(input_handler);
+
+            // ドロップハンドラーのセットアップ
+            if (dropHandler != null)
+            {
+                dropHandler.Setup(container);
+            }
         }
 
         public void UpdateInventoryUI()
@@ -39,7 +43,6 @@ namespace Blue.Inventory
             {
                 AddItemToUI(item.Key, item.Value);
             }
-            navigator.InitializeSelection();
         }
 
         /// <summary>
