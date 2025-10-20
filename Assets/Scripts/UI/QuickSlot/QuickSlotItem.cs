@@ -1,6 +1,6 @@
 using Blue.Item;
 
-namespace Blue.Inventory
+namespace Blue.UI.QuickSlot
 {
     /// <summary>
     /// クイックスロットに登録されるアイテム情報

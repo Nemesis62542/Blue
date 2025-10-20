@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Blue.Item;
-using Blue.Inventory;
 using Blue.UI.DragAndDrop;
 
 namespace Blue.UI.QuickSlot

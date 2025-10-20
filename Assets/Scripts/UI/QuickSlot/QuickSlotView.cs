@@ -1,5 +1,4 @@
 using UnityEngine;
-using Blue.Inventory;
 using Blue.UI.Inventory;
 using Blue.UI.DragAndDrop;
 using System.Collections.Generic;
