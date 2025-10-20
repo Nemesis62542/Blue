@@ -31,7 +31,6 @@ namespace Blue.Inventory
         {
             if (model == null) return;
 
-            // 他のインベントリのプールに入っているスロットを回収
             CleanupOrphanedSlots();
 
             ReleaseAllItemSlots();
@@ -57,7 +56,6 @@ namespace Blue.Inventory
                     continue;
                 }
 
-                // 親が自分のitemSlotParentでない場合は、正しい親に戻す
                 if (slot.transform.parent != itemSlotParent)
                 {
                     slot.transform.SetParent(itemSlotParent);
@@ -86,7 +84,6 @@ namespace Blue.Inventory
                 slot = itemSlotPool.Dequeue();
                 slot.gameObject.SetActive(true);
 
-                // プールから取り出す際にTransformをリセット
                 slot.transform.SetParent(itemSlotParent);
                 slot.transform.localPosition = Vector3.zero;
                 slot.transform.localRotation = Quaternion.identity;
@@ -102,7 +99,6 @@ namespace Blue.Inventory
         {
             foreach (ItemSlot child in itemSlots)
             {
-                // ドラッグ中のスロットはプールに戻さない
                 if (child.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
                 {
                     if (drag_handler.IsDragging)

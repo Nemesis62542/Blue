@@ -21,7 +21,6 @@ namespace Blue.UI.QuickSlot
             this.quickSlotModel = quickSlotModel;
             quickSlots = GetComponentsInChildren<GenericItemDropHandler>();
 
-            // 各ドロップ枠にGenericItemDropHandlerをセットアップ
             foreach (GenericItemDropHandler handler in quickSlots)
             {
                 handler.Setup(quickSlotModel);
@@ -80,7 +79,6 @@ namespace Blue.UI.QuickSlot
         {
             foreach (ItemSlot slot in itemSlots)
             {
-                // ドラッグ中のスロットはプールに戻さない
                 if (slot.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
                 {
                     if (drag_handler.IsDragging)

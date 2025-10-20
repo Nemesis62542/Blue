@@ -28,13 +28,11 @@ namespace Blue.Inventory
         {
             if (!IsValidSlot(index)) return;
 
-            // 既に登録されているアイテムがあれば、インベントリに戻す
             if (quickSlots[index] != null)
             {
                 inventory.AddItem(quickSlots[index].ItemData, quickSlots[index].Quantity);
             }
 
-            // インベントリから指定個数を取り出す
             if (inventory.TryGetItem(item, out InventoryItem inventoryItem))
             {
                 int actualQuantity = Mathf.Min(quantity, inventoryItem.Quantity);
@@ -51,7 +49,6 @@ namespace Blue.Inventory
         {
             if (!IsValidSlot(index) || quickSlots[index] == null) return;
 
-            // クイックスロットからインベントリに戻す
             inventory.AddItem(quickSlots[index].ItemData, quickSlots[index].Quantity);
             quickSlots[index] = null;
 
@@ -89,10 +86,8 @@ namespace Blue.Inventory
                 case ItemType.Consumable:
                     ApplyConsumableEffect(slot_item.ItemData);
 
-                    // クイックスロットから1個消費
                     slot_item.ModifyQuantity(-1);
 
-                    // 個数が0になったらスロットをクリア
                     if (slot_item.Quantity <= 0)
                     {
                         quickSlots[index] = null;
@@ -115,7 +110,6 @@ namespace Blue.Inventory
             {
                 QuickSlotItem slot_item = quickSlots[i];
 
-                // 個数が0以下になったらクリア
                 if (slot_item != null && slot_item.Quantity <= 0)
                 {
                     quickSlots[i] = null;

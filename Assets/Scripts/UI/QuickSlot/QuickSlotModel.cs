@@ -19,12 +19,10 @@ namespace Blue.UI.QuickSlot
         public event Action<int, ItemData> OnQuickSlotChanged;
         public event Action OnQuickSlotUpdated;
 
-        // IItemContainer実装
         public bool AddItem(ItemData item_data, int quantity)
         {
             if (item_data == null || quantity <= 0) return false;
 
-            // 空いているスロットを探して追加
             for (int i = 0; i < quickSlots.Count; i++)
             {
                 if (quickSlots[i] == null)
@@ -36,7 +34,6 @@ namespace Blue.UI.QuickSlot
                 }
             }
 
-            // 空きスロットがない場合は失敗
             return false;
         }
 
@@ -44,7 +41,6 @@ namespace Blue.UI.QuickSlot
         {
             if (item_data == null || quantity <= 0) return false;
 
-            // 該当アイテムを探して削除
             for (int i = 0; i < quickSlots.Count; i++)
             {
                 if (quickSlots[i]?.ItemData == item_data)

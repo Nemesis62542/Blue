@@ -33,7 +33,6 @@ namespace Blue.UI.Garage.Strage
             playerInventory.Initialize(player_inventory, playerInput);
             quickSlot.Initialize(new QuickSlotModel());
 
-            // ドロップハンドラのセットアップ
             if (strageDropHandler != null)
             {
                 strageDropHandler.Setup(strageInventory);

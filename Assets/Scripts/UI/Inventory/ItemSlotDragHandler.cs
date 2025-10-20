@@ -24,7 +24,6 @@ namespace Blue.UI.Inventory
             canvas = GetComponentInParent<Canvas>();
         }
 
-        // IDraggableItemSlot実装
         public ItemData GetItemData()
         {
             return itemSlot.CurrentItem;
