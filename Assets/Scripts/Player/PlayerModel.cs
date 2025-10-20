@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Blue.Entity;
 using Blue.Inventory;
+using Blue.UI.QuickSlot;
 using UnityEngine;
 
 namespace Blue.Player
@@ -10,7 +11,7 @@ namespace Blue.Player
     {
         private InventoryModel inventory = new InventoryModel();
         private Dictionary<EntityData, int> capturedEntities = new Dictionary<EntityData, int>();
-        private QuickSlotHandler quickSlotHandler;
+        private QuickSlotModel quickSlotModel;
         private int maxOxygen = 100;
         private int oxygen;
         private float maxFuel = 100f;
@@ -20,13 +21,13 @@ namespace Blue.Player
         public PlayerModel(EntityData data, InventoryModel inventory = null, int? initialOxygen = null) : base(data)
         {
             this.inventory = inventory ?? new InventoryModel();
-            quickSlotHandler = new QuickSlotHandler(this.inventory);
+            quickSlotModel = new QuickSlotModel();
             oxygen = initialOxygen ?? maxOxygen;
             fuel = maxFuel;
         }
 
         public InventoryModel Inventory => inventory;
-        public QuickSlotHandler QuickSlot => quickSlotHandler;
+        public QuickSlotModel QuickSlot => quickSlotModel;
         public int MaxOxygen
         {
             get => maxOxygen;
