@@ -1,4 +1,3 @@
-using System;
 using Blue.Input;
 using Blue.Item;
 using Blue.UI.DragAndDrop;
@@ -16,7 +15,7 @@ namespace Blue.Inventory
         {
             this.model = model;
             this.model.OnValueChanged += RefreshInventoryUI;
-            view.Initialize(this.model, input_handler, this);
+            view?.Initialize(this.model, input_handler, this);
         }
 
         public void RefreshInventoryUI()
@@ -24,7 +23,6 @@ namespace Blue.Inventory
             view.UpdateInventoryUI();
         }
 
-        // IItemContainer実装
         public bool RemoveItem(ItemData item_data, int quantity)
         {
             if (model.TryGetItem(item_data, out InventoryItem item) && item.Quantity >= quantity)

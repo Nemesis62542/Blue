@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Blue.Item;
-using UnityEngine;
+using Blue.UI.DragAndDrop;
 
-namespace Blue.Inventory
+namespace Blue.UI.QuickSlot
 {
-    public class QuickSlotHandler
+    public class QuickSlotModel : IItemContainer
     {
         private List<QuickSlotItem> quickSlots = new List<QuickSlotItem>(new QuickSlotItem[4]);
-        private InventoryModel inventory;
         private int currentSlotIndex = 0;
 
         public IReadOnlyList<QuickSlotItem> QuickSlots => quickSlots.AsReadOnly();
@@ -19,43 +18,53 @@ namespace Blue.Inventory
         public event Action<int, ItemData> OnQuickSlotChanged;
         public event Action OnQuickSlotUpdated;
 
-        public QuickSlotHandler(InventoryModel inventory)
+        public bool AddItem(ItemData item_data, int quantity)
         {
-            this.inventory = inventory;
-        }
+            if (item_data == null || quantity <= 0) return false;
 
-        public void Register(int index, ItemData item, int quantity = 1)
-        {
-            if (!IsValidSlot(index)) return;
-
-            // 既に登録されているアイテムがあれば、インベントリに戻す
-            if (quickSlots[index] != null)
+            for (int i = 0; i < quickSlots.Count; i++)
             {
-                inventory.AddItem(quickSlots[index].ItemData, quickSlots[index].Quantity);
+                if (quickSlots[i] == null)
+                {
+                    quickSlots[i] = new QuickSlotItem(item_data, quantity);
+                    OnQuickSlotChanged?.Invoke(i, item_data);
+                    OnQuickSlotUpdated?.Invoke();
+                    return true;
+                }
             }
 
-            // インベントリから指定個数を取り出す
-            if (inventory.TryGetItem(item, out InventoryItem inventoryItem))
-            {
-                int actualQuantity = Mathf.Min(quantity, inventoryItem.Quantity);
-
-                inventory.RemoveItem(item, actualQuantity);
-                quickSlots[index] = new QuickSlotItem(item, actualQuantity);
-
-                if (index == currentSlotIndex) OnQuickSlotChanged?.Invoke(index, item);
-                OnQuickSlotUpdated?.Invoke();
-            }
+            return false;
         }
 
-        public void Unregister(int index)
+        public bool RemoveItem(ItemData item_data, int quantity)
         {
-            if (!IsValidSlot(index) || quickSlots[index] == null) return;
+            if (item_data == null || quantity <= 0) return false;
 
-            // クイックスロットからインベントリに戻す
-            inventory.AddItem(quickSlots[index].ItemData, quickSlots[index].Quantity);
-            quickSlots[index] = null;
+            for (int i = 0; i < quickSlots.Count; i++)
+            {
+                if (quickSlots[i]?.ItemData == item_data)
+                {
+                    if (quickSlots[i].Quantity >= quantity)
+                    {
+                        quickSlots[i].ModifyQuantity(-quantity);
 
-            OnQuickSlotChanged?.Invoke(index, null);
+                        if (quickSlots[i].Quantity <= 0)
+                        {
+                            quickSlots[i] = null;
+                            OnQuickSlotChanged?.Invoke(i, null);
+                        }
+
+                        OnQuickSlotUpdated?.Invoke();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public void UpdateView()
+        {
             OnQuickSlotUpdated?.Invoke();
         }
 
@@ -89,10 +98,8 @@ namespace Blue.Inventory
                 case ItemType.Consumable:
                     ApplyConsumableEffect(slot_item.ItemData);
 
-                    // クイックスロットから1個消費
                     slot_item.ModifyQuantity(-1);
 
-                    // 個数が0になったらスロットをクリア
                     if (slot_item.Quantity <= 0)
                     {
                         quickSlots[index] = null;
@@ -104,9 +111,13 @@ namespace Blue.Inventory
             }
         }
 
-        private bool IsValidSlot(int index)
+        public void SelectSlot(int index)
         {
-            return index >= 0 && index < quickSlots.Count;
+            if (IsValidSlot(index))
+            {
+                currentSlotIndex = index;
+                OnQuickSlotChanged?.Invoke(index, GetItem(index));
+            }
         }
 
         public void CleanupInvalidSlots()
@@ -115,7 +126,6 @@ namespace Blue.Inventory
             {
                 QuickSlotItem slot_item = quickSlots[i];
 
-                // 個数が0以下になったらクリア
                 if (slot_item != null && slot_item.Quantity <= 0)
                 {
                     quickSlots[i] = null;
@@ -125,20 +135,14 @@ namespace Blue.Inventory
             }
         }
 
-        public void SelectSlot(int index)
+        private bool IsValidSlot(int index)
         {
-            if (IsValidSlot(index))
-            {
-                currentSlotIndex = index;
-                Debug.Log($"クイックスロット{index}を選択");
-                OnQuickSlotChanged?.Invoke(index, GetItem(index));
-            }
+            return index >= 0 && index < quickSlots.Count;
         }
 
         private void ApplyConsumableEffect(ItemData item)
         {
-            Debug.Log($"使用: {item.Name} ({item.GetAttributeValue(ItemAttribute.HealingValue)} HP 回復)");
+            UnityEngine.Debug.Log($"使用: {item.Name} ({item.GetAttributeValue(ItemAttribute.HealingValue)} HP 回復)");
         }
-
     }
 }

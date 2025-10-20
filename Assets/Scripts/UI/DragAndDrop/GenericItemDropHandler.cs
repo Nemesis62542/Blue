@@ -37,13 +37,11 @@ namespace Blue.UI.DragAndDrop
 
                 if (CanAcceptItem(item_data, quantity))
                 {
-                    // ドラッグ中のスロットを即座にプールに戻せるように、先にフラグを降ろす
                     if (event_data.pointerDrag.TryGetComponent(out ItemSlotDragHandler drag_handler))
                     {
                         drag_handler.ForceEndDrag();
                     }
 
-                    // ドロップ処理を実行（この時点でisDragging = falseなので正しく更新される）
                     OnItemDropped(item_data, quantity, source_container);
                 }
             }
@@ -70,7 +68,6 @@ namespace Blue.UI.DragAndDrop
             }
         }
 
-        // IItemDropTarget実装
         public IItemContainer GetTargetContainer()
         {
             return targetContainer;
@@ -78,8 +75,6 @@ namespace Blue.UI.DragAndDrop
 
         public bool CanAcceptItem(ItemData item_data, int quantity)
         {
-            // 基本的には全て受け入れ可能
-            // 必要に応じてサブクラスでオーバーライド
             return targetContainer != null && item_data != null && quantity > 0;
         }
 
@@ -90,25 +85,20 @@ namespace Blue.UI.DragAndDrop
                 return;
             }
 
-            // 同じコンテナへのドロップは無視
             if (source_container == targetContainer)
             {
                 return;
             }
 
-            // 元のコンテナから削除
             if (source_container.RemoveItem(item_data, quantity))
             {
-                // 移動先に追加
                 if (targetContainer.AddItem(item_data, quantity))
                 {
-                    // 両方のビューを更新
                     source_container.UpdateView();
                     targetContainer.UpdateView();
                 }
                 else
                 {
-                    // 追加に失敗した場合は元に戻す
                     source_container.AddItem(item_data, quantity);
                     source_container.UpdateView();
                 }

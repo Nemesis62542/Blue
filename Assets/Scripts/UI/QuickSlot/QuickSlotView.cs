@@ -1,77 +1,93 @@
 using UnityEngine;
+using Blue.UI.Inventory;
+using Blue.UI.DragAndDrop;
 using System.Collections.Generic;
 using Blue.Item;
-using Blue.Inventory;
-using Blue.UI.Inventory;
 
 namespace Blue.UI.QuickSlot
 {
     public class QuickSlotView : MonoBehaviour
     {
-        [SerializeField] private Transform quickSlotParent;
-        [SerializeField] private ItemSlot quickSlotPrefab;
+        [SerializeField] private ItemSlot itemSlotPrefab;
 
-        private List<ItemSlot> quickSlotSlots = new List<ItemSlot>();
-        private Queue<ItemSlot> quickSlotPool = new Queue<ItemSlot>();
-        private QuickSlotHandler quickSlotHandler;
+        private QuickSlotModel quickSlotModel;
+        private GenericItemDropHandler[] quickSlots;
+        private List<ItemSlot> itemSlots = new List<ItemSlot>();
+        private Queue<ItemSlot> itemSlotPool = new Queue<ItemSlot>();
 
-        public void Initialize(QuickSlotHandler quickSlotHandler)
+        public void Initialize(QuickSlotModel quickSlotModel)
         {
-            this.quickSlotHandler = quickSlotHandler;
+            this.quickSlotModel = quickSlotModel;
+            quickSlots = GetComponentsInChildren<GenericItemDropHandler>();
+
+            foreach (GenericItemDropHandler handler in quickSlots)
+            {
+                handler.Setup(quickSlotModel);
+            }
         }
 
-        public void RefreshQuickSlotUI()
+        public void UpdateInventoryUI()
         {
-            if (quickSlotHandler == null) return;
+            if (quickSlotModel == null) return;
 
-            ReleaseAllQuickSlots();
+            ReleaseAllItemSlots();
 
-            int slot_count = quickSlotHandler.QuickSlots.Count;
-            for (int i = 0; i < slot_count; i++)
+            for (int i = 0; i < quickSlots.Length; i++)
             {
-                QuickSlotItem slot_item = quickSlotHandler.GetQuickSlotItem(i);
-                ItemSlot quick_slot = GetOrCreateQuickSlot();
+                if (quickSlots[i] == null) continue;
+
+                QuickSlotItem slot_item = quickSlotModel.GetQuickSlotItem(i);
 
                 if (slot_item != null)
                 {
-                    quick_slot.SetItem(slot_item.ItemData, slot_item.Quantity);
-                }
-                else
-                {
-                    quick_slot.SetItem(null, 0);
-                }
-
-                if (quick_slot.HoverArea.TryGetComponent(out QuickSlotDropHandler drop_handler))
-                {
-                    drop_handler.Setup(quickSlotHandler, i);
-                }
-
-                if (quick_slot.HoverArea.TryGetComponent(out QuickSlotClickHandler click_handler))
-                {
-                    click_handler.Setup(quickSlotHandler, i);
+                    AddItemToUI(slot_item.ItemData, slot_item.Quantity, quickSlots[i].transform);
                 }
             }
         }
 
-        private ItemSlot GetOrCreateQuickSlot()
+        private void AddItemToUI(ItemData item_data, int count, Transform parent)
         {
-            if (quickSlotPool.Count > 0)
+            ItemSlot item_slot = GetOrCreateItemSlot();
+            item_slot.transform.SetParent(parent);
+            item_slot.transform.localPosition = Vector3.zero;
+            item_slot.transform.localRotation = Quaternion.identity;
+            item_slot.transform.localScale = Vector3.one;
+            item_slot.SetItem(item_data, count);
+
+            if (item_slot.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
             {
-                ItemSlot slot = quickSlotPool.Dequeue();
+                drag_handler.Initialize(quickSlotModel);
+            }
+        }
+
+        private ItemSlot GetOrCreateItemSlot()
+        {
+            ItemSlot slot;
+            if (itemSlotPool.Count > 0)
+            {
+                slot = itemSlotPool.Dequeue();
                 slot.gameObject.SetActive(true);
                 return slot;
             }
-            ItemSlot new_slot = Instantiate(quickSlotPrefab, quickSlotParent);
-            quickSlotSlots.Add(new_slot);
-            return new_slot;
+            slot = Instantiate(itemSlotPrefab);
+            itemSlots.Add(slot);
+            return slot;
         }
 
-        private void ReleaseAllQuickSlots()
+        private void ReleaseAllItemSlots()
         {
-            foreach (ItemSlot slot in quickSlotSlots)
+            foreach (ItemSlot slot in itemSlots)
             {
+                if (slot.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
+                {
+                    if (drag_handler.IsDragging)
+                    {
+                        continue;
+                    }
+                }
+
                 slot.gameObject.SetActive(false);
-                quickSlotPool.Enqueue(slot);
+                itemSlotPool.Enqueue(slot);
             }
         }
     }

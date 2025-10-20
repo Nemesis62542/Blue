@@ -52,7 +52,7 @@ namespace Blue.Player
         private float fuelDepletedTimer = 0f;
 
         public InventoryModel Inventory => model.Inventory;
-        public QuickSlotHandler QuickSlot => model.QuickSlot;
+        public QuickSlotModel QuickSlot => model.QuickSlot;
         public Status Status => model.Status;
 
         public static PlayerController Instance;
@@ -88,7 +88,7 @@ namespace Blue.Player
             model.OnFuelChanged += HandleFuelChanged;
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, inputHandler);
-            quickSlotController.Initialize(QuickSlot, inputHandler);
+            quickSlotController.Initialize(QuickSlot);
 
             inputHandler.OnJumpEvent += HandleJump;
             inputHandler.OnInteractEvent += InteractObject;

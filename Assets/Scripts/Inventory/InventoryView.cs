@@ -12,8 +12,7 @@ namespace Blue.Inventory
     {
         [SerializeField] private Transform itemSlotParent;
         [SerializeField] private ItemSlot itemSlotPrefab;
-        [SerializeField] private UISelectableNavigator navigator;
-        [SerializeField] private InventoryItemSelectHandler itemSelectHandler;
+        [SerializeField] private GenericItemDropHandler dropHandler;
 
         private List<ItemSlot> itemSlots = new List<ItemSlot>();
         private InventoryModel model;
@@ -24,14 +23,18 @@ namespace Blue.Inventory
         {
             this.model = model;
             this.container = container;
-            itemSelectHandler.SetupInput(input_handler);
+
+            // ドロップハンドラーのセットアップ
+            if (dropHandler != null)
+            {
+                dropHandler.Setup(container);
+            }
         }
 
         public void UpdateInventoryUI()
         {
             if (model == null) return;
 
-            // 他のインベントリのプールに入っているスロットを回収
             CleanupOrphanedSlots();
 
             ReleaseAllItemSlots();
@@ -40,7 +43,6 @@ namespace Blue.Inventory
             {
                 AddItemToUI(item.Key, item.Value);
             }
-            navigator.InitializeSelection();
         }
 
         /// <summary>
@@ -57,7 +59,6 @@ namespace Blue.Inventory
                     continue;
                 }
 
-                // 親が自分のitemSlotParentでない場合は、正しい親に戻す
                 if (slot.transform.parent != itemSlotParent)
                 {
                     slot.transform.SetParent(itemSlotParent);
@@ -86,7 +87,6 @@ namespace Blue.Inventory
                 slot = itemSlotPool.Dequeue();
                 slot.gameObject.SetActive(true);
 
-                // プールから取り出す際にTransformをリセット
                 slot.transform.SetParent(itemSlotParent);
                 slot.transform.localPosition = Vector3.zero;
                 slot.transform.localRotation = Quaternion.identity;
@@ -102,7 +102,6 @@ namespace Blue.Inventory
         {
             foreach (ItemSlot child in itemSlots)
             {
-                // ドラッグ中のスロットはプールに戻さない
                 if (child.HoverArea.TryGetComponent(out ItemSlotDragHandler drag_handler))
                 {
                     if (drag_handler.IsDragging)

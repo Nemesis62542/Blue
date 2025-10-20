@@ -21,9 +21,9 @@ namespace Blue.UI.Inventory
         public void Initialize(IItemContainer container)
         {
             sourceContainer = container;
+            canvas = GetComponentInParent<Canvas>();
         }
 
-        // IDraggableItemSlot実装
         public ItemData GetItemData()
         {
             return itemSlot.CurrentItem;
@@ -37,11 +37,6 @@ namespace Blue.UI.Inventory
         public IItemContainer GetSourceContainer()
         {
             return sourceContainer;
-        }
-
-        private void Awake()
-        {
-            canvas = GetComponentInParent<Canvas>();
         }
 
         public void OnBeginDrag(PointerEventData event_data)

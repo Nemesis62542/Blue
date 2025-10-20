@@ -1,5 +1,4 @@
 using UnityEngine;
-using Blue.Inventory;
 using Blue.Input;
 
 namespace Blue.UI.QuickSlot
@@ -7,33 +6,29 @@ namespace Blue.UI.QuickSlot
     public class QuickSlotController : MonoBehaviour
     {
         [SerializeField] private QuickSlotView view;
-        [SerializeField] private QuickSlotSelectHandler selectHandler;
 
-        private QuickSlotHandler quickSlotHandler;
+        private QuickSlotModel quickSlotModel;
 
-        public void Initialize(QuickSlotHandler quickSlotHandler, PlayerInputHandler inputHandler)
+        public void Initialize(QuickSlotModel quick__slot_model)
         {
-            this.quickSlotHandler = quickSlotHandler;
+            quickSlotModel = quick__slot_model;
 
-            quickSlotHandler.OnQuickSlotUpdated += RefreshQuickSlotUI;
+            quick__slot_model.OnQuickSlotUpdated += RefreshQuickSlotUI;
 
-            selectHandler.SetQuickSlotHandler(quickSlotHandler);
-            selectHandler.SetupInput(inputHandler);
-
-            view.Initialize(quickSlotHandler);
+            view.Initialize(quick__slot_model);
         }
 
         private void OnDisable()
         {
-            if (quickSlotHandler != null)
+            if (quickSlotModel != null)
             {
-                quickSlotHandler.OnQuickSlotUpdated -= RefreshQuickSlotUI;
+                quickSlotModel.OnQuickSlotUpdated -= RefreshQuickSlotUI;
             }
         }
 
         public void RefreshQuickSlotUI()
         {
-            view.RefreshQuickSlotUI();
+            view.UpdateInventoryUI();
         }
     }
 }
