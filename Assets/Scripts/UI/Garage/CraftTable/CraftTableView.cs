@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Blue.Recipe;
 using TMPro;
@@ -12,13 +13,18 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
 
-        public void Initialize(List<RecipeData> recipes)
+        public Action<RecipeData> OnConfirmCraftItem;
+
+        public void Initialize(List<RecipeData> recipes, Action<RecipeData> craft_callback)
         {
+            OnConfirmCraftItem = craft_callback;
+
             foreach(RecipeData recipe in recipes)
             {
                 RecipePanel panel = Instantiate(panelPrefab, panelParent);
                 panel.Initialize(recipe);
                 panel.OnPointerEnter += SetItemInfomation;
+                panel.OnConfirmCraftItem += OnConfirmCraftItem;
             }
         }
 

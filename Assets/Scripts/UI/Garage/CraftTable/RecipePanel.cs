@@ -16,6 +16,7 @@ namespace Blue.UI.Garage.CraftTable
         private bool isPointerClick;
 
         public event Action<RecipeData> OnPointerEnter;
+        public event Action<RecipeData> OnConfirmCraftItem;
 
         public RecipeData Recipe => recipe;
 
@@ -35,6 +36,7 @@ namespace Blue.UI.Garage.CraftTable
                 if(progressGauge.value >= 1)
                 {
                     progressGauge.value = 0;
+                    OnConfirmCraftItem?.Invoke(recipe);
                 }
             }
             else
