@@ -13,6 +13,7 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private Slider progressGauge;
 
         private RecipeData recipe;
+        private bool isPointerClick;
 
         public event Action<RecipeData> OnPointerEnter;
 
@@ -26,9 +27,35 @@ namespace Blue.UI.Garage.CraftTable
             progressGauge.value = 0f;
         }
 
+        public void Update()
+        {
+            if(isPointerClick)
+            {
+                progressGauge.value += Time.deltaTime;
+                if(progressGauge.value >= 1)
+                {
+                    progressGauge.value = 0;
+                }
+            }
+            else
+            {
+                progressGauge.value = 0;
+            }
+        }
+
         public void OnPointerEnterEvent()
         {
             OnPointerEnter?.Invoke(recipe);
+        }
+
+        public void OnPointerDownEvent()
+        {
+            isPointerClick = true;
+        }
+
+        public void OnPointerUpEvent()
+        {
+            isPointerClick = false;
         }
     }
 }
