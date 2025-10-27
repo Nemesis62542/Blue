@@ -1,4 +1,5 @@
 using Blue.Input;
+using Blue.UI.Garage.CraftTable;
 using Blue.UI.Garage.Strage;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace Blue.UI.Garage
     public class GarageSceneController : MonoBehaviour
     {
         [SerializeField] StrageController strage;
+        [SerializeField] CraftTableController craftTable;
 
         PlayerInputHandler playerInput;
 
@@ -14,7 +16,8 @@ namespace Blue.UI.Garage
         {
             playerInput = new PlayerInputHandler();
 
-            strage.Initialize(playerInput);
+            //strage.Initialize(playerInput);
+            craftTable.Initialize();
         }
     }
 }
