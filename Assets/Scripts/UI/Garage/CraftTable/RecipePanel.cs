@@ -1,3 +1,4 @@
+using System;
 using Blue.Recipe;
 using TMPro;
 using UnityEngine;
@@ -13,13 +14,21 @@ namespace Blue.UI.Garage.CraftTable
 
         private RecipeData recipe;
 
+        public event Action<RecipeData> OnPointerEnter;
+
         public RecipeData Recipe => recipe;
 
         public void Initialize(RecipeData recipe)
         {
+            this.recipe = recipe;
             icon.sprite = recipe.ResultItem.Icon;
             nameText.text = recipe.ResultItem.Name;
             progressGauge.value = 0f;
+        }
+
+        public void OnPointerEnterEvent()
+        {
+            OnPointerEnter?.Invoke(recipe);
         }
     }
 }

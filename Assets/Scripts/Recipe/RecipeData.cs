@@ -22,7 +22,7 @@ namespace Blue.Recipe
         [SerializeField] private ItemData item;
         [SerializeField] private int count;
 
-        public ItemData RequireItem => item;
-        public int RequireCount => count;
+        public ItemData Item => item;
+        public int Count => count;
     }
 }
