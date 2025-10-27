@@ -13,10 +13,14 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
 
+        private CraftTableModel model;
+        private RecipeData currentRecipe;
+
         public Action<RecipeData> OnConfirmCraftItem;
 
-        public void Initialize(List<RecipeData> recipes, Action<RecipeData> craft_callback)
+        public void Initialize(List<RecipeData> recipes, CraftTableModel craft_model, Action<RecipeData> craft_callback)
         {
+            model = craft_model;
             OnConfirmCraftItem = craft_callback;
 
             foreach(RecipeData recipe in recipes)
@@ -28,8 +32,17 @@ namespace Blue.UI.Garage.CraftTable
             }
         }
 
+        public void RefreshDisplay()
+        {
+            if (currentRecipe != null)
+            {
+                SetItemInfomation(currentRecipe);
+            }
+        }
+
         private void SetItemInfomation(RecipeData recipe)
         {
+            currentRecipe = recipe;
             description.text = recipe.ResultItem.Description;
             requireItems.text = GenerateRequireItemText(recipe.RequireResources);
         }
@@ -40,7 +53,9 @@ namespace Blue.UI.Garage.CraftTable
 
             foreach(RequireItemData require in requires)
             {
-                result += $"{require.Item.Name} x {require.Count}\n";
+                bool hasEnough = model.CheckEnoughResource(require.Item, require.Count);
+                string color = hasEnough ? "white" : "red";
+                result += $"<color={color}>{require.Item.Name} x {require.Count}</color>\n";
             }
 
             return result;

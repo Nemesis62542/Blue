@@ -48,9 +48,9 @@ namespace Blue.UI.Garage.CraftTable
             }
         }
 
-        private bool CheckEnoughResource(ItemData item, int count)
+        public bool CheckEnoughResource(ItemData item, int count)
         {
-            return  strageInventory.TryGetItem(item, out InventoryItem inventory_item) && 
+            return  strageInventory.TryGetItem(item, out InventoryItem inventory_item) &&
                     inventory_item.Quantity >= count;
         }
     }

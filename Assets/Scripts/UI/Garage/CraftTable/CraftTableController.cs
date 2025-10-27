@@ -23,12 +23,13 @@ namespace Blue.UI.Garage.CraftTable
 
             model = new CraftTableModel(strage_inventory);
             
-            view.Initialize(recipes, ConfirmCraftItem);
+            view.Initialize(recipes, model, ConfirmCraftItem);
         }
 
         public void ConfirmCraftItem(RecipeData recipe)
         {
             model.CraftItem(recipe);
+            view.RefreshDisplay();
         }
     }
 }
