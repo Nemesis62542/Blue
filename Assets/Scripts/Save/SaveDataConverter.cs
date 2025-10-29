@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Blue.Inventory;
 using Blue.Item;
+using Blue.UI.QuickSlot;
 using UnityEngine;
 
 namespace Blue.Save
@@ -162,6 +163,91 @@ namespace Blue.Save
         {
             SaveData save_data = SaveManager.CurrentSaveData;
             return ConvertFromSaveData(save_data.storageInventory);
+        }
+
+        /// <summary>
+        /// QuickSlotModelをQuickSlotSaveDataに変換
+        /// </summary>
+        public static QuickSlotSaveData ConvertToSaveData(QuickSlotModel quickSlot)
+        {
+            QuickSlotSaveData save_data = new QuickSlotSaveData();
+            save_data.currentSlotIndex = quickSlot.CurrentSlotIndex;
+
+            foreach (QuickSlotItem slot_item in quickSlot.QuickSlots)
+            {
+                if (slot_item != null && slot_item.ItemData != null)
+                {
+                    string item_path = GetItemDataPath(slot_item.ItemData);
+                    if (!string.IsNullOrEmpty(item_path))
+                    {
+                        save_data.slots.Add(new QuickSlotItemSaveData(item_path, slot_item.Quantity));
+                    }
+                    else
+                    {
+                        save_data.slots.Add(null); // 空スロット
+                    }
+                }
+                else
+                {
+                    save_data.slots.Add(null); // 空スロット
+                }
+            }
+
+            return save_data;
+        }
+
+        /// <summary>
+        /// QuickSlotSaveDataをQuickSlotModelに変換
+        /// </summary>
+        public static QuickSlotModel ConvertFromSaveData(QuickSlotSaveData save_data)
+        {
+            QuickSlotModel quickSlot = new QuickSlotModel();
+
+            if (save_data == null || save_data.slots == null)
+            {
+                return quickSlot;
+            }
+
+            // スロットを復元
+            for (int i = 0; i < save_data.slots.Count; i++)
+            {
+                QuickSlotItemSaveData slot_data = save_data.slots[i];
+                if (slot_data != null && !string.IsNullOrEmpty(slot_data.itemDataPath))
+                {
+                    ItemData item = LoadItemData(slot_data.itemDataPath);
+                    if (item != null)
+                    {
+                        quickSlot.AddItem(item, slot_data.quantity);
+                    }
+                }
+            }
+
+            // 現在選択中のスロットを復元
+            if (save_data.currentSlotIndex >= 0 && save_data.currentSlotIndex < save_data.slots.Count)
+            {
+                quickSlot.SelectSlot(save_data.currentSlotIndex);
+            }
+
+            return quickSlot;
+        }
+
+        /// <summary>
+        /// クイックスロットを保存
+        /// </summary>
+        public static void SaveQuickSlot(QuickSlotModel quickSlot)
+        {
+            SaveData save_data = SaveManager.CurrentSaveData;
+            save_data.quickSlot = ConvertToSaveData(quickSlot);
+            SaveManager.Save();
+        }
+
+        /// <summary>
+        /// クイックスロットを読み込み
+        /// </summary>
+        public static QuickSlotModel LoadQuickSlot()
+        {
+            SaveData save_data = SaveManager.CurrentSaveData;
+            return ConvertFromSaveData(save_data.quickSlot);
         }
     }
 }

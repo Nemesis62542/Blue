@@ -11,12 +11,14 @@ namespace Blue.Save
     {
         public InventorySaveData playerInventory;
         public InventorySaveData storageInventory;
+        public QuickSlotSaveData quickSlot;
         public long lastSaveTime; // Unix timestamp
 
         public SaveData()
         {
             playerInventory = new InventorySaveData();
             storageInventory = new InventorySaveData();
+            quickSlot = new QuickSlotSaveData();
             lastSaveTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
     }
@@ -45,6 +47,32 @@ namespace Blue.Save
             itemDataPath = item_data_path;
             quantity = qty;
             dynamicValues = dynamic_values ?? new Dictionary<string, int>();
+        }
+    }
+
+    /// <summary>
+    /// クイックスロットのセーブデータ
+    /// </summary>
+    [Serializable]
+    public class QuickSlotSaveData
+    {
+        public List<QuickSlotItemSaveData> slots = new List<QuickSlotItemSaveData>();
+        public int currentSlotIndex = 0;
+    }
+
+    /// <summary>
+    /// クイックスロットアイテムのセーブデータ
+    /// </summary>
+    [Serializable]
+    public class QuickSlotItemSaveData
+    {
+        public string itemDataPath; // ItemDataのResourcesパスまたはGUID
+        public int quantity;
+
+        public QuickSlotItemSaveData(string item_data_path, int qty)
+        {
+            itemDataPath = item_data_path;
+            quantity = qty;
         }
     }
 }

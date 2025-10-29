@@ -16,6 +16,7 @@ namespace Blue.UI.Garage.Strage
         private PlayerInputHandler playerInput;
         private InventoryModel strageInventoryModel;
         private InventoryModel playerInventoryModel;
+        private QuickSlotModel quickSlotModel;
 
         public void Initialize(PlayerInputHandler player_input)
         {
@@ -25,14 +26,16 @@ namespace Blue.UI.Garage.Strage
             // セーブデータから読み込み
             strageInventoryModel = SaveDataConverter.LoadStorageInventory();
             playerInventoryModel = SaveDataConverter.LoadPlayerInventory();
+            quickSlotModel = SaveDataConverter.LoadQuickSlot();
 
             strageInventory.Initialize(strageInventoryModel, playerInput);
             playerInventory.Initialize(playerInventoryModel, playerInput);
-            quickSlot.Initialize(new QuickSlotModel());
+            quickSlot.Initialize(quickSlotModel);
 
             // インベントリ変更時に自動保存
             strageInventoryModel.OnValueChanged += OnStorageChanged;
             playerInventoryModel.OnValueChanged += OnPlayerInventoryChanged;
+            quickSlotModel.OnQuickSlotUpdated += OnQuickSlotChanged;
 
             InitializeView();
         }
@@ -48,6 +51,10 @@ namespace Blue.UI.Garage.Strage
             {
                 playerInventoryModel.OnValueChanged -= OnPlayerInventoryChanged;
             }
+            if (quickSlotModel != null)
+            {
+                quickSlotModel.OnQuickSlotUpdated -= OnQuickSlotChanged;
+            }
         }
 
         private void OnStorageChanged()
@@ -58,6 +65,11 @@ namespace Blue.UI.Garage.Strage
         private void OnPlayerInventoryChanged()
         {
             SaveDataConverter.SavePlayerInventory(playerInventoryModel);
+        }
+
+        private void OnQuickSlotChanged()
+        {
+            SaveDataConverter.SaveQuickSlot(quickSlotModel);
         }
 
         private void InitializeView()
