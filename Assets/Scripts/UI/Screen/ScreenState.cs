@@ -8,5 +8,8 @@ namespace Blue.UI.Screen
         Pause,      // ポーズ画面
         Settings,   // 設定画面
         Movie,      // ムービーシーン
+        GarageHome, // ガレージホーム画面
+        CraftTable, // アイテムクラフト画面
+        Strage,     // アイテム倉庫画面
     }
 }
