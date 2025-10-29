@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Blue.Inventory;
-using Blue.Item;
 using Blue.Recipe;
+using Blue.Save;
 using UnityEngine;
 
 namespace Blue.UI.Garage.CraftTable
@@ -10,20 +10,47 @@ namespace Blue.UI.Garage.CraftTable
     {
         [SerializeField] private CraftTableView view;
         [SerializeField] private List<RecipeData> recipes;
-        [SerializeField] private ItemData item;
 
         private CraftTableModel model;
+        private InventoryModel storageInventoryModel;
+        private InventoryModel playerInventoryModel;
 
         public void Initialize()
         {
-            //仮の実装で一旦Newする
-            InventoryModel strage_inventory = new InventoryModel();
-            //デバッグ用にアイテムを追加
-            strage_inventory.AddItem(item);
+            // セーブデータから倉庫とプレイヤーインベントリを読み込み
+            storageInventoryModel = SaveDataConverter.LoadStorageInventory();
+            playerInventoryModel = SaveDataConverter.LoadPlayerInventory();
 
-            model = new CraftTableModel(strage_inventory);
-            
+            model = new CraftTableModel(storageInventoryModel, playerInventoryModel);
+
+            // インベントリ変更時に自動保存
+            storageInventoryModel.OnValueChanged += OnStorageInventoryChanged;
+            playerInventoryModel.OnValueChanged += OnPlayerInventoryChanged;
+
             view.Initialize(recipes, model, ConfirmCraftItem);
+        }
+
+        private void OnDestroy()
+        {
+            // イベント解除
+            if (storageInventoryModel != null)
+            {
+                storageInventoryModel.OnValueChanged -= OnStorageInventoryChanged;
+            }
+            if (playerInventoryModel != null)
+            {
+                playerInventoryModel.OnValueChanged -= OnPlayerInventoryChanged;
+            }
+        }
+
+        private void OnStorageInventoryChanged()
+        {
+            SaveDataConverter.SaveStorageInventory(storageInventoryModel);
+        }
+
+        private void OnPlayerInventoryChanged()
+        {
+            SaveDataConverter.SavePlayerInventory(playerInventoryModel);
         }
 
         public void ConfirmCraftItem(RecipeData recipe)

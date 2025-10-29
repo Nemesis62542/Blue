@@ -6,6 +6,7 @@ using Blue.Interface;
 using Blue.Inventory;
 using Blue.Item;
 using Blue.Object;
+using Blue.Save;
 using Blue.UI;
 using Blue.UI.QuickSlot;
 using Blue.UI.Screen;
@@ -81,7 +82,11 @@ namespace Blue.Player
             }
             Instance = this;
             inputHandler = new PlayerInputHandler();
-            model = new PlayerModel(data);
+
+            // セーブデータから読み込み
+            InventoryModel playerInventory = SaveDataConverter.LoadPlayerInventory();
+            QuickSlotModel quickSlot = SaveDataConverter.LoadQuickSlot();
+            model = new PlayerModel(data, playerInventory, quickSlot);
 
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
@@ -89,6 +94,10 @@ namespace Blue.Player
             model.OnDepthChanged += HandleDepthChanged;
             inventoryController.Initialize(Inventory, inputHandler);
             quickSlotController.Initialize(QuickSlot);
+
+            // インベントリ・クイックスロット変更時に自動保存
+            Inventory.OnValueChanged += OnInventoryChanged;
+            QuickSlot.OnQuickSlotUpdated += OnQuickSlotChanged;
 
             inputHandler.OnJumpEvent += HandleJump;
             inputHandler.OnInteractEvent += InteractObject;
@@ -111,6 +120,16 @@ namespace Blue.Player
             model.OnOxygenChanged -= HandleOxygenChanged;
             model.OnFuelChanged -= HandleFuelChanged;
             model.OnDepthChanged -= HandleDepthChanged;
+
+            // セーブイベント解除
+            if (Inventory != null)
+            {
+                Inventory.OnValueChanged -= OnInventoryChanged;
+            }
+            if (QuickSlot != null)
+            {
+                QuickSlot.OnQuickSlotUpdated -= OnQuickSlotChanged;
+            }
 
             inputHandler.OnJumpEvent -= HandleJump;
             inputHandler.OnInteractEvent -= InteractObject;
@@ -487,6 +506,16 @@ namespace Blue.Player
         public void OnPickUpItem(ItemData item)
         {
             view.AddMessage(new MessageData($"{item.Name}を入手：Eキーで確認"));
+        }
+
+        private void OnInventoryChanged()
+        {
+            SaveDataConverter.SavePlayerInventory(Inventory);
+        }
+
+        private void OnQuickSlotChanged()
+        {
+            SaveDataConverter.SaveQuickSlot(QuickSlot);
         }
     }
 }

@@ -18,10 +18,10 @@ namespace Blue.Player
         private float fuel;
         private float depth;
 
-        public PlayerModel(EntityData data, InventoryModel inventory = null, int? initialOxygen = null) : base(data)
+        public PlayerModel(EntityData data, InventoryModel inventory = null, QuickSlotModel quickSlot = null, int? initialOxygen = null) : base(data)
         {
             this.inventory = inventory ?? new InventoryModel();
-            quickSlotModel = new QuickSlotModel();
+            quickSlotModel = quickSlot ?? new QuickSlotModel();
             oxygen = initialOxygen ?? maxOxygen;
             fuel = maxFuel;
         }

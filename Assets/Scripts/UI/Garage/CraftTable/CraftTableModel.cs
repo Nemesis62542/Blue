@@ -7,11 +7,13 @@ namespace Blue.UI.Garage.CraftTable
 {
     public class CraftTableModel
     {
-        private InventoryModel strageInventory;
+        private InventoryModel storageInventory;
+        private InventoryModel playerInventory;
 
-        public CraftTableModel(InventoryModel strage_inventory)
+        public CraftTableModel(InventoryModel storage_inventory, InventoryModel player_inventory)
         {
-            strageInventory = strage_inventory;
+            storageInventory = storage_inventory;
+            playerInventory = player_inventory;
         }
 
         public void CraftItem(RecipeData recipe)
@@ -24,7 +26,7 @@ namespace Blue.UI.Garage.CraftTable
 
             ConsumeResources(recipe);
 
-            strageInventory.AddItem(recipe.ResultItem, recipe.ResultCount);
+            storageInventory.AddItem(recipe.ResultItem, recipe.ResultCount);
             Debug.Log($"{recipe.ResultItem.Name}を{recipe.ResultCount}個作成");
         }
 
@@ -39,19 +41,45 @@ namespace Blue.UI.Garage.CraftTable
 
         private void ConsumeResources(RecipeData recipe)
         {
-            //現在、仮の実装で単一のインベントリからアイテムを探して削除している
-            //今後、倉庫のインベントリ→プレイヤーのインベントリの順でアイテムを検索し、削除する方式にする予定
-            //必要アイテムは足りているが片方のインベントリからだけでは足りない場合、不足分をもう片方のインベントリから探す処理も実装する
+            // 倉庫のインベントリ→プレイヤーのインベントリの順でアイテムを検索し、削除する
+            // 片方のインベントリからだけでは足りない場合、不足分をもう片方のインベントリから探す
             foreach(RequireItemData require in recipe.RequireResources)
             {
-                strageInventory.RemoveItem(require.Item, require.Count);
+                int remaining_count = require.Count;
+
+                // まず倉庫から消費
+                if (storageInventory.TryGetItem(require.Item, out InventoryItem storage_item))
+                {
+                    int consume_from_storage = Mathf.Min(storage_item.Quantity, remaining_count);
+                    storageInventory.RemoveItem(require.Item, consume_from_storage);
+                    remaining_count -= consume_from_storage;
+                }
+
+                // 倉庫で足りない分はプレイヤーインベントリから消費
+                if (remaining_count > 0)
+                {
+                    playerInventory.RemoveItem(require.Item, remaining_count);
+                }
             }
         }
 
         public bool CheckEnoughResource(ItemData item, int count)
         {
-            return  strageInventory.TryGetItem(item, out InventoryItem inventory_item) &&
-                    inventory_item.Quantity >= count;
+            // 倉庫とプレイヤーインベントリの合計数をチェック
+            int storage_count = 0;
+            int player_count = 0;
+
+            if (storageInventory.TryGetItem(item, out InventoryItem storage_item))
+            {
+                storage_count = storage_item.Quantity;
+            }
+
+            if (playerInventory.TryGetItem(item, out InventoryItem player_item))
+            {
+                player_count = player_item.Quantity;
+            }
+
+            return (storage_count + player_count) >= count;
         }
     }
 }
