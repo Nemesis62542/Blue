@@ -28,13 +28,13 @@ namespace Blue.Save
                 }
 
                 // 動的な属性値を保存
-                Dictionary<string, int> dynamic_values = new Dictionary<string, int>();
+                List<DynamicValuePair> dynamic_values = new List<DynamicValuePair>();
                 foreach (ItemAttribute attribute in System.Enum.GetValues(typeof(ItemAttribute)))
                 {
                     int value = item.GetDynamicValue(attribute);
                     if (value != 0)
                     {
-                        dynamic_values[attribute.ToString()] = value;
+                        dynamic_values.Add(new DynamicValuePair(attribute.ToString(), value));
                     }
                 }
 
@@ -75,13 +75,13 @@ namespace Blue.Save
                 inventory.AddItem(item, item_data.quantity);
 
                 // 動的な属性値を復元
-                if (inventory.TryGetItem(item, out InventoryItem inventory_item))
+                if (inventory.TryGetItem(item, out InventoryItem inventory_item) && item_data.dynamicValues != null)
                 {
-                    foreach (KeyValuePair<string, int> kvp in item_data.dynamicValues)
+                    foreach (DynamicValuePair pair in item_data.dynamicValues)
                     {
-                        if (System.Enum.TryParse(kvp.Key, out ItemAttribute attribute))
+                        if (System.Enum.TryParse(pair.key, out ItemAttribute attribute))
                         {
-                            inventory_item.SetDynamicValue(attribute, kvp.Value);
+                            inventory_item.SetDynamicValue(attribute, pair.value);
                         }
                     }
                 }

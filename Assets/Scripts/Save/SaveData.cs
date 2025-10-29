@@ -40,13 +40,29 @@ namespace Blue.Save
     {
         public string itemDataPath; // ItemDataのResourcesパスまたはGUID
         public int quantity;
-        public Dictionary<string, int> dynamicValues = new Dictionary<string, int>();
+        public List<DynamicValuePair> dynamicValues = new List<DynamicValuePair>();
 
-        public InventoryItemSaveData(string item_data_path, int qty, Dictionary<string, int> dynamic_values)
+        public InventoryItemSaveData(string item_data_path, int qty, List<DynamicValuePair> dynamic_values)
         {
             itemDataPath = item_data_path;
             quantity = qty;
-            dynamicValues = dynamic_values ?? new Dictionary<string, int>();
+            dynamicValues = dynamic_values ?? new List<DynamicValuePair>();
+        }
+    }
+
+    /// <summary>
+    /// 動的な属性値のペア（JsonUtility用にDictionaryの代わり）
+    /// </summary>
+    [Serializable]
+    public class DynamicValuePair
+    {
+        public string key;
+        public int value;
+
+        public DynamicValuePair(string k, int v)
+        {
+            key = k;
+            value = v;
         }
     }
 
