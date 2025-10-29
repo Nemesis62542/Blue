@@ -81,5 +81,15 @@ namespace Blue.UI.Garage
             screen.interactable = is_visible;
             screen.blocksRaycasts = is_visible;
         }
+
+        public void TransitionCraftTable()
+        {
+            ShowScreen(ScreenState.CraftTable);
+        }
+
+        public void TransitionStrage()
+        {
+            ShowScreen(ScreenState.Strage);
+        }
     }
 }
