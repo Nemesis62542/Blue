@@ -13,16 +13,19 @@ namespace Blue.UI.Garage.CraftTable
 
         private CraftTableModel model;
         private InventoryModel storageInventoryModel;
+        private InventoryModel playerInventoryModel;
 
         public void Initialize()
         {
-            // セーブデータから倉庫インベントリを読み込み
+            // セーブデータから倉庫とプレイヤーインベントリを読み込み
             storageInventoryModel = SaveDataConverter.LoadStorageInventory();
+            playerInventoryModel = SaveDataConverter.LoadPlayerInventory();
 
-            model = new CraftTableModel(storageInventoryModel);
+            model = new CraftTableModel(storageInventoryModel, playerInventoryModel);
 
             // インベントリ変更時に自動保存
-            storageInventoryModel.OnValueChanged += OnInventoryChanged;
+            storageInventoryModel.OnValueChanged += OnStorageInventoryChanged;
+            playerInventoryModel.OnValueChanged += OnPlayerInventoryChanged;
 
             view.Initialize(recipes, model, ConfirmCraftItem);
         }
@@ -32,13 +35,22 @@ namespace Blue.UI.Garage.CraftTable
             // イベント解除
             if (storageInventoryModel != null)
             {
-                storageInventoryModel.OnValueChanged -= OnInventoryChanged;
+                storageInventoryModel.OnValueChanged -= OnStorageInventoryChanged;
+            }
+            if (playerInventoryModel != null)
+            {
+                playerInventoryModel.OnValueChanged -= OnPlayerInventoryChanged;
             }
         }
 
-        private void OnInventoryChanged()
+        private void OnStorageInventoryChanged()
         {
             SaveDataConverter.SaveStorageInventory(storageInventoryModel);
+        }
+
+        private void OnPlayerInventoryChanged()
+        {
+            SaveDataConverter.SavePlayerInventory(playerInventoryModel);
         }
 
         public void ConfirmCraftItem(RecipeData recipe)
