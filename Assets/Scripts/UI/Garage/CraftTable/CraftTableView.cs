@@ -22,6 +22,10 @@ namespace Blue.UI.Garage.CraftTable
         {
             model = craft_model;
             OnConfirmCraftItem = craft_callback;
+            foreach (Transform child in panelParent)
+            {
+                Destroy(child.gameObject);
+            }
 
             foreach(RecipeData recipe in recipes)
             {
