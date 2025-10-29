@@ -90,6 +90,7 @@ namespace Blue.Item
         Weapon,      // 武器
         Tool,        // 道具
         Ammo,        // 弾薬
+        Material,    // 素材
         QuestItem,   // クエストアイテム
         Misc         // その他（特殊アイテムなど）
     }
