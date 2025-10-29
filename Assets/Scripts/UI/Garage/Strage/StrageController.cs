@@ -1,6 +1,7 @@
 using Blue.Input;
 using Blue.Inventory;
 using Blue.Item;
+using Blue.Save;
 using Blue.UI.QuickSlot;
 using UnityEngine;
 
@@ -11,26 +12,52 @@ namespace Blue.UI.Garage.Strage
         [SerializeField] private InventoryController strageInventory;
         [SerializeField] private InventoryController playerInventory;
         [SerializeField] private QuickSlotController quickSlot;
-        [SerializeField] private ItemData item;
 
         private PlayerInputHandler playerInput;
+        private InventoryModel strageInventoryModel;
+        private InventoryModel playerInventoryModel;
 
         public void Initialize(PlayerInputHandler player_input)
         {
             playerInput = player_input;
             playerInput.SetInputMap(InputMapType.Inventory);
 
-            //仮の実装で一旦Newする
-            InventoryModel strage_inventory = new InventoryModel();
-            InventoryModel player_inventory = new InventoryModel();
-            //デバッグ用にアイテムを追加
-            player_inventory.AddItem(item);
+            // セーブデータから読み込み
+            strageInventoryModel = SaveDataConverter.LoadStorageInventory();
+            playerInventoryModel = SaveDataConverter.LoadPlayerInventory();
 
-            strageInventory.Initialize(strage_inventory, playerInput);
-            playerInventory.Initialize(player_inventory, playerInput);
+            strageInventory.Initialize(strageInventoryModel, playerInput);
+            playerInventory.Initialize(playerInventoryModel, playerInput);
             quickSlot.Initialize(new QuickSlotModel());
 
+            // インベントリ変更時に自動保存
+            strageInventoryModel.OnValueChanged += OnStorageChanged;
+            playerInventoryModel.OnValueChanged += OnPlayerInventoryChanged;
+
             InitializeView();
+        }
+
+        private void OnDestroy()
+        {
+            // イベント解除
+            if (strageInventoryModel != null)
+            {
+                strageInventoryModel.OnValueChanged -= OnStorageChanged;
+            }
+            if (playerInventoryModel != null)
+            {
+                playerInventoryModel.OnValueChanged -= OnPlayerInventoryChanged;
+            }
+        }
+
+        private void OnStorageChanged()
+        {
+            SaveDataConverter.SaveStorageInventory(strageInventoryModel);
+        }
+
+        private void OnPlayerInventoryChanged()
+        {
+            SaveDataConverter.SavePlayerInventory(playerInventoryModel);
         }
 
         private void InitializeView()
