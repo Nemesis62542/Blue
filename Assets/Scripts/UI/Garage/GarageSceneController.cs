@@ -31,7 +31,7 @@ namespace Blue.UI.Garage
 
         private void Update()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape)) ShowScreen(ScreenState.GarageHome);
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape)) TransitionHome();
         }
 
         private void InitializeScreenDictionary()
@@ -95,6 +95,11 @@ namespace Blue.UI.Garage
         public void TransitionStrage()
         {
             ShowScreen(ScreenState.Strage);
+        }
+
+        public void TransitionHome()
+        {
+            ShowScreen(ScreenState.GarageHome);
         }
     }
 }
