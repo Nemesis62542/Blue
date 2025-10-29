@@ -29,6 +29,11 @@ namespace Blue.UI.Garage
             ShowScreen(ScreenState.GarageHome);
         }
 
+        private void Update()
+        {
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape)) ShowScreen(ScreenState.GarageHome);
+        }
+
         private void InitializeScreenDictionary()
         {
             screenDictionary = new Dictionary<ScreenState, CanvasGroup>();
