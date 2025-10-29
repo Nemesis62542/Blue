@@ -77,9 +77,9 @@ namespace Blue.Save
                 // 動的な属性値を復元
                 if (inventory.TryGetItem(item, out InventoryItem inventory_item))
                 {
-                    foreach (var kvp in item_data.dynamicValues)
+                    foreach (KeyValuePair<string, int> kvp in item_data.dynamicValues)
                     {
-                        if (System.Enum.TryParse<ItemAttribute>(kvp.Key, out ItemAttribute attribute))
+                        if (System.Enum.TryParse(kvp.Key, out ItemAttribute attribute))
                         {
                             inventory_item.SetDynamicValue(attribute, kvp.Value);
                         }
