@@ -19,3 +19,4 @@ MonoBehaviour:
   isStackable: 0
   heldItemPrefab: {fileID: 0}
   attributes: []
+  cachedGUID: 012e84efb9bc2574f897be6c1053f876
