@@ -91,39 +91,45 @@ namespace Blue.Save
         }
 
         /// <summary>
-        /// ItemDataのパスを取得（AssetDatabaseを使用しない方法）
+        /// ItemDataのGUIDを取得
         /// </summary>
         private static string GetItemDataPath(ItemData item_data)
         {
             if (item_data == null) return null;
 
-            // ScriptableObjectの名前をパスとして使用
-            // 実際の実装では、ItemDataにユニークなIDを持たせるか、
-            // Resourcesフォルダに配置してResources.Loadで読み込む方法を推奨
-            return item_data.name;
+#if UNITY_EDITOR
+            // エディタではGUIDを直接取得
+            return item_data.ItemID;
+#else
+            // ランタイムではキャッシュから取得
+            return ItemDataCache.GetGUID(item_data);
+#endif
         }
 
         /// <summary>
-        /// パスからItemDataを読み込み
+        /// GUIDからItemDataを読み込み
         /// </summary>
-        private static ItemData LoadItemData(string path)
+        private static ItemData LoadItemData(string guid)
         {
-            if (string.IsNullOrEmpty(path)) return null;
+            if (string.IsNullOrEmpty(guid)) return null;
 
-            // Resourcesフォルダから読み込む場合
-            // ItemData item = Resources.Load<ItemData>($"Items/{path}");
-
-            // 現状はFind.objectOfTypeAllを使用（パフォーマンスが悪いため、本番では改善が必要）
-            ItemData[] all_items = Resources.FindObjectsOfTypeAll<ItemData>();
-            foreach (ItemData item in all_items)
+#if UNITY_EDITOR
+            // エディタではAssetDatabaseから直接読み込み
+            string asset_path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            if (!string.IsNullOrEmpty(asset_path))
             {
-                if (item.name == path)
-                {
-                    return item;
-                }
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<ItemData>(asset_path);
             }
+#else
+            // ランタイムではキャッシュから取得
+            ItemData item = ItemDataCache.GetItemByGUID(guid);
+            if (item != null)
+            {
+                return item;
+            }
+#endif
 
-            Debug.LogWarning($"ItemData not found: {path}");
+            Debug.LogWarning($"ItemData not found for GUID: {guid}");
             return null;
         }
 

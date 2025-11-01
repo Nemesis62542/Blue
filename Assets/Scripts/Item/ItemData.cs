@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Blue.Item
 {
@@ -16,12 +19,40 @@ namespace Blue.Item
 
         [SerializeField] private List<ItemAttributeData> attributes; // 属性データ
 
+        [SerializeField, HideInInspector] private string cachedGUID; // ビルド版用のキャッシュGUID
+
         public string Name => name;
         public string Description => description;
         public Sprite Icon => icon;
         public ItemType Type => type;
         public bool IsStackable => isStackable;
         public ItemUseHandler HeldItemPrefab => heldItemPrefab;
+
+        // アイテムの一意なID（GUIDベース）
+        public string ItemID
+        {
+            get
+            {
+#if UNITY_EDITOR
+                string assetPath = AssetDatabase.GetAssetPath(this);
+                if (!string.IsNullOrEmpty(assetPath))
+                {
+                    string guid = AssetDatabase.AssetPathToGUID(assetPath);
+                    // エディタではGUIDをキャッシュに保存（ビルド時に使用）
+                    if (cachedGUID != guid)
+                    {
+                        cachedGUID = guid;
+                        EditorUtility.SetDirty(this);
+                    }
+                    return guid;
+                }
+#else
+                // ビルド版ではキャッシュされたGUIDを返す
+                return cachedGUID;
+#endif
+                return string.Empty;
+            }
+        }
 
         public int GetAttributeValue(ItemAttribute attribute_type)
         {
