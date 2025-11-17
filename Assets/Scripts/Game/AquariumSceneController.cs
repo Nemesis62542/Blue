@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Blue.Entity;
 using Blue.Object;
+using Blue.Save;
 using UnityEngine;
 
 namespace Blue.Game
@@ -11,11 +12,11 @@ namespace Blue.Game
 
         void Awake()
         {
-            if (SceneDataBridge.TransferData != null)
+            // セーブデータから捕獲した生物を読み込む
+            List<EntityData> entities = SaveDataConverter.LoadCapturedEntitiesList();
+            if (entities != null && entities.Count > 0)
             {
-                List<EntityData> entities = new List<EntityData>(SceneDataBridge.TransferData.CapturedEntity.Keys);
                 InitializeAquaria(entities);
-                SceneDataBridge.Clear();
             }
         }
 

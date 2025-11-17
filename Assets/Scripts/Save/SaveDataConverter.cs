@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Blue.Entity;
 using Blue.Inventory;
 using Blue.Item;
 using Blue.UI.QuickSlot;
@@ -254,6 +255,140 @@ namespace Blue.Save
         {
             SaveData save_data = SaveManager.CurrentSaveData;
             return ConvertFromSaveData(save_data.quickSlot);
+        }
+
+        /// <summary>
+        /// 捕獲した生物のDictionaryをCapturedEntitySaveDataに変換
+        /// </summary>
+        public static CapturedEntitySaveData ConvertToSaveData(Dictionary<EntityData, int> capturedEntities)
+        {
+            CapturedEntitySaveData save_data = new CapturedEntitySaveData();
+
+            if (capturedEntities == null)
+            {
+                return save_data;
+            }
+
+            foreach (KeyValuePair<EntityData, int> pair in capturedEntities)
+            {
+                string entity_path = GetEntityDataPath(pair.Key);
+                if (string.IsNullOrEmpty(entity_path))
+                {
+                    Debug.LogWarning($"Failed to get path for EntityData: {pair.Key.Name}");
+                    continue;
+                }
+
+                CapturedEntityItemSaveData item_save_data = new CapturedEntityItemSaveData(
+                    entity_path,
+                    pair.Value
+                );
+
+                save_data.entities.Add(item_save_data);
+            }
+
+            return save_data;
+        }
+
+        /// <summary>
+        /// CapturedEntitySaveDataを捕獲した生物のDictionaryに変換
+        /// </summary>
+        public static Dictionary<EntityData, int> ConvertFromSaveData(CapturedEntitySaveData save_data)
+        {
+            Dictionary<EntityData, int> captured_entities = new Dictionary<EntityData, int>();
+
+            if (save_data == null || save_data.entities == null)
+            {
+                return captured_entities;
+            }
+
+            foreach (CapturedEntityItemSaveData entity_data in save_data.entities)
+            {
+                EntityData entity = LoadEntityData(entity_data.entityDataPath);
+                if (entity == null)
+                {
+                    Debug.LogWarning($"Failed to load EntityData at path: {entity_data.entityDataPath}");
+                    continue;
+                }
+
+                captured_entities[entity] = entity_data.quantity;
+            }
+
+            return captured_entities;
+        }
+
+        /// <summary>
+        /// EntityDataのGUIDを取得
+        /// </summary>
+        private static string GetEntityDataPath(EntityData entity_data)
+        {
+            if (entity_data == null) return null;
+
+#if UNITY_EDITOR
+            // エディタではAssetDatabaseからGUIDを取得
+            string asset_path = UnityEditor.AssetDatabase.GetAssetPath(entity_data);
+            if (!string.IsNullOrEmpty(asset_path))
+            {
+                return UnityEditor.AssetDatabase.AssetPathToGUID(asset_path);
+            }
+#else
+            // ランタイムではキャッシュから取得（将来的に実装）
+            // TODO: EntityDataCacheの実装が必要
+            Debug.LogWarning("Runtime entity loading not yet implemented. Need EntityDataCache.");
+#endif
+
+            return null;
+        }
+
+        /// <summary>
+        /// GUIDからEntityDataを読み込み
+        /// </summary>
+        private static EntityData LoadEntityData(string guid)
+        {
+            if (string.IsNullOrEmpty(guid)) return null;
+
+#if UNITY_EDITOR
+            // エディタではAssetDatabaseから直接読み込み
+            string asset_path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            if (!string.IsNullOrEmpty(asset_path))
+            {
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<EntityData>(asset_path);
+            }
+#else
+            // ランタイムではキャッシュから取得（将来的に実装）
+            // TODO: EntityDataCacheの実装が必要
+            Debug.LogWarning("Runtime entity loading not yet implemented. Need EntityDataCache.");
+#endif
+
+            Debug.LogWarning($"EntityData not found for GUID: {guid}");
+            return null;
+        }
+
+        /// <summary>
+        /// 捕獲した生物を保存
+        /// </summary>
+        public static void SaveCapturedEntities(Dictionary<EntityData, int> capturedEntities)
+        {
+            SaveData save_data = SaveManager.CurrentSaveData;
+            save_data.capturedEntity = ConvertToSaveData(capturedEntities);
+            SaveManager.Save();
+        }
+
+        /// <summary>
+        /// 捕獲した生物を読み込み
+        /// </summary>
+        public static Dictionary<EntityData, int> LoadCapturedEntities()
+        {
+            SaveData save_data = SaveManager.CurrentSaveData;
+            return ConvertFromSaveData(save_data.capturedEntity);
+        }
+
+        /// <summary>
+        /// 捕獲した生物のリストを読み込み
+        /// </summary>
+        public static List<EntityData> LoadCapturedEntitiesList()
+        {
+            Dictionary<EntityData, int> captured_entities = LoadCapturedEntities();
+            return new List<EntityData>(captured_entities.Keys);
         }
     }
 }
