@@ -118,10 +118,5 @@ namespace Blue.Player
             // セーブデータに保存
             SaveDataConverter.SaveCapturedEntities(capturedEntities);
         }
-
-        public PlayerTransferData CreateTransferData()
-        {
-            return new PlayerTransferData(capturedEntities);
-        }
     }
 }

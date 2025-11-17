@@ -498,8 +498,6 @@ namespace Blue.Player
             model.AddCapturedEntity(captured);
             view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
 
-            SceneDataBridge.TransferData = model.CreateTransferData();
-
             if (captured.Name == "ME-G4L0") GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
         }
 
