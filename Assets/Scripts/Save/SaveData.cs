@@ -12,6 +12,7 @@ namespace Blue.Save
         public InventorySaveData playerInventory;
         public InventorySaveData storageInventory;
         public QuickSlotSaveData quickSlot;
+        public CapturedEntitySaveData capturedEntity;
         public long lastSaveTime; // Unix timestamp
 
         public SaveData()
@@ -19,6 +20,7 @@ namespace Blue.Save
             playerInventory = new InventorySaveData();
             storageInventory = new InventorySaveData();
             quickSlot = new QuickSlotSaveData();
+            capturedEntity = new CapturedEntitySaveData();
             lastSaveTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
     }
@@ -88,6 +90,31 @@ namespace Blue.Save
         public QuickSlotItemSaveData(string item_data_path, int qty)
         {
             itemDataPath = item_data_path;
+            quantity = qty;
+        }
+    }
+
+    /// <summary>
+    /// 捕獲した生物のセーブデータ
+    /// </summary>
+    [Serializable]
+    public class CapturedEntitySaveData
+    {
+        public List<CapturedEntityItemSaveData> entities = new List<CapturedEntityItemSaveData>();
+    }
+
+    /// <summary>
+    /// 捕獲した生物アイテムのセーブデータ
+    /// </summary>
+    [Serializable]
+    public class CapturedEntityItemSaveData
+    {
+        public string entityDataPath; // EntityDataのResourcesパスまたはGUID
+        public int quantity;
+
+        public CapturedEntityItemSaveData(string entity_data_path, int qty)
+        {
+            entityDataPath = entity_data_path;
             quantity = qty;
         }
     }

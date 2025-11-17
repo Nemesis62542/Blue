@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Blue.Entity;
 using Blue.Inventory;
+using Blue.Save;
 using Blue.UI.QuickSlot;
 using UnityEngine;
 
@@ -24,6 +25,9 @@ namespace Blue.Player
             quickSlotModel = quickSlot ?? new QuickSlotModel();
             oxygen = initialOxygen ?? maxOxygen;
             fuel = maxFuel;
+
+            // セーブデータから捕獲した生物を読み込む
+            capturedEntities = SaveDataConverter.LoadCapturedEntities();
         }
 
         public InventoryModel Inventory => inventory;
@@ -110,11 +114,9 @@ namespace Blue.Player
             {
                 capturedEntities.Add(entity, 1);
             }
-        }
 
-        public PlayerTransferData CreateTransferData()
-        {
-            return new PlayerTransferData(capturedEntities);
+            // セーブデータに保存
+            SaveDataConverter.SaveCapturedEntities(capturedEntities);
         }
     }
 }
