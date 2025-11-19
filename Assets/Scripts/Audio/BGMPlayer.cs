@@ -23,7 +23,7 @@ namespace Blue.Audio
             // 既存のフェード処理をキャンセル
             fadeCts?.Cancel();
             fadeCts?.Dispose();
-            fadeCts = new CancellationTokenSource();
+            fadeCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
 
             audioSource.loop = loop;
 
@@ -64,7 +64,7 @@ namespace Blue.Audio
             // 既存のフェード処理をキャンセル
             fadeCts?.Cancel();
             fadeCts?.Dispose();
-            fadeCts = new CancellationTokenSource();
+            fadeCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
 
             if (fade_time <= 0f)
             {
@@ -95,7 +95,8 @@ namespace Blue.Audio
 
             while (elapsed < duration)
             {
-                audioSource.volume = Mathf.Lerp(startVolume, 0, elapsed / duration);
+                float t = Mathf.Clamp01(elapsed / duration);
+                audioSource.volume = Mathf.Lerp(startVolume, 0, t);
                 elapsed += Time.deltaTime;
                 await UniTask.Yield(ct);
             }
@@ -114,7 +115,8 @@ namespace Blue.Audio
 
             while (elapsed < duration)
             {
-                audioSource.volume = Mathf.Lerp(0, 1, elapsed / duration);
+                float t = Mathf.Clamp01(elapsed / duration);
+                audioSource.volume = Mathf.Lerp(0, 1, t);
                 elapsed += Time.deltaTime;
                 await UniTask.Yield(ct);
             }
