@@ -29,14 +29,17 @@ namespace Blue.Audio
             temp_obj.transform.position = position;
 
             AudioSource source = temp_obj.AddComponent<AudioSource>();
-            source.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+            source.outputAudioMixerGroup = audioSource?.outputAudioMixerGroup;
             source.spatialBlend = 1.0f;
             source.minDistance = min_distance;
             source.maxDistance = max_distance;
             source.rolloffMode = AudioRolloffMode.Logarithmic;
 
             source.PlayOneShot(clip);
-            Destroy(temp_obj, clip.length);
+
+            // clip.lengthが0の場合も考慮し、最低1秒は保証
+            float destroyTime = Mathf.Max(clip.length, 1.0f);
+            Destroy(temp_obj, destroyTime);
         }
     }
 }
