@@ -1,5 +1,6 @@
 using UnityEngine;
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 namespace Blue.Audio
 {
@@ -7,8 +8,7 @@ namespace Blue.Audio
     {
         [SerializeField] private AudioSource audioSource;
 
-        private Coroutine fadeCoroutine;
-        private bool isFading;
+        private CancellationTokenSource fadeCts;
 
         public AudioClip CurrentClip => audioSource != null ? audioSource.clip : null;
 
@@ -88,39 +88,44 @@ namespace Blue.Audio
             isFading = false;
         }
 
-        private IEnumerator FadeOut(float duration)
+        private async UniTask FadeOutAsync(float duration, CancellationToken ct)
         {
             float startVolume = audioSource.volume;
+            float elapsed = 0f;
 
-            for (float t = 0; t < duration; t += Time.deltaTime)
+            while (elapsed < duration)
             {
-                audioSource.volume = Mathf.Lerp(startVolume, 0, t / duration);
-                yield return null;
+                audioSource.volume = Mathf.Lerp(startVolume, 0, elapsed / duration);
+                elapsed += Time.deltaTime;
+                await UniTask.Yield(ct);
             }
 
             audioSource.volume = 0;
             audioSource.Stop();
         }
 
-        private IEnumerator FadeIn(AudioClip clip, float duration)
+        private async UniTask FadeInAsync(AudioClip clip, float duration, CancellationToken ct)
         {
             audioSource.clip = clip;
             audioSource.volume = 0;
             audioSource.Play();
 
-            for (float t = 0; t < duration; t += Time.deltaTime)
+            float elapsed = 0f;
+
+            while (elapsed < duration)
             {
-                audioSource.volume = Mathf.Lerp(0, 1, t / duration);
-                yield return null;
+                audioSource.volume = Mathf.Lerp(0, 1, elapsed / duration);
+                elapsed += Time.deltaTime;
+                await UniTask.Yield(ct);
             }
 
             audioSource.volume = 1;
         }
 
-        private IEnumerator FadeOutAndPlayNewClip(AudioClip new_clip, float duration)
+        private async UniTask FadeOutAndPlayNewClipAsync(AudioClip new_clip, float duration, CancellationToken ct)
         {
-            yield return FadeOut(duration);
-            yield return FadeIn(new_clip, duration);
+            await FadeOutAsync(duration, ct);
+            await FadeInAsync(new_clip, duration, ct);
         }
     }
 }
