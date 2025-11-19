@@ -12,7 +12,7 @@ namespace Blue.Audio
 
         public AudioClip CurrentClip => audioSource != null ? audioSource.clip : null;
 
-        public void Play(AudioClip clip, bool loop, float fade_time)
+        public async void Play(AudioClip clip, bool loop, float fade_time)
         {
             if (audioSource == null)
             {
@@ -20,11 +20,10 @@ namespace Blue.Audio
                 return;
             }
 
-            if (isFading)
-            {
-                Debug.LogWarning($"BGMPlayer: フェード中に再生が要求されました（Clip: {clip?.name ?? "null"}）。処理をスキップします。");
-                return;
-            }
+            // 既存のフェード処理をキャンセル
+            fadeCts?.Cancel();
+            fadeCts?.Dispose();
+            fadeCts = new CancellationTokenSource();
 
             audioSource.loop = loop;
 
@@ -37,17 +36,24 @@ namespace Blue.Audio
                 return;
             }
 
-            if (audioSource.isPlaying)
+            try
             {
-                StartFadeCoroutine(FadeOutAndPlayNewClip(clip, fade_time));
+                if (audioSource.isPlaying)
+                {
+                    await FadeOutAndPlayNewClipAsync(clip, fade_time, fadeCts.Token);
+                }
+                else
+                {
+                    await FadeInAsync(clip, fade_time, fadeCts.Token);
+                }
             }
-            else
+            catch (System.OperationCanceledException)
             {
-                StartFadeCoroutine(FadeIn(clip, fade_time));
+                // キャンセルされた場合は正常終了
             }
         }
 
-        public void Stop(float fade_time)
+        public async void Stop(float fade_time)
         {
             if (audioSource == null)
             {
@@ -55,11 +61,10 @@ namespace Blue.Audio
                 return;
             }
 
-            if (isFading)
-            {
-                Debug.LogWarning("BGMPlayer: フェード中に停止が要求されました。処理をスキップします。");
-                return;
-            }
+            // 既存のフェード処理をキャンセル
+            fadeCts?.Cancel();
+            fadeCts?.Dispose();
+            fadeCts = new CancellationTokenSource();
 
             if (fade_time <= 0f)
             {
@@ -67,25 +72,20 @@ namespace Blue.Audio
                 return;
             }
 
-            StartFadeCoroutine(FadeOut(fade_time));
-        }
-
-        private void StartFadeCoroutine(IEnumerator routine)
-        {
-            if (isFading)
+            try
             {
-                Debug.LogWarning("BGMPlayer: フェード処理が重複しようとしました。スキップします。");
-                return;
+                await FadeOutAsync(fade_time, fadeCts.Token);
             }
-
-            fadeCoroutine = StartCoroutine(FadeWrapper(routine));
+            catch (System.OperationCanceledException)
+            {
+                // キャンセルされた場合は正常終了
+            }
         }
 
-        private IEnumerator FadeWrapper(IEnumerator routine)
+        private void OnDestroy()
         {
-            isFading = true;
-            yield return StartCoroutine(routine);
-            isFading = false;
+            fadeCts?.Cancel();
+            fadeCts?.Dispose();
         }
 
         private async UniTask FadeOutAsync(float duration, CancellationToken ct)
