@@ -7,7 +7,8 @@ namespace Blue.Input
     public enum InputMapType
     {
         None,
-        Player,
+        Main,
+        Aquarium,
         Menu,
         Inventory,
         Movie,
@@ -194,7 +195,7 @@ namespace Blue.Input
 
             switch (type)
             {
-                case InputMapType.Player:
+                case InputMapType.Main:
                     inputActions.Player.Enable();
                     break;
 

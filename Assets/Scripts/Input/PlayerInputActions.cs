@@ -728,6 +728,120 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Aquarium"",
+            ""id"": ""be599bd7-2a8b-4bc1-86fe-5ba9800fcf9b"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""bf07634d-158a-42c7-8c2c-96a39edd5918"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""586b8fd4-b009-46f7-b6f7-d2d1e32842e5"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""da96fcf0-3463-46ac-a025-831b140cee94"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""de1f3ac9-a973-4596-bb6e-32b65ec042a5"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""d03694c6-95f1-4404-a9ea-03854cbbf7ba"",
+                    ""path"": ""<Keyboard>/#(S)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""ffbeed40-a51a-4ad3-96ae-14e56f26b737"",
+                    ""path"": ""<Keyboard>/#(A)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""b1e9a92b-b7db-482f-a493-7886845b6a06"",
+                    ""path"": ""<Keyboard>/#(D)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""af037af6-05be-4986-9b53-4eb472760c43"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b99b412-0047-459b-b6f3-7ef348a607f4"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5fb8b747-245a-4fa9-abc9-3baaaa15092f"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -760,6 +874,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Movie
         m_Movie = asset.FindActionMap("Movie", throwIfNotFound: true);
         m_Movie_Skip = m_Movie.FindAction("Skip", throwIfNotFound: true);
+        // Aquarium
+        m_Aquarium = asset.FindActionMap("Aquarium", throwIfNotFound: true);
+        m_Aquarium_Move = m_Aquarium.FindAction("Move", throwIfNotFound: true);
+        m_Aquarium_Look = m_Aquarium.FindAction("Look", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -768,6 +886,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Inventory.enabled, "This will cause a leak and performance issues, PlayerInputActions.Inventory.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Menu.enabled, "This will cause a leak and performance issues, PlayerInputActions.Menu.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Movie.enabled, "This will cause a leak and performance issues, PlayerInputActions.Movie.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Aquarium.enabled, "This will cause a leak and performance issues, PlayerInputActions.Aquarium.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1399,6 +1518,113 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="MovieActions" /> instance referencing this action map.
     /// </summary>
     public MovieActions @Movie => new MovieActions(this);
+
+    // Aquarium
+    private readonly InputActionMap m_Aquarium;
+    private List<IAquariumActions> m_AquariumActionsCallbackInterfaces = new List<IAquariumActions>();
+    private readonly InputAction m_Aquarium_Move;
+    private readonly InputAction m_Aquarium_Look;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Aquarium".
+    /// </summary>
+    public struct AquariumActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public AquariumActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Aquarium/Move".
+        /// </summary>
+        public InputAction @Move => m_Wrapper.m_Aquarium_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Aquarium/Look".
+        /// </summary>
+        public InputAction @Look => m_Wrapper.m_Aquarium_Look;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Aquarium; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="AquariumActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(AquariumActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="AquariumActions" />
+        public void AddCallbacks(IAquariumActions instance)
+        {
+            if (instance == null || m_Wrapper.m_AquariumActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_AquariumActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="AquariumActions" />
+        private void UnregisterCallbacks(IAquariumActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="AquariumActions.UnregisterCallbacks(IAquariumActions)" />.
+        /// </summary>
+        /// <seealso cref="AquariumActions.UnregisterCallbacks(IAquariumActions)" />
+        public void RemoveCallbacks(IAquariumActions instance)
+        {
+            if (m_Wrapper.m_AquariumActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="AquariumActions.AddCallbacks(IAquariumActions)" />
+        /// <seealso cref="AquariumActions.RemoveCallbacks(IAquariumActions)" />
+        /// <seealso cref="AquariumActions.UnregisterCallbacks(IAquariumActions)" />
+        public void SetCallbacks(IAquariumActions instance)
+        {
+            foreach (var item in m_Wrapper.m_AquariumActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_AquariumActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="AquariumActions" /> instance referencing this action map.
+    /// </summary>
+    public AquariumActions @Aquarium => new AquariumActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
@@ -1570,5 +1796,27 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSkip(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Aquarium" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="AquariumActions.AddCallbacks(IAquariumActions)" />
+    /// <seealso cref="AquariumActions.RemoveCallbacks(IAquariumActions)" />
+    public interface IAquariumActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLook(InputAction.CallbackContext context);
     }
 }
