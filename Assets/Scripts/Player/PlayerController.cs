@@ -111,7 +111,7 @@ namespace Blue.Player
             Inventory.OnPickUpItem = OnPickUpItem;
 
             Cursor.lockState = CursorLockMode.Locked;
-            inputHandler.SetInputMap(InputMapType.Player);
+            inputHandler.SetInputMap(InputMapType.Main);
         }
         
         private void Cleanup()
@@ -171,11 +171,6 @@ namespace Blue.Player
 
             if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
-
-            if (SceneLoader.CurrentSceneName == "Aquarium")
-            {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Title");
-            }
         }
 
         private void HandleJump()
@@ -204,7 +199,7 @@ namespace Blue.Player
         public void ForwardIngame()
         {
             uiController.ShowScreen(ScreenState.Ingame);
-            inputHandler.SetInputMap(InputMapType.Player);
+            inputHandler.SetInputMap(InputMapType.Main);
         }
 
         public void ForwardMovie()
@@ -477,7 +472,7 @@ namespace Blue.Player
         private void CloseCurrentScreen()
         {
             uiController.HideCurrentScreen();
-            inputHandler.SetInputMap(InputMapType.Player);
+            inputHandler.SetInputMap(InputMapType.Main);
         }
 
         private void UseSelectedItem()
