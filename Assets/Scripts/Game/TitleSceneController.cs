@@ -1,3 +1,4 @@
+using Blue.Save;
 using UnityEngine;
 
 namespace Blue.Game
@@ -6,6 +7,7 @@ namespace Blue.Game
     {
         private void Update()
         {
+            SaveManager.DeleteSaveData();
             if (UnityEngine.Input.anyKeyDown) SceneLoader.LoadScene("Tutorial");
         }
     }

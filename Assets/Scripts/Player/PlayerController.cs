@@ -151,21 +151,21 @@ namespace Blue.Player
             HandleMove();
             HandleViewRotation();
 
-            bool isBoosting = false;
+            // bool isBoosting = false;
 
-            if (inputHandler.BoostHeld)
-            {
-                isBoosting = HandleBoost(Vector3.up);
-            }
-            else if (inputHandler.DownBoostHeld)
-            {
-                isBoosting = HandleBoost(Vector3.down);
-            }
+            // if (inputHandler.BoostHeld)
+            // {
+            //     isBoosting = HandleBoost(Vector3.up);
+            // }
+            // else if (inputHandler.DownBoostHeld)
+            // {
+            //     isBoosting = HandleBoost(Vector3.down);
+            // }
 
-            if (!isBoosting && boostEffect != null && boostEffect.isPlaying)
-            {
-                boostEffect.Stop();
-            }
+            // if (!isBoosting && boostEffect != null && boostEffect.isPlaying)
+            // {
+            //     boostEffect.Stop();
+            // }
 
             HandleFuelRecovery();
 
