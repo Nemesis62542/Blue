@@ -7,7 +7,8 @@ namespace Blue.Input
     public enum InputMapType
     {
         None,
-        Player,
+        Main,
+        Aquarium,
         Menu,
         Inventory,
         Movie,
@@ -63,6 +64,11 @@ namespace Blue.Input
             inputActions.Player.Inventory.performed += OnInventoryToggle;
             inputActions.Player.Pause.performed += OnPauseToggle;
 
+            inputActions.Aquarium.Move.performed += OnMove;
+            inputActions.Aquarium.Move.canceled += OnMove;
+            inputActions.Aquarium.Look.performed += OnLook;
+            inputActions.Aquarium.Look.canceled += OnLook;
+
             inputActions.Inventory.Close.performed += OnInventoryToggle;
             inputActions.Menu.Close.performed += OnPauseToggle;
 
@@ -89,6 +95,11 @@ namespace Blue.Input
             inputActions.Player.QuickSlot4.performed -= OnQuickSlot4;
             inputActions.Player.Inventory.performed -= OnInventoryToggle;
             inputActions.Player.Pause.performed -= OnPauseToggle;
+
+            inputActions.Aquarium.Move.performed -= OnMove;
+            inputActions.Aquarium.Move.canceled -= OnMove;
+            inputActions.Aquarium.Look.performed -= OnLook;
+            inputActions.Aquarium.Look.canceled -= OnLook;
 
             inputActions.Inventory.Close.performed -= OnInventoryToggle;
             inputActions.Menu.Close.performed -= OnPauseToggle;
@@ -194,8 +205,12 @@ namespace Blue.Input
 
             switch (type)
             {
-                case InputMapType.Player:
+                case InputMapType.Main:
                     inputActions.Player.Enable();
+                    break;
+
+                case InputMapType.Aquarium:
+                    inputActions.Aquarium.Enable();
                     break;
 
                 case InputMapType.Menu:
