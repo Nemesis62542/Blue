@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: CuttleFish
   m_EditorClassIdentifier: 
   id: 2
+  cachedGUID: 744773d9cc1ce5a40899b70f03eb5313
   name: "\u30D2\u30AB\u30EA\u30A4\u30AB"
   hp: 10
   attackPower: 0

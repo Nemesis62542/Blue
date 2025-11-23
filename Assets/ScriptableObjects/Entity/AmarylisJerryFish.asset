@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AmarylisJerryFish
   m_EditorClassIdentifier: 
   id: 1
+  cachedGUID: b28d05ee57458554799861221d1fef46
   name: "\u30AB\u30A4\u30E8\u30A6\u30D2\u30AC\u30F3\u30D0\u30CA"
   hp: 1
   attackPower: 0
@@ -20,4 +21,3 @@ MonoBehaviour:
   habitation: 1
   object: {fileID: 2047442325691957912, guid: 5ff2571d86a6e714f9d14edaa6b83ce6, type: 3}
   school: {fileID: 2140745494137631999, guid: ba654abcde6f4a647830ac52dcaf8ff0, type: 3}
-  ID: 0

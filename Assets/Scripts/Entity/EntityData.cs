@@ -1,5 +1,8 @@
 using Blue.Item;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Blue.Entity
 {
@@ -7,6 +10,7 @@ namespace Blue.Entity
     public class EntityData : ScriptableObject
     {
         [SerializeField] int id;
+        [SerializeField, HideInInspector] private string cachedGUID;
         [SerializeField] private new string name;
         [SerializeField] private int hp;
         [SerializeField] private int attackPower;
@@ -16,6 +20,35 @@ namespace Blue.Entity
         [SerializeField] private SchoolController school;
 
         public int ID => id;
+
+        /// <summary>
+        /// エンティティの一意なID（GUIDベース）
+        /// </summary>
+        public string EntityGUID
+        {
+            get
+            {
+#if UNITY_EDITOR
+                string assetPath = AssetDatabase.GetAssetPath(this);
+                if (!string.IsNullOrEmpty(assetPath))
+                {
+                    string guid = AssetDatabase.AssetPathToGUID(assetPath);
+                    // エディタではGUIDをキャッシュに保存（ビルド時に使用）
+                    if (cachedGUID != guid)
+                    {
+                        cachedGUID = guid;
+                        EditorUtility.SetDirty(this);
+                    }
+                    return guid;
+                }
+#else
+                // ビルド版ではキャッシュされたGUIDを返す
+                return cachedGUID;
+#endif
+                return string.Empty;
+            }
+        }
+
         public string Name => name;
         public int HP => hp;
         public int AttackPower => attackPower;

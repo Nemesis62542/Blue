@@ -180,6 +180,7 @@ namespace Blue.Save
 #endif
 
                 currentSaveData = new SaveData();
+                isInitialized = true;
             }
             catch (Exception e)
             {

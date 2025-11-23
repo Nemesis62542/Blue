@@ -28,6 +28,12 @@ namespace Blue.Game
         {
             HandleMove();
             HandleViewRotation();
+
+            // 仮の実装
+            if (SceneLoader.CurrentSceneName == "Aquarium")
+            {
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Title");
+            } 
         }
 
         private void Initialize()
@@ -35,13 +41,7 @@ namespace Blue.Game
             inputHandler = new PlayerInputHandler();
 
             Cursor.lockState = CursorLockMode.Locked;
-            inputHandler.SetInputMap(defaultInputMap);
-
-            // 仮の実装
-            if (SceneLoader.CurrentSceneName == "Aquarium")
-            {
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Title");
-            }
+            inputHandler.SetInputMap(defaultInputMap);  
         }
 
         private void HandleMove()

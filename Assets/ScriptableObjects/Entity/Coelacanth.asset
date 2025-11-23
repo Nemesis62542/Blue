@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Coelacanth
   m_EditorClassIdentifier: 
   id: 3
+  cachedGUID: f5e27857ee5703d48b7c22e0ec49ec75
   name: "\u30B3\u30A8\u30E9\u30AB\u30F3\u30B5\u30B9"
   hp: 10
   attackPower: 0

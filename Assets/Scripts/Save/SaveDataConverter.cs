@@ -331,9 +331,8 @@ namespace Blue.Save
                 return UnityEditor.AssetDatabase.AssetPathToGUID(asset_path);
             }
 #else
-            // ランタイムではキャッシュから取得（将来的に実装）
-            // TODO: EntityDataCacheの実装が必要
-            Debug.LogWarning("Runtime entity loading not yet implemented. Need EntityDataCache.");
+            // ランタイムではキャッシュから取得
+            return EntityDataCache.GetGUID(entity_data);
 #endif
 
             return null;
@@ -354,9 +353,12 @@ namespace Blue.Save
                 return UnityEditor.AssetDatabase.LoadAssetAtPath<EntityData>(asset_path);
             }
 #else
-            // ランタイムではキャッシュから取得（将来的に実装）
-            // TODO: EntityDataCacheの実装が必要
-            Debug.LogWarning("Runtime entity loading not yet implemented. Need EntityDataCache.");
+            // ランタイムではキャッシュから取得
+            EntityData entity = EntityDataCache.GetEntityByGUID(guid);
+            if (entity != null)
+            {
+                return entity;
+            }
 #endif
 
             Debug.LogWarning($"EntityData not found for GUID: {guid}");

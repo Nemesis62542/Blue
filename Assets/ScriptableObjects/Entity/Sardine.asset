@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Sardine
   m_EditorClassIdentifier: 
   id: 2
+  cachedGUID: 9e2403439a60c6044946e6ccc827fb6d
   name: "\u30C1\u30E7\u30A6\u30C1\u30F3\u30A4\u30EF\u30B7"
   hp: 2
   attackPower: 0

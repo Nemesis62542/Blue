@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MecaShark
   m_EditorClassIdentifier: 
   id: 4
+  cachedGUID: 6a1213083b84f5148a8d0f36bd99ca11
   name: ME-G4L0
   hp: 100
   attackPower: 10

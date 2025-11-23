@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: TropicalFish_1
   m_EditorClassIdentifier: 
+  id: 0
+  cachedGUID: f6495b183781074489f13b0f8099bc3a
   name: "\u30A2\u30AA\u30B9\u30B8\u30CF\u30AE"
   hp: 2
   attackPower: 0

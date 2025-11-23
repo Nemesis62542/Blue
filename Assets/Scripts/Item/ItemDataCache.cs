@@ -36,19 +36,19 @@ namespace Blue.Item
                 }
             }
 #else
-            // ビルド版ではResourcesフォルダから読み込み
-            // ItemDataをResourcesフォルダに配置する必要があります
-            ItemData[] allItems = Resources.LoadAll<ItemData>("Items");
-            foreach (ItemData item in allItems)
+            // ビルド版ではレジストリから読み込み
+            ItemDataRegistry registry = ItemDataRegistry.Instance;
+            if (registry != null)
             {
-                if (item != null)
+                foreach (ItemData item in registry.Items)
                 {
-                    // ビルド版ではGUIDをItemDataに埋め込む必要があるため、
-                    // 別の方法で管理するか、エディタ時にGUIDをシリアライズする必要があります
-                    string guid = GetGUIDFromItem(item);
-                    if (!string.IsNullOrEmpty(guid))
+                    if (item != null)
                     {
-                        RegisterItem(item, guid);
+                        string guid = GetGUIDFromItem(item);
+                        if (!string.IsNullOrEmpty(guid))
+                        {
+                            RegisterItem(item, guid);
+                        }
                     }
                 }
             }
