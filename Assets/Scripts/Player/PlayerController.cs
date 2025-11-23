@@ -186,7 +186,7 @@ namespace Blue.Player
                 oxygenDecreaseTimer = 0f;
                 if (model.Oxygen == 0)
                 {
-                    model.Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
+                    Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
                 }
                 else
                 {
@@ -421,6 +421,7 @@ namespace Blue.Player
         {
             Debug.Log("PlayerController: 死亡処理実行");
             inputHandler.DisableInput();
+            SceneLoader.LoadScene("Title");
         }
 
         private bool RaycastFromCamera(out RaycastHit hit, float range)

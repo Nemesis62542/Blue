@@ -7,8 +7,11 @@ namespace Blue.Game
     {
         private void Update()
         {
-            SaveManager.DeleteSaveData();
-            if (UnityEngine.Input.anyKeyDown) SceneLoader.LoadScene("Tutorial");
+            if (UnityEngine.Input.anyKeyDown) 
+            {
+                SaveManager.DeleteSaveData();
+                SceneLoader.LoadScene("Tutorial");
+            }
         }
     }
 }
