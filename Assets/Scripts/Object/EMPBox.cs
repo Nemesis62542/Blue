@@ -24,7 +24,12 @@ namespace Blue.Object
 
         public void Interact(MonoBehaviour interactor)
         {
-            if (battery < maxBattery) return;
+            if (battery < maxBattery)
+            {
+                MessageView.Instance.ShowMessage(new MessageData("チャージ中...しばらくお待ちください"), 5.0f);
+                return;
+            }
+
             battery = 0;
             slider.value = 0;
             shark.Damage(new Attack.AttackData(null, shark, 40, Attack.AttackType.Magic, shark.transform.position));
