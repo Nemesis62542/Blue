@@ -9,7 +9,7 @@ using UnityEngine;
 public class SchoolChild : MonoBehaviour
 {
 	[SerializeField] private Transform _scanner;
-	
+
     private SchoolController _spawner;
     private Vector3 _wayPoint;
     private float _speed = 10.0f;
@@ -23,6 +23,7 @@ public class SchoolChild : MonoBehaviour
     private int _updateNextSeed = 0;
     private int _updateSeed = -1;
     private Transform _cacheTransform;
+    private Rigidbody _rigidbody;
 
 #if UNITY_EDITOR
     private bool _sWarning;
@@ -33,6 +34,14 @@ public class SchoolChild : MonoBehaviour
 	public void Start()
 	{
 		if (_cacheTransform == null) _cacheTransform = transform;
+		_rigidbody = GetComponent<Rigidbody>();
+		if (_rigidbody == null)
+		{
+			_rigidbody = gameObject.AddComponent<Rigidbody>();
+			_rigidbody.useGravity = false;
+			_rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+			_rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+		}
 		SetRandomScale();
 		LocateRequiredChildren();
 		SkewModelForLessUniformedMovement();
@@ -47,9 +56,14 @@ public class SchoolChild : MonoBehaviour
     public void Update() {
         if (_spawner._updateDivisor <= 1 || _spawner._updateCounter == _updateSeed){
             CheckForDistanceToWaypoint();
+        }
+    }
+
+    public void FixedUpdate() {
+        if (_spawner._updateDivisor <= 1 || _spawner._updateCounter == _updateSeed){
             RotationBasedOnWaypointOrAvoidance();
-            ForwardMovement();
             RayCastToPushAwayFromObstacles();
+            ForwardMovement();
         }
     }
 
@@ -189,11 +203,11 @@ public class SchoolChild : MonoBehaviour
 
     private bool Avoidance() {
 		if(!_spawner._avoidance)
-			return false;		
+			return false;
 		RaycastHit hit;
 		float d;
-		Quaternion rx = _cacheTransform.rotation;
-		Vector3 ex = _cacheTransform.rotation.eulerAngles;
+		Quaternion rx = _rigidbody.rotation;
+		Vector3 ex = _rigidbody.rotation.eulerAngles;
 		Vector3 cacheForward = _cacheTransform.forward;
 		Vector3 cacheRight = _cacheTransform.right;
 		float randomRight = Random.Range(-.1f, .1f);
@@ -205,33 +219,33 @@ public class SchoolChild : MonoBehaviour
 				d = (_spawner._avoidDistance - hit.distance) / _spawner._avoidDistance;
 				ex.x += upDownSigns[i] * _spawner._avoidSpeed * d * _spawner._newDelta * (_speed + 1);
 				rx.eulerAngles = ex;
-				_cacheTransform.rotation = rx;
+				_rigidbody.rotation = rx;
 			}
 		}
 
 		//Crash avoidance //Checks for obstacles forward
-		if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*randomRight), out hit, _spawner._stopDistance, _spawner._avoidanceMask)){		
+		if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*randomRight), out hit, _spawner._stopDistance, _spawner._avoidanceMask)){
 	//					Debug.DrawLine(_cacheTransform.position,hit.point);
-					d = (_spawner._stopDistance - hit.distance)/_spawner._stopDistance;				
+					d = (_spawner._stopDistance - hit.distance)/_spawner._stopDistance;
 					ex.y -= _spawner._avoidSpeed*d*_spawner._newDelta*(_targetSpeed +3);
 					rx.eulerAngles = ex;
-					_cacheTransform.rotation = rx;
-					_speed -= d*_spawner._newDelta*_spawner._stopSpeedMultiplier*_speed;				
+					_rigidbody.rotation = rx;
+					_speed -= d*_spawner._newDelta*_spawner._stopSpeedMultiplier*_speed;
 					if(_speed < 0.01f){
-						_speed = 0.01f;	
+						_speed = 0.01f;
 					}
 					return true;
 		}else if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*(_spawner._avoidAngle+_rotateCounterL)), out hit, _spawner._avoidDistance, _spawner._avoidanceMask)){
 	//				Debug.DrawLine(_cacheTransform.position,hit.point);
-					d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;				
+					d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;
 					_rotateCounterL+=.1f;
 					ex.y -= _spawner._avoidSpeed*d*_spawner._newDelta*_rotateCounterL*(_speed +1);
 					rx.eulerAngles = ex;
-					_cacheTransform.rotation = rx;				
+					_rigidbody.rotation = rx;
 					if(_rotateCounterL > 1.5f)
-						_rotateCounterL = 1.5f;				
+						_rotateCounterL = 1.5f;
 					_rotateCounterR = 0.0f;
-					return true;		
+					return true;
 		}else if (Physics.Raycast(_cacheTransform.position, cacheForward+(cacheRight*-(_spawner._avoidAngle+_rotateCounterR)), out hit, _spawner._avoidDistance, _spawner._avoidanceMask)){
 	//			Debug.DrawLine(_cacheTransform.position,hit.point);
 					d = (_spawner._avoidDistance - hit.distance)/_spawner._avoidDistance;
@@ -244,9 +258,9 @@ public class SchoolChild : MonoBehaviour
 					_rotateCounterR +=.1f;
 					ex.y += _spawner._avoidSpeed*d*_spawner._newDelta*_rotateCounterR*(_speed +1);
 					rx.eulerAngles = ex;
-					_cacheTransform.rotation = rx;	
+					_rigidbody.rotation = rx;
 					if(_rotateCounterR > 1.5f)
-						_rotateCounterR = 1.5f;	
+						_rotateCounterR = 1.5f;
 					_rotateCounterL = 0.0f;
 					return true;
 		}else{
@@ -257,29 +271,31 @@ public class SchoolChild : MonoBehaviour
 	}
 	
 	private void ForwardMovement(){
-		_cacheTransform.position += _cacheTransform.TransformDirection(Vector3.forward)*_speed*_spawner._newDelta;
+		Vector3 targetVelocity = _cacheTransform.TransformDirection(Vector3.forward) * _speed;
+		_rigidbody.linearVelocity = targetVelocity;
+
 		if (tParam < 1) {
 			if(_speed > _targetSpeed){
 				tParam += _spawner._newDelta * _spawner._acceleration;
 			}else{
-				tParam += _spawner._newDelta * _spawner._brake;		
+				tParam += _spawner._newDelta * _spawner._brake;
 			}
-			_speed = Mathf.Lerp(_speed, _targetSpeed,tParam);	
+			_speed = Mathf.Lerp(_speed, _targetSpeed,tParam);
 		}
 	}
 	
 	private void RotationBasedOnWaypointOrAvoidance(){
         Quaternion rotation = Quaternion.LookRotation(_wayPoint - _cacheTransform.position);
         if (!Avoidance()){
-			_cacheTransform.rotation = Quaternion.Slerp(_cacheTransform.rotation, rotation, _spawner._newDelta * _damping);
+			_rigidbody.rotation = Quaternion.Slerp(_rigidbody.rotation, rotation, _spawner._newDelta * _damping);
 		}
 		//Limit rotation up and down to avoid freaky behavior
-		float angle = _cacheTransform.localEulerAngles.x;
+		float angle = _rigidbody.rotation.eulerAngles.x;
 	    angle = (angle > 180) ? angle - 360 : angle;
-		Quaternion rx = _cacheTransform.rotation;
+		Quaternion rx = _rigidbody.rotation;
 	    Vector3 rxea = rx.eulerAngles;
 	    rxea.x = ClampAngle(angle, -50.0f , 50.0f);
 	    rx.eulerAngles = rxea;
-		_cacheTransform.rotation = rx;
+		_rigidbody.rotation = rx;
 	}
 }
