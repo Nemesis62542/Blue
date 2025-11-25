@@ -1,3 +1,4 @@
+using Blue.Audio;
 using Blue.Player;
 using UnityEngine;
 
@@ -48,6 +49,8 @@ namespace Blue.Game
                 }
                 isGodRayPlaying = shouldPlay;
             }
+
+            SoundController.Instance.PlayEnvironmentSound(EnvironmentSoundType.UnderWater);
         }
     }
 }

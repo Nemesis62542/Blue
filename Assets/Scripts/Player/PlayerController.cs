@@ -1,4 +1,5 @@
 using Blue.Attack;
+using Blue.Audio;
 using Blue.Entity;
 using Blue.Game;
 using Blue.Input;
@@ -196,6 +197,7 @@ namespace Blue.Player
                 {
                     model.ConsumeOxygen(oxygenDecreaseAmount);
                     view.PlayBubble();
+                    SoundController.Instance.PlaySE(SEType.Respiratory);
                 }
             }
         }
@@ -368,6 +370,7 @@ namespace Blue.Player
         private void Scan()
         {
             scannerController.Scan(camTransform.position, camTransform.forward);
+            SoundController.Instance.PlaySE(SEType.Scan);
         }
 
         private void HandleHPChanged(float current, float max)
