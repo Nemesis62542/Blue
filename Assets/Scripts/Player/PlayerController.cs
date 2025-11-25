@@ -148,7 +148,6 @@ namespace Blue.Player
         private void Update()
         {
             LookingObject();
-            HandleMove();
             HandleViewRotation();
 
             // bool isBoosting = false;
@@ -171,6 +170,11 @@ namespace Blue.Player
 
             if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
+        }
+
+        private void FixedUpdate()
+        {
+            HandleMove();
         }
 
         private void HandleJump()
@@ -219,22 +223,24 @@ namespace Blue.Player
             right.Normalize();
 
             Vector3 move_direction = (forward * move_input.y + right * move_input.x).normalized;
-            Vector3 current_velocity = rb.linearVelocity;
-            Vector3 target_velocity = move_direction * moveSpeed;
-            target_velocity.y = current_velocity.y;
 
             if (move_input.sqrMagnitude > 0.01f)
             {
-                // 入力がある場合は加速
-                Vector3 new_velocity = Vector3.MoveTowards(current_velocity, target_velocity, acceleration * Time.deltaTime);
-                rb.linearVelocity = new_velocity;
+                // 入力がある場合は目標速度に向かって力を加える
+                Vector3 current_horizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                Vector3 target_velocity = move_direction * moveSpeed;
+                Vector3 velocity_diff = target_velocity - current_horizontal;
+
+                // 加速力を計算
+                Vector3 force = velocity_diff * acceleration;
+                rb.AddForce(force, ForceMode.Acceleration);
             }
             else
             {
-                // 入力がない場合は減速（慣性）
-                Vector3 horizontal_velocity = new Vector3(current_velocity.x, 0f, current_velocity.z);
-                horizontal_velocity = Vector3.MoveTowards(horizontal_velocity, Vector3.zero, deceleration * Time.deltaTime);
-                rb.linearVelocity = new Vector3(horizontal_velocity.x, current_velocity.y, horizontal_velocity.z);
+                // 入力がない場合は減速力を加える
+                Vector3 current_horizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                Vector3 decel_force = -current_horizontal * deceleration;
+                rb.AddForce(decel_force, ForceMode.Acceleration);
             }
         }
 
