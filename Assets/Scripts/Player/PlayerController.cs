@@ -503,7 +503,11 @@ namespace Blue.Player
             model.AddCapturedEntity(captured);
             view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
 
-            if (captured.Name == "ME-G4L0") GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
+            if (captured.Name == "ME-G4L0") 
+            {
+                SoundController.Instance.StopBGM(0.5f);
+                GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
+            }
         }
 
         public void OnPickUpItem(ItemData item)

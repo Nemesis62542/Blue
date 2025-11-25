@@ -1,3 +1,4 @@
+using Blue.Audio;
 using Blue.Input;
 using UnityEngine;
 
@@ -32,6 +33,7 @@ namespace Blue.Game
             // 仮の実装
             if (SceneLoader.CurrentSceneName == "Aquarium")
             {
+                SoundController.Instance.StopBGM(0);
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Title");
             } 
         }
