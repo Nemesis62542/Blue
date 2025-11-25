@@ -16222,23 +16222,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6953364561088171395, guid: 9a9f38be517496f4291e2fa43091fb5e, type: 3}
   m_PrefabInstance: {fileID: 46516273}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &941909502460292740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7313897020251177726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf47b343ae2dd2740b4d2522691812a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.Game.GravityController
-  mode: 1
-  gravityStrength: 9.8
-  terminalVelocity: 50
-  dragCoefficient: 0.1
-  buoyancy: 0
 --- !u!136 &1259275379977843676
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -16529,7 +16512,6 @@ GameObject:
   - component: {fileID: 9055999051488716751}
   - component: {fileID: 1259275379977843676}
   - component: {fileID: 2058130821150359878}
-  - component: {fileID: 941909502460292740}
   - component: {fileID: 9055999051488716752}
   m_Layer: 6
   m_Name: Player
@@ -16689,9 +16671,9 @@ MonoBehaviour:
   rb: {fileID: 2058130821150359878}
   camTransform: {fileID: 8616141341974509641}
   defaultInputMap: 2
-  moveSpeed: 2
+  moveSpeed: 3
   acceleration: 10
-  deceleration: 4
+  deceleration: 10
   maxLookUpAngle: 80
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
