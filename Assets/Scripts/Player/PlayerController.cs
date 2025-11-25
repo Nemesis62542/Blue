@@ -40,6 +40,10 @@ namespace Blue.Player
         [SerializeField] private float fuelDepletedCooldown = 5f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
+        [Header("着地判定")]
+        [SerializeField] private float groundCheckDistance = 0.2f;
+        [SerializeField] private Vector3 groundCheckOffset = new Vector3(0f, 0.1f, 0f);
+        [SerializeField] private float groundCheckRadius = 0.3f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
@@ -175,7 +179,31 @@ namespace Blue.Player
 
         private void FixedUpdate()
         {
+            CheckGrounded();
             HandleMove();
+        }
+
+        private void CheckGrounded()
+        {
+            Vector3 origin = transform.position + groundCheckOffset;
+            int ground_layer_mask = 1 << 8; // Layer 8
+
+            isGrounded = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit hit, groundCheckDistance, ground_layer_mask);
+
+            // デバッグ用：球体の可視化
+            Color debug_color = isGrounded ? Color.green : Color.red;
+            Vector3 end_position = origin + Vector3.down * groundCheckDistance;
+
+            // 中心線
+            Debug.DrawLine(origin, end_position, debug_color);
+
+            // 球体の輪郭（簡易的に8方向の線で表現）
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = i * 45f * Mathf.Deg2Rad;
+                Vector3 offset = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * groundCheckRadius;
+                Debug.DrawLine(origin + offset, end_position + offset, debug_color);
+            }
         }
 
         private void HandleJump()
@@ -322,15 +350,6 @@ namespace Blue.Player
                     pos.y -= 0.8f;
                     Instantiate(cloudOfDust, pos, Quaternion.identity);
                 }
-                isGrounded = true;
-            }
-        }
-
-        private void OnCollisionExit(Collision collision)
-        {
-            if (collision.gameObject.layer == 8)
-            {
-                isGrounded = false;
             }
         }
 
