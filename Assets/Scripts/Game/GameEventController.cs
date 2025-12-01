@@ -8,6 +8,7 @@ using UnityEngine.Timeline;
 using Blue.UI.Screen;
 using Blue.Entity;
 using Blue.Player;
+using Blue.Audio;
 
 public class GameEventController : MonoBehaviour
 {
@@ -76,14 +77,21 @@ public class GameEventController : MonoBehaviour
         PlayerController.Instance.ForwardMovie();
     }
 
+    public void ShallowSeaBGM()
+    {
+        SoundController.Instance.PlayBGM(BGMType.ShallowSea);
+    }
+
     public void EmergencyMessage()
     {
+        SoundController.Instance.StopBGM(0.5f);
         MessageView.Instance.ShowMessage(new MessageData("周囲に大型の動態反応を検知。危険度：<color=red>高</color>"), 5.0f);
     }
 
     public void BattleStart()
     {
         shark.StartBattle();
+        SoundController.Instance.PlayBGM(BGMType.MecaShark);
         MessageView.Instance.ShowMessage(new MessageData("ME-G4L0の敵対反応を検知。速やかな対応を推奨"), 8.0f);
     }
 
@@ -94,6 +102,7 @@ public class GameEventController : MonoBehaviour
 
     public void ForwardAquariumScene()
     {
+        SoundController.Instance.PlayBGM(BGMType.ShallowSea);
         ForwardIngame();
         EndEvent();
         SceneLoader.LoadScene("Aquarium");

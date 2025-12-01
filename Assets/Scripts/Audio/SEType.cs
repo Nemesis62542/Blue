@@ -4,8 +4,7 @@ namespace Blue.Audio
     {
         None,
         Click,
-        Explosion,
-        Pickup,
-        EnemyHit
+        Respiratory,  // 水中の呼吸音
+        Scan,         // スキャン
     }
 }

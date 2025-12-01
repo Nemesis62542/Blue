@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: BGMAudioClip
   m_EditorClassIdentifier: 
   bgmList:
-  - type: 1
-    clip: {fileID: 8300000, guid: d185900adb4d661469f03e026222c3f6, type: 3}
+  - type: 2
+    clip: {fileID: 8300000, guid: 2fe1fc275c8256247907d130cc45da25, type: 3}
+    loop: 1
+  - type: 3
+    clip: {fileID: 8300000, guid: 408f23de484ff3841b7e238b594c06a9, type: 3}
+    loop: 1

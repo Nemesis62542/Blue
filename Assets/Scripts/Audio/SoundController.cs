@@ -8,8 +8,10 @@ namespace Blue.Audio
 
         [SerializeField] private BGMPlayer bgmPlayer;
         [SerializeField] private SEPlayer sePlayer;
+        [SerializeField] private EnvironmentSoundPlayer environmentSoundPlayer;
         [SerializeField] private BGMAudioClip bgmAudioClip;
         [SerializeField] private SEAudioClip seAudioClip;
+        [SerializeField] private EnvironmentSoundAudioClip environmentSoundAudioClip;
 
         public static SoundController Instance => instance;
 
@@ -83,6 +85,47 @@ namespace Blue.Audio
             if (seAudioClip == null || sePlayer == null)
             {
                 Debug.LogError("SEPlayer または SEAudioClip が設定されていません。");
+                return false;
+            }
+            return true;
+        }
+
+        public void PlayEnvironmentSound(EnvironmentSoundType type)
+        {
+            PlayEnvironmentSound(type, 0f);
+        }
+
+        public void PlayEnvironmentSound(EnvironmentSoundType type, float fade_time = 0f)
+        {
+            if (!ValidateEnvironmentSound()) return;
+
+            AudioClip clip = environmentSoundAudioClip.GetClip(type);
+            bool loop = environmentSoundAudioClip.GetLoop(type);
+
+            if (clip == null) return;
+            if (clip == environmentSoundPlayer.CurrentClip) return;
+
+            if (loop)
+            {
+                environmentSoundPlayer.Play(clip, loop, fade_time);
+            }
+            else
+            {
+                environmentSoundPlayer.PlayOneShot(clip);
+            }
+        }
+
+        public void StopEnvironmentSound(float fade_time = 0f)
+        {
+            if (!ValidateEnvironmentSound()) return;
+            environmentSoundPlayer.Stop(fade_time);
+        }
+
+        private bool ValidateEnvironmentSound()
+        {
+            if (environmentSoundPlayer == null || environmentSoundAudioClip == null)
+            {
+                Debug.LogError("EnvironmentSoundPlayer または EnvironmentSoundAudioClip が設定されていません。");
                 return false;
             }
             return true;

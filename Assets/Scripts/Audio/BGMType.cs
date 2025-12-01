@@ -4,7 +4,8 @@ namespace Blue.Audio
     {
         None,
         Title,
-        Battle,
+        ShallowSea, // 浅瀬
+        MecaShark,  // VS.ME-G4L0
         Field,
         Boss
     }

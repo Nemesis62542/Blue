@@ -1,4 +1,5 @@
 using Blue.Attack;
+using Blue.Audio;
 using Blue.Entity;
 using Blue.Game;
 using Blue.Input;
@@ -39,6 +40,10 @@ namespace Blue.Player
         [SerializeField] private float fuelDepletedCooldown = 5f;
         [SerializeField] private float maxLookUpAngle = 80f;
         [SerializeField] private float interactDistance = 3.0f;
+        [Header("着地判定")]
+        [SerializeField] private float groundCheckDistance = 0.2f;
+        [SerializeField] private Vector3 groundCheckOffset = new Vector3(0f, 0.1f, 0f);
+        [SerializeField] private float groundCheckRadius = 0.3f;
 
         private PlayerInputHandler inputHandler;
         private bool isGrounded;
@@ -148,7 +153,6 @@ namespace Blue.Player
         private void Update()
         {
             LookingObject();
-            HandleMove();
             HandleViewRotation();
 
             // bool isBoosting = false;
@@ -173,6 +177,35 @@ namespace Blue.Player
             model.SetDepth(waterLevel - transform.position.y);
         }
 
+        private void FixedUpdate()
+        {
+            CheckGrounded();
+            HandleMove();
+        }
+
+        private void CheckGrounded()
+        {
+            Vector3 origin = transform.position + groundCheckOffset;
+            int ground_layer_mask = 1 << 8; // Layer 8
+
+            isGrounded = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit hit, groundCheckDistance, ground_layer_mask);
+
+            // デバッグ用：球体の可視化
+            Color debug_color = isGrounded ? Color.green : Color.red;
+            Vector3 end_position = origin + Vector3.down * groundCheckDistance;
+
+            // 中心線
+            Debug.DrawLine(origin, end_position, debug_color);
+
+            // 球体の輪郭（簡易的に8方向の線で表現）
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = i * 45f * Mathf.Deg2Rad;
+                Vector3 offset = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * groundCheckRadius;
+                Debug.DrawLine(origin + offset, end_position + offset, debug_color);
+            }
+        }
+
         private void HandleJump()
         {
             if (isGrounded) Jump();
@@ -192,6 +225,7 @@ namespace Blue.Player
                 {
                     model.ConsumeOxygen(oxygenDecreaseAmount);
                     view.PlayBubble();
+                    SoundController.Instance.PlaySE(SEType.Respiratory);
                 }
             }
         }
@@ -219,22 +253,24 @@ namespace Blue.Player
             right.Normalize();
 
             Vector3 move_direction = (forward * move_input.y + right * move_input.x).normalized;
-            Vector3 current_velocity = rb.linearVelocity;
-            Vector3 target_velocity = move_direction * moveSpeed;
-            target_velocity.y = current_velocity.y;
 
             if (move_input.sqrMagnitude > 0.01f)
             {
-                // 入力がある場合は加速
-                Vector3 new_velocity = Vector3.MoveTowards(current_velocity, target_velocity, acceleration * Time.deltaTime);
-                rb.linearVelocity = new_velocity;
+                // 入力がある場合は目標速度に向かって力を加える
+                Vector3 current_horizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                Vector3 target_velocity = move_direction * moveSpeed;
+                Vector3 velocity_diff = target_velocity - current_horizontal;
+
+                // 加速力を計算
+                Vector3 force = velocity_diff * acceleration;
+                rb.AddForce(force, ForceMode.Acceleration);
             }
             else
             {
-                // 入力がない場合は減速（慣性）
-                Vector3 horizontal_velocity = new Vector3(current_velocity.x, 0f, current_velocity.z);
-                horizontal_velocity = Vector3.MoveTowards(horizontal_velocity, Vector3.zero, deceleration * Time.deltaTime);
-                rb.linearVelocity = new Vector3(horizontal_velocity.x, current_velocity.y, horizontal_velocity.z);
+                // 入力がない場合は減速力を加える
+                Vector3 current_horizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                Vector3 decel_force = -current_horizontal * deceleration;
+                rb.AddForce(decel_force, ForceMode.Acceleration);
             }
         }
 
@@ -314,15 +350,6 @@ namespace Blue.Player
                     pos.y -= 0.8f;
                     Instantiate(cloudOfDust, pos, Quaternion.identity);
                 }
-                isGrounded = true;
-            }
-        }
-
-        private void OnCollisionExit(Collision collision)
-        {
-            if (collision.gameObject.layer == 8)
-            {
-                isGrounded = false;
             }
         }
 
@@ -362,6 +389,7 @@ namespace Blue.Player
         private void Scan()
         {
             scannerController.Scan(camTransform.position, camTransform.forward);
+            SoundController.Instance.PlaySE(SEType.Scan);
         }
 
         private void HandleHPChanged(float current, float max)
@@ -494,7 +522,11 @@ namespace Blue.Player
             model.AddCapturedEntity(captured);
             view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
 
-            if (captured.Name == "ME-G4L0") GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
+            if (captured.Name == "ME-G4L0") 
+            {
+                SoundController.Instance.StopBGM(0.5f);
+                GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
+            }
         }
 
         public void OnPickUpItem(ItemData item)

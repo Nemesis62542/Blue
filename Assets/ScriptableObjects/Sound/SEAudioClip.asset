@@ -13,5 +13,11 @@ MonoBehaviour:
   m_Name: SEAudioClip
   m_EditorClassIdentifier: 
   seList:
-  - type: 1
-    clip: {fileID: 8300000, guid: 0436270dd89d332409e8b0f8902b41ba, type: 3}
+  - type: 2
+    clip: {fileID: 8300000, guid: 9ad2bf190a5ec0c478ece59abd2742f8, type: 3}
+    minDistance: 0.1
+    maxDistance: 1
+  - type: 3
+    clip: {fileID: 8300000, guid: 2f0e53b7465f45941b1ba357a6dacf1e, type: 3}
+    minDistance: 1
+    maxDistance: 5
