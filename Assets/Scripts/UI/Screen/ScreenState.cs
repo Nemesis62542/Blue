@@ -11,5 +11,6 @@ namespace Blue.UI.Screen
         GarageHome, // ガレージホーム画面
         CraftTable, // アイテムクラフト画面
         Strage,     // アイテム倉庫画面
+        Map,        // マップ画面
     }
 }
