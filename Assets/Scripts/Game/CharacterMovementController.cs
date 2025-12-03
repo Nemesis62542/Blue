@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Blue.Game
 {
-    public class CharacterController : MonoBehaviour
+    public class CharacterMovementController : MonoBehaviour
     {
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Transform camTransform;
@@ -33,8 +33,11 @@ namespace Blue.Game
             // 仮の実装
             if (SceneLoader.CurrentSceneName == "Aquarium")
             {
-                SoundController.Instance.StopBGM(0);
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) SceneLoader.LoadScene("Title");
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Tab)) 
+                {
+                    SoundController.Instance.StopBGM(0);
+                    SceneLoader.LoadScene("Title");
+                }
             } 
         }
 
