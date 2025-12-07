@@ -9,16 +9,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 922.113
+      value: 920.534
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 86.498
+      value: 87.364
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 900.635
+      value: 901.1423
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalRotation.w
@@ -155,6 +167,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 40106541720585981}
   m_SourcePrefab: {fileID: 100100000, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
+--- !u!95 &2524068493568638488 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
+  m_PrefabInstance: {fileID: 8245491967348786057}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &6238919863375789549 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2664098864995057252, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
@@ -194,6 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.DragonBabyController
   view: {fileID: 7506442412053812423}
   data: {fileID: 11400000, guid: ec58aea71e901274e85c9fdadbf3042e, type: 2}
+  crawler: {fileID: 9209982776800037783}
+  waitTimeRange: {x: 30, y: 180}
 --- !u!114 &7506442412053812423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.DragonBabyView
   skinnedMeshRenderer: {fileID: 6238919863375789549}
   highlightController: {fileID: 8272492256066373824}
+  animator: {fileID: 2524068493568638488}
 --- !u!114 &9209982776800037783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,13 +240,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50bd86fa8e02d554d91d2d998a9daecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.GroundCrawler
-  moveSpeed: 3
+  moveSpeed: 0.3
   moveForce: 10
-  rotationSpeed: 10
+  rotationSpeed: 0.7
   waypointDistance: 1
   groundCheckDistance: 1
   groundCheckRadius: 0.3
-  forwardGroundThreshold: 0.1
   heightOffset: -0.2
   groundAlignForce: 10
   groundMask:
