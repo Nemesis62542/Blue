@@ -246,7 +246,7 @@ namespace Blue.Entity.Common
         {
             targetWaypoint = point;
 
-            if(targetWaypoint != rb.position) state = State.Move; 
+            state = State.Move; 
         }
 
         public void SetRoamCenter(Vector3 center)
