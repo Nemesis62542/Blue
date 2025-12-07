@@ -2,6 +2,14 @@ using UnityEngine;
 
 namespace Blue.Entity.Common
 {
+    public enum State
+    {
+        None,    // なし
+        Idle,    // 待機中
+        Move,    // 移動中
+        Arrival  // 目的地に到着
+    }
+
     [RequireComponent(typeof(Rigidbody))]
     public class GroundCrawler : MonoBehaviour
     {
@@ -14,7 +22,6 @@ namespace Blue.Entity.Common
         [Header("Ground Detection")]
         [SerializeField] private float groundCheckDistance = 2.0f;
         [SerializeField] private float groundCheckRadius = 0.5f;
-        [SerializeField] private float forwardGroundThreshold = 1.0f;
         [SerializeField] private float heightOffset = 0.1f;
         [SerializeField] private float groundAlignForce = 10.0f;
         [SerializeField] private LayerMask groundMask = ~0;
@@ -35,15 +42,17 @@ namespace Blue.Entity.Common
 
         private Rigidbody rb;
         private Vector3 targetWaypoint;
+        private State state = State.None;
+        
+        public State State => state;
 
         private void Start()
         {
             rb = GetComponent<Rigidbody>();
-            rb.useGravity = false;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
 
             roamCenter = transform.position;
-            SetRandomWaypoint();
+            state = State.Idle;
         }
 
         private void FixedUpdate()
@@ -60,7 +69,7 @@ namespace Blue.Entity.Common
             RotateToAlignWithGround();
 
             // 進行方向への回転
-            RotateTowardsTarget();
+            if (state == State.Move) RotateTowardsTarget();
         }
 
         private void RotateToAlignWithGround()
@@ -118,7 +127,7 @@ namespace Blue.Entity.Common
         {
             if (Vector3.Distance(rb.position, targetWaypoint) < waypointDistance)
             {
-                SetRandomWaypoint();
+                state = State.Arrival;
             }
 
             // 目標への方向（水平面に投影）
@@ -169,7 +178,7 @@ namespace Blue.Entity.Common
             ApplyGroundAttachment();
 
             // 前方への移動
-            ApplyForwardMovement();
+            if (state == State.Move) ApplyForwardMovement();
         }
 
         private void ApplyGroundAttachment()
@@ -223,14 +232,21 @@ namespace Blue.Entity.Common
                 // 地面の高さを検出してwaypointを地面上に配置
                 if (Physics.SphereCast(candidateWaypoint + Vector3.up * 10f, groundCheckRadius, Vector3.down, out RaycastHit hit, 20f, groundMask))
                 {
-                    targetWaypoint = hit.point + hit.normal * heightOffset;
+                    SetWaypoint(hit.point + hit.normal * heightOffset);
                     return;
                 }
             }
 
             // 最大試行回数を超えた場合は現在地を目標に設定
             Debug.LogWarning($"[GroundCrawler] Failed to find valid waypoint after {maxAttempts} attempts. Using current position.");
-            targetWaypoint = rb.position;
+            SetWaypoint(rb.position);
+        }
+
+        public void SetWaypoint(Vector3 point)
+        {
+            targetWaypoint = point;
+
+            if(targetWaypoint != rb.position) state = State.Move; 
         }
 
         public void SetRoamCenter(Vector3 center)
