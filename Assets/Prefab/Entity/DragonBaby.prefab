@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 488.87354
+      value: 922.113
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 295.788
+      value: 86.498
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 888.63495
+      value: 900.635
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       propertyPath: m_LocalRotation.w
@@ -150,10 +150,10 @@ PrefabInstance:
       addedObject: {fileID: 9209982776800037783}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1877890935996677450}
+      addedObject: {fileID: 3270707494659489448}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3270707494659489448}
+      addedObject: {fileID: 40106541720585981}
   m_SourcePrefab: {fileID: 100100000, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
 --- !u!137 &6238919863375789549 stripped
 SkinnedMeshRenderer:
@@ -220,12 +220,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50bd86fa8e02d554d91d2d998a9daecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.GroundCrawler
-  moveSpeed: 0.1
-  rotationSpeed: 0.1
+  moveSpeed: 3
+  moveForce: 10
+  rotationSpeed: 10
   waypointDistance: 1
-  groundCheckDistance: 2
-  groundCheckRadius: 0.5
-  heightOffset: -0.1
+  groundCheckDistance: 1
+  groundCheckRadius: 0.3
+  forwardGroundThreshold: 0.1
+  heightOffset: -0.2
   groundAlignForce: 10
   groundMask:
     serializedVersion: 2
@@ -239,28 +241,7 @@ MonoBehaviour:
   pushDistance: 1
   pushForce: 2
   roamCenter: {x: 0, y: 0, z: 0}
-  roamArea: {x: 5, y: 5}
---- !u!65 &1877890935996677450
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9127871291077197528}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 128
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.25, y: 0.13, z: 0.5}
-  m_Center: {x: 0, y: 0.06, z: -0.065}
+  roamArea: {x: 2, y: 2}
 --- !u!54 &3270707494659489448
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -288,3 +269,26 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!136 &40106541720585981
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9127871291077197528}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Height: 0.6
+  m_Direction: 2
+  m_Center: {x: 0, y: 0.1, z: -0.05}

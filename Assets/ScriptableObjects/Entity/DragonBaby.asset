@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: DragonBaby
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
-  id: 0
+  id: 5
   cachedGUID: ec58aea71e901274e85c9fdadbf3042e
   name: "\u30C9\u30E9\u30B4\u30F3\u30D9\u30D3\u30FC"
   hp: 5
