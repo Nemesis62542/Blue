@@ -19,6 +19,8 @@ namespace Blue.Entity
 
         public bool IsCapturable => true;
 
+        private const string ANIMATOR_MOVE_PARAM = "Move";
+
         protected override void Awake()
         {
             model = new DragonBabyModel(data);
@@ -41,9 +43,11 @@ namespace Blue.Entity
 
                 // 次の目的地を設定
                 crawler.SetRandomWaypoint();
+                view.SetAnimatorBool(ANIMATOR_MOVE_PARAM, true);
 
                 // Arrivalステートになるまで待機
                 await UniTask.WaitUntil(() => crawler.State == State.Arrival, cancellationToken: ct);
+                view.SetAnimatorBool(ANIMATOR_MOVE_PARAM, false);
             }
         }
 
