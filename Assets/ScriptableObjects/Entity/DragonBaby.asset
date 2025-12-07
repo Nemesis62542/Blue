@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
+  m_Name: DragonBaby
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
+  id: 5
+  cachedGUID: ec58aea71e901274e85c9fdadbf3042e
+  name: "\u30C9\u30E9\u30B4\u30F3\u30D9\u30D3\u30FC"
+  hp: 5
+  attackPower: 0
+  displaySize: 1
+  habitation: 1
+  object: {fileID: 9127871291077197528, guid: 46ec307b6c6d75341908b2bd7d9ff8c5, type: 3}
+  school: {fileID: 0}
