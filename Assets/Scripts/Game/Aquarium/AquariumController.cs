@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Blue.Game.Aquarium
 {
-    public class AquariumController : MonoBehaviour
+    public partial class AquariumController : MonoBehaviour
     {
         [SerializeField] private List<DisplayData> displayData = new List<DisplayData>();
 
