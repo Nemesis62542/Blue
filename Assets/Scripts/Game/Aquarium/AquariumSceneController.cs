@@ -7,7 +7,16 @@ namespace Blue.Game.Aquarium
 {
     public class AquariumSceneController : MonoBehaviour
     {
+        public enum State
+        {
+            None,    // なし
+            View,    // 鑑賞状態
+            Editor,  // 編集状態
+        }
+
         [SerializeField] private List<AquariumController> aquaria = new List<AquariumController>();
+
+        private State state = State.None;
 
         void Awake()
         {
