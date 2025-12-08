@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Blue.Entity;
-using Blue.Object;
 using Blue.Save;
 using UnityEngine;
 
-namespace Blue.Game
+namespace Blue.Game.Aquarium
 {
     public class AquariumSceneController : MonoBehaviour
     {

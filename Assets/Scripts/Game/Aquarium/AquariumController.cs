@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Blue.Entity;
 using UnityEngine;
 
-namespace Blue.Object
+namespace Blue.Game.Aquarium
 {
     public class AquariumController : MonoBehaviour
     {
