@@ -21,6 +21,85 @@ Shader "Custom/WaterFill"
         }
         LOD 100
 
+        HLSLINCLUDE
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+        struct Attributes
+        {
+            float4 positionOS : POSITION;
+            float3 normalOS : NORMAL;
+        };
+
+        struct Varyings
+        {
+            float4 positionHCS : SV_POSITION;
+            float3 positionWS : TEXCOORD0;
+            float3 normalWS : TEXCOORD1;
+        };
+
+        CBUFFER_START(UnityPerMaterial)
+            float4 _WaterColor;
+            float4 _SurfaceColor;
+            float _SurfaceLineThickness;
+            float _SurfaceLineSoftness;
+        CBUFFER_END
+
+        UNITY_INSTANCING_BUFFER_START(WaterFill)
+            UNITY_DEFINE_INSTANCED_PROP(float, _FillLevel01)
+            UNITY_DEFINE_INSTANCED_PROP(float, _ObjectHeight)
+            UNITY_DEFINE_INSTANCED_PROP(float, _PivotOffsetY)
+        UNITY_INSTANCING_BUFFER_END(WaterFill)
+
+        Varyings vert(Attributes input)
+        {
+            Varyings output;
+            VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionOS.xyz);
+            output.positionHCS = positionInputs.positionCS;
+            output.positionWS = positionInputs.positionWS;
+            output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+            return output;
+        }
+
+        void GetFillData(Varyings input, out float fillLevelLocal, out float3 positionOS, out float fillDistance, out float fillMask)
+        {
+            float fillLevel01 = UNITY_ACCESS_INSTANCED_PROP(WaterFill, _FillLevel01);
+            float objectHeight = UNITY_ACCESS_INSTANCED_PROP(WaterFill, _ObjectHeight);
+            float pivotOffsetY = UNITY_ACCESS_INSTANCED_PROP(WaterFill, _PivotOffsetY);
+            fillLevelLocal = (fillLevel01 * objectHeight) + pivotOffsetY;
+
+            positionOS = TransformWorldToObject(input.positionWS);
+            fillDistance = fillLevelLocal - positionOS.y;
+            float edgeWidth = max(fwidth(positionOS.y), 1e-4);
+            fillMask = saturate(smoothstep(-edgeWidth, edgeWidth, fillDistance));
+        }
+        ENDHLSL
+
+        Pass
+        {
+            Name "DepthOnly"
+            Tags { "LightMode" = "DepthOnly" }
+            Cull Off
+            ZWrite On
+            ColorMask 0
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment fragDepth
+            #pragma multi_compile_instancing
+
+            half4 fragDepth(Varyings input) : SV_Target
+            {
+                float fillLevelLocal;
+                float3 positionOS;
+                float fillDistance;
+                float fillMask;
+                GetFillData(input, fillLevelLocal, positionOS, fillDistance, fillMask);
+                clip(fillDistance);
+                return half4(0.0, 0.0, 0.0, 0.0);
+            }
+            ENDHLSL
+        }
+
         Pass
         {
             Name "Forward"
@@ -34,55 +113,13 @@ Shader "Custom/WaterFill"
             #pragma fragment frag
             #pragma multi_compile_instancing
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            struct Attributes
-            {
-                float4 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-            };
-
-            struct Varyings
-            {
-                float4 positionHCS : SV_POSITION;
-                float3 positionWS : TEXCOORD0;
-                float3 normalWS : TEXCOORD1;
-            };
-
-            CBUFFER_START(UnityPerMaterial)
-                float4 _WaterColor;
-                float4 _SurfaceColor;
-                float _SurfaceLineThickness;
-                float _SurfaceLineSoftness;
-            CBUFFER_END
-
-            UNITY_INSTANCING_BUFFER_START(WaterFill)
-                UNITY_DEFINE_INSTANCED_PROP(float, _FillLevel01)
-                UNITY_DEFINE_INSTANCED_PROP(float, _ObjectHeight)
-                UNITY_DEFINE_INSTANCED_PROP(float, _PivotOffsetY)
-            UNITY_INSTANCING_BUFFER_END(WaterFill)
-
-            Varyings vert(Attributes input)
-            {
-                Varyings output;
-                VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionOS.xyz);
-                output.positionHCS = positionInputs.positionCS;
-                output.positionWS = positionInputs.positionWS;
-                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                return output;
-            }
-
             half4 frag(Varyings input) : SV_Target
             {
-                float fillLevel01 = UNITY_ACCESS_INSTANCED_PROP(WaterFill, _FillLevel01);
-                float objectHeight = UNITY_ACCESS_INSTANCED_PROP(WaterFill, _ObjectHeight);
-                float pivotOffsetY = UNITY_ACCESS_INSTANCED_PROP(WaterFill, _PivotOffsetY);
-                float fillLevelLocal = (fillLevel01 * objectHeight) + pivotOffsetY;
-
-                float3 positionOS = TransformWorldToObject(input.positionWS);
-                float fillDistance = fillLevelLocal - positionOS.y;
-                float edgeWidth = max(fwidth(positionOS.y), 1e-4);
-                float fillMask = saturate(smoothstep(-edgeWidth, edgeWidth, fillDistance));
+                float fillLevelLocal;
+                float3 positionOS;
+                float fillDistance;
+                float fillMask;
+                GetFillData(input, fillLevelLocal, positionOS, fillDistance, fillMask);
 
                 float3 normalWS = normalize(input.normalWS);
                 float upMask = saturate(dot(normalWS, float3(0.0, 1.0, 0.0)));
