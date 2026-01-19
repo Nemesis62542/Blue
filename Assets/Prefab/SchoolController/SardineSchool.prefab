@@ -111,7 +111,7 @@ MonoBehaviour:
   _stopSpeedMultiplier: 2
   _avoidanceMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 375
   _push: 0
   _pushDistance: 0
   _pushForce: 5
