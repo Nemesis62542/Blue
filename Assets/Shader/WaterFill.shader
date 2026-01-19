@@ -9,6 +9,9 @@ Shader "Custom/WaterFill"
         [PerRendererData]_PivotOffsetY ("Pivot Offset Y (Local Units)", Float) = 0.0
         _SurfaceLineThickness ("Surface Line Thickness", Range(0.001, 0.2)) = 0.03
         _SurfaceLineSoftness ("Surface Line Softness", Range(0.0, 0.2)) = 0.02
+        _DistanceFadeStart ("Distance Fade Start", Float) = 10.0
+        _DistanceFadeEnd ("Distance Fade End", Float) = 30.0
+        _DistanceOpacityBoost ("Distance Opacity Boost", Range(0, 1)) = 0.4
     }
 
     SubShader
@@ -42,6 +45,9 @@ Shader "Custom/WaterFill"
             float4 _SurfaceColor;
             float _SurfaceLineThickness;
             float _SurfaceLineSoftness;
+            float _DistanceFadeStart;
+            float _DistanceFadeEnd;
+            float _DistanceOpacityBoost;
         CBUFFER_END
 
         UNITY_INSTANCING_BUFFER_START(WaterFill)
@@ -71,6 +77,15 @@ Shader "Custom/WaterFill"
             fillDistance = fillLevelLocal - positionOS.y;
             float edgeWidth = max(fwidth(positionOS.y), 1e-4);
             fillMask = saturate(smoothstep(-edgeWidth, edgeWidth, fillDistance));
+        }
+
+        float GetDistanceOpacityBoost(float3 positionWS)
+        {
+            float3 cameraWS = GetCameraPositionWS();
+            float distanceToCamera = distance(cameraWS, positionWS);
+            float fadeRange = max(_DistanceFadeEnd - _DistanceFadeStart, 1e-3);
+            float t = saturate((distanceToCamera - _DistanceFadeStart) / fadeRange);
+            return lerp(0.0, _DistanceOpacityBoost, t);
         }
         ENDHLSL
 
@@ -131,6 +146,7 @@ Shader "Custom/WaterFill"
 
                 float3 color = lerp(_WaterColor.rgb, _SurfaceColor.rgb, surfaceBlend);
                 float alpha = lerp(_WaterColor.a, _SurfaceColor.a, surfaceBlend) * fillMask;
+                alpha = saturate(alpha + GetDistanceOpacityBoost(input.positionWS));
 
                 return half4(color, alpha);
             }
