@@ -979,6 +979,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 833756508350244147}
+  - component: {fileID: 2558290725734189488}
   m_Layer: 0
   m_Name: Aquarium_Simple
   m_TagString: Untagged
@@ -1005,6 +1006,23 @@ Transform:
   - {fileID: 5345204081614098922}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2558290725734189488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4303745624815526160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9774646c8db724e468d306ef27b18655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Object.AquariumController
+  habitation: 1
+  slots:
+  - spawnPoint: {fileID: 5345204081614098922}
+    isSchoolSlot: 1
+    maxDisplayableSize: 3
 --- !u!1 &6164216384883725611
 GameObject:
   m_ObjectHideFlags: 0
