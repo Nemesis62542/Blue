@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Blue.Entity;
 using UnityEngine;
 
@@ -7,69 +7,64 @@ namespace Blue.Object
 {
     public class AquariumController : MonoBehaviour
     {
-        [SerializeField] private List<DisplayData> displayData = new List<DisplayData>();
-
-        private void InstantiateDisplayEntity(DisplayData data)
-        {
-            GameObject @object = data.Entity.School != null ? data.Entity.School.gameObject : data.Entity.Object;
-            Instantiate(@object, data.SpawnPoint.position, Quaternion.identity, transform);
-        }
-
-        public DisplayData FirstEnptyDisplayData(HabitationArea habitation, bool isSchool = false)
-        {
-            foreach (DisplayData data in displayData)
-            {
-                if (data.Entity != null) continue;
-                if (data.Habitation != habitation) continue;
-
-                if (isSchool)
-                {
-                    if (data.IsSchool) return data;
-                }
-                else
-                {
-                    return data;
-                }
-            }
-
-            return null;
-        }
-
-        public void SetDisplayEntity(DisplayData data, EntityData entity)
-        {
-            if (data.MaxDisplayableSize < entity.DisplaySize) throw new Exception("生物の展示に失敗");
-
-            if (entity.School != null)
-            {
-                if (data.IsSchool)
-                {
-                    data.Entity = entity;
-                    InstantiateDisplayEntity(data);
-                }
-                else throw new Exception("生物の展示に失敗");
-            }
-            else
-            {
-                data.Entity = entity;
-                InstantiateDisplayEntity(data);
-            }
-        }
-    }
-
-    [Serializable]
-    public class DisplayData
-    {
-        [SerializeField] private Transform spawnPoint;
-        [SerializeField] private bool isSchool;
-        [SerializeField] private int maxDisplayableSize;
-        [SerializeField] private EntityData entity;
         [SerializeField] private HabitationArea habitation;
+        [SerializeField] private List<DisplaySlot> slots = new List<DisplaySlot>();
 
-        public Transform SpawnPoint => spawnPoint;
-        public bool IsSchool => isSchool;
-        public int MaxDisplayableSize => maxDisplayableSize;
         public HabitationArea Habitation => habitation;
 
-        public EntityData Entity { get => entity; set => entity = value; }
+        /// <summary>
+        /// 指定された生物を配置できる空きスロットがあるか
+        /// </summary>
+        public bool HasAvailableSlot(EntityData entity)
+        {
+            return FindAvailableSlot(entity) != null;
+        }
+
+        /// <summary>
+        /// 生物を水槽に追加
+        /// </summary>
+        public bool TryAddEntity(EntityData entity)
+        {
+            DisplaySlot slot = FindAvailableSlot(entity);
+            if (slot == null)
+            {
+                Debug.LogWarning($"{entity.Name} を配置できる空きスロットがありません");
+                return false;
+            }
+
+            slot.PlaceEntity(entity, transform);
+            return true;
+        }
+
+        /// <summary>
+        /// 生物を配置可能な空きスロットを検索
+        /// </summary>
+        private DisplaySlot FindAvailableSlot(EntityData entity)
+        {
+            return slots.FirstOrDefault(s => s.CanPlace(entity));
+        }
+
+        /// <summary>
+        /// すべてのスロットをクリア
+        /// </summary>
+        public void ClearAllSlots()
+        {
+            foreach (DisplaySlot slot in slots)
+            {
+                slot.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 指定された生物を水槽から削除
+        /// </summary>
+        public bool RemoveEntity(EntityData entity)
+        {
+            DisplaySlot slot = slots.FirstOrDefault(s => s.CurrentEntity == entity);
+            if (slot == null) return false;
+
+            slot.Clear();
+            return true;
+        }
     }
 }
