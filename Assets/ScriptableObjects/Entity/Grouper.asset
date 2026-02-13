@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: Grouper
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
-  id: 0
-  cachedGUID: 
-  name: 
-  hp: 0
-  attackPower: 0
-  displaySize: 0
-  habitation: 0
-  object: {fileID: 0}
+  id: 6
+  cachedGUID: ed7e79b50ec8a20478b0e9b70022e26b
+  name: "\u30AC\u30F3\u30B7\u30E7\u30A6\u30CF\u30BC"
+  hp: 5
+  attackPower: 5
+  displaySize: 3
+  habitation: 1
+  object: {fileID: 3084643546200101481, guid: 0f9d3b5f019bb6240b6da27f6c07dccb, type: 3}
   school: {fileID: 0}

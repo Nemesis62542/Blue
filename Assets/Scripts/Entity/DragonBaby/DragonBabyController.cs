@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class DragonBabyController : BaseEntityController<DragonBabyModel, DragonBabyView>, IScannable
+    public class DragonBabyController : BaseEntityController<DragonBabyModel, DragonBabyView>, IScannable, ICapturable
     {
         [SerializeField] private GroundCrawler crawler;
         [SerializeField] private Vector2 waitTimeRange = new Vector2(2f, 5f);

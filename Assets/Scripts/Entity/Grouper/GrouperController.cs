@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class GrouperController : BaseEntityController<GrouperModel, GrouperView>, IScannable
+    public class GrouperController : BaseEntityController<GrouperModel, GrouperView>, IScannable, ICapturable
     {
         [Header("攻撃設定")]
         [SerializeField] private float attackRange = 5f;
