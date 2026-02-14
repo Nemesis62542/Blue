@@ -102,6 +102,7 @@ public class GameEventController : MonoBehaviour
 
     public void ForwardAquariumScene()
     {
+        SoundController.Instance.StopEnvironmentSound();
         SoundController.Instance.PlayBGM(BGMType.ShallowSea);
         ForwardIngame();
         EndEvent();
