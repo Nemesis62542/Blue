@@ -664,6 +664,9 @@ MonoBehaviour:
   - spawnPoint: {fileID: 5890403927826813785}
     isSchoolSlot: 1
     maxDisplayableSize: 10
+  - spawnPoint: {fileID: 0}
+    isSchoolSlot: 0
+    maxDisplayableSize: 3
 --- !u!1 &2968976871114286551
 GameObject:
   m_ObjectHideFlags: 0
