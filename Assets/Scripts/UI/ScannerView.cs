@@ -114,6 +114,7 @@ namespace Blue.UI
         {
             foreach (ScanUIElement element in details.Values)
             {
+                if (element == null) continue;
                 element.gameObject.SetActive(false);
                 pool.Enqueue(element);
             }

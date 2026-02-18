@@ -510,6 +510,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""3e44bd0d-ef84-4f72-b4a8-58cd7654f75a"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""a3b2c1d4-e5f6-7890-abcd-ef1234567890"",
                     ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",

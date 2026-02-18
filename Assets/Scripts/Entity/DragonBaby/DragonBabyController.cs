@@ -35,20 +35,24 @@ namespace Blue.Entity
         {
             if (crawler == null) return;
 
-            while (!ct.IsCancellationRequested)
+            try
             {
-                // ランダムな秒数待機
-                float waitTime = UnityEngine.Random.Range(waitTimeRange.x, waitTimeRange.y);
-                await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: ct);
+                while (!ct.IsCancellationRequested)
+                {
+                    // ランダムな秒数待機
+                    float waitTime = UnityEngine.Random.Range(waitTimeRange.x, waitTimeRange.y);
+                    await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: ct);
 
-                // 次の目的地を設定
-                crawler.SetRandomWaypoint();
-                view.SetAnimatorBool(ANIMATOR_MOVE_PARAM, true);
+                    // 次の目的地を設定
+                    crawler.SetRandomWaypoint();
+                    view.SetAnimatorBool(ANIMATOR_MOVE_PARAM, true);
 
-                // Arrivalステートになるまで待機
-                await UniTask.WaitUntil(() => crawler.State == State.Arrival, cancellationToken: ct);
-                view.SetAnimatorBool(ANIMATOR_MOVE_PARAM, false);
+                    // Arrivalステートになるまで待機
+                    await UniTask.WaitUntil(() => crawler.State == State.Arrival, cancellationToken: ct);
+                    view.SetAnimatorBool(ANIMATOR_MOVE_PARAM, false);
+                }
             }
+            catch (OperationCanceledException) { }
         }
 
         public void OnScanEnd()
