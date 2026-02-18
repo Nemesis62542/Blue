@@ -4681,6 +4681,9 @@ MonoBehaviour:
   - entityID: 5
     habitation: 1
     targetAquariumIndex: 5
+  - entityID: 6
+    habitation: 1
+    targetAquariumIndex: 2
 --- !u!1 &2055082994
 GameObject:
   m_ObjectHideFlags: 0
@@ -5534,6 +5537,10 @@ PrefabInstance:
     - target: {fileID: 4303745624815526160, guid: a5a4bc6ef8b439342a177aeb047b41f2, type: 3}
       propertyPath: m_Name
       value: Aquarium_Simple
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345204081614098922, guid: a5a4bc6ef8b439342a177aeb047b41f2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6949305878090574962, guid: a5a4bc6ef8b439342a177aeb047b41f2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

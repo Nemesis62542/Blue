@@ -50,7 +50,7 @@ MonoBehaviour:
   _groupTransform: {fileID: 0}
   _groupName: 
   _groupChildToSchool: 1
-  _childAmount: 500
+  _childAmount: 150
   _spawnSphere: 1
   _spawnSphereDepth: 1
   _spawnSphereHeight: 2
