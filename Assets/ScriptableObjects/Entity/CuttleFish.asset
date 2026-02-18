@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
+  m_Name: CuttleFish
+  m_EditorClassIdentifier: 
+  id: 2
+  cachedGUID: 744773d9cc1ce5a40899b70f03eb5313
+  name: "\u30D2\u30AB\u30EA\u30A4\u30AB"
+  hp: 10
+  attackPower: 0
+  displaySize: 0
+  habitation: 1
+  object: {fileID: 1566385464481461660, guid: 7d9142265143e314a81c9f4a8d6aa8b8, type: 3}
+  school: {fileID: 0}

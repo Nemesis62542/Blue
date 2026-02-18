@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 92a4caf88d80ddb4ba1885158d1da561
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246720
+  packageName: Hologram Shaders Pro for URP, HDRP & Built-in
+  packageVersion: 1.1.0
+  assetPath: Assets/Hologram Shaders Pro/Demo/Materials/GridHologram.mat
+  uploadId: 683562

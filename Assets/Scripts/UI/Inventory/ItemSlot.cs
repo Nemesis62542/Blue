@@ -1,0 +1,57 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using Blue.Item;
+using UnityEngine.EventSystems;
+
+namespace Blue.UI.Inventory
+{
+    public class ItemSlot : MonoBehaviour
+    {
+        [SerializeField] private Image itemIcon;
+        [SerializeField] private TextMeshProUGUI itemCountText;
+        [SerializeField] private RectTransform hoverArea;
+        private ItemData currentItemData;
+        private int currentItemCount;
+
+        public ItemData CurrentItem => currentItemData;
+        public int CurrentItemCount => currentItemCount;
+        public RectTransform HoverArea => hoverArea;
+
+        public void SetItem(ItemData item_data, int count)
+        {
+            currentItemData = item_data;
+            currentItemCount = count;
+
+            if (item_data != null)
+            {
+                itemIcon.gameObject.SetActive(true);
+                itemIcon.sprite = item_data.Icon;
+                itemCountText.text = count > 1 ? count.ToString() : "";
+            }
+            else
+            {
+                itemIcon.gameObject.SetActive(false);
+                itemCountText.text = "";
+            }
+        }
+
+        public void ShowItemDetails()
+        {
+            if (currentItemData != null)
+            {
+                ItemDetailUI.Instance.ShowItemDetails(currentItemData);
+            }
+        }
+
+        public void HideItemDetails()
+        {
+            ItemDetailUI.Instance.HideItemDetails();
+        }
+
+        public void OnClick()
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+    }
+}

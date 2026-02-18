@@ -1,0 +1,75 @@
+@startuml
+' Entity系
+class BaseEntityModel {
+  - Status status
+  + Damage()
+  + OnDead()
+}
+
+class BaseEntityController<TModel, TView> {
+  - model : TModel
+  - view : TView
+  + Initialize()
+  + Update()
+}
+
+class BaseEntityView {
+  + PlayAnimation()
+  + PlayEffect()
+}
+
+BaseEntityModel <|-- EnemyEntityModel
+BaseEntityController <|-- EnemyEntityController
+BaseEntityView <|-- EnemyEntityView
+
+BaseEntityModel <|-- PlayerModel
+BaseEntityController <|-- PlayerController
+BaseEntityView <|-- PlayerView
+
+' Inventory系
+class InventoryModel {
+  - item_list
+  + AddItem()
+  + RemoveItem()
+}
+
+class InventoryView {
+  + Initialize()
+  + UpdateInventoryUI()
+}
+
+class QuickSlotHandler {
+  - quick_slot_list
+  + SetItemToSlot()
+  + GetSelectedItem()
+}
+
+' UI系
+class UIController {
+  - screen_dict
+  + ShowScreen()
+  + HideAllScreen()
+}
+
+class BaseUIScreenController {
+  + MoveSelection()
+  + Decide()
+  + Cancel()
+}
+
+' Sound系
+class SoundController {
+  + PlayBGM()
+  + PlaySE()
+}
+
+' 関係線
+PlayerController --> InventoryModel
+PlayerController --> QuickSlotHandler
+PlayerController --> UIController
+
+InventoryModel --> InventoryView
+InventoryModel --> QuickSlotHandler
+
+UIController --> BaseUIScreenController
+@enduml

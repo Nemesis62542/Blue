@@ -1,0 +1,547 @@
+using Blue.Attack;
+using Blue.Audio;
+using Blue.Entity;
+using Blue.Game;
+using Blue.Input;
+using Blue.Interface;
+using Blue.Inventory;
+using Blue.Item;
+using Blue.Object;
+using Blue.Save;
+using Blue.UI;
+using Blue.UI.QuickSlot;
+using Blue.UI.Screen;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace Blue.Player
+{
+    [RequireComponent(typeof(Rigidbody))]
+    public class PlayerController : BaseEntityController<PlayerModel, PlayerView>, IInventoryHolder, IAttackable, ILivingEntity
+    {
+        [SerializeField] private Rigidbody rb;
+        [SerializeField] private Transform camTransform;
+        [SerializeField] private ScannerController scannerController;
+        [SerializeField] private PlayerStatusView playerStatusView;
+        [SerializeField] private ParticleSystem cloudOfDust;
+        [SerializeField] private ParticleSystem boostEffect;
+        [Header("プレイヤーの情報")]
+        [SerializeField] private InventoryController inventoryController;
+        [SerializeField] private QuickSlotController quickSlotController;
+        [SerializeField] private UIController uiController;
+        [Header("プレイヤーの操作に関する値")]
+        [SerializeField] private float moveSpeed = 5f;
+        [SerializeField] private float acceleration = 10f;
+        [SerializeField] private float deceleration = 4f;
+        [SerializeField] private float jumpStrength = 5f;
+        [SerializeField] private float boostForce = 8f;
+        [SerializeField] private float fuelConsumptionRate = 10f;
+        [SerializeField] private float fuelRecoveryRate = 5f;
+        [SerializeField] private float fuelDepletedCooldown = 5f;
+        [SerializeField] private float maxLookUpAngle = 80f;
+        [SerializeField] private float interactDistance = 3.0f;
+        [Header("着地判定")]
+        [SerializeField] private float groundCheckDistance = 0.2f;
+        [SerializeField] private Vector3 groundCheckOffset = new Vector3(0f, 0.1f, 0f);
+        [SerializeField] private float groundCheckRadius = 0.3f;
+
+        private PlayerInputHandler inputHandler;
+        private bool isGrounded;
+        private float camVerticalRotation = 0f;
+        private float waterLevel = 0;
+        private float mouseLookSensitivity = 10f;
+        private float controllerLookSensitivity = 10f;
+        private float oxygenDecreaseInterval = 3.0f;
+        private float oxygenDecreaseTimer = 0.0f;
+        private int oxygenDecreaseAmount = 1;
+        private bool fuelDepleted = false;
+        private float fuelDepletedTimer = 0f;
+
+        public InventoryModel Inventory => model.Inventory;
+        public QuickSlotModel QuickSlot => model.QuickSlot;
+        public Status Status => model.Status;
+
+        public static PlayerController Instance;
+
+        public void SetWaterLevel(float level)
+        {
+            waterLevel = level;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            Initialize();
+        }
+
+        private void OnDestroy()
+        {
+            Cleanup();
+        }
+
+        private void Initialize()
+        {
+            if (Instance != null && Instance != this)
+            {
+                return;
+            }
+            Instance = this;
+            inputHandler = new PlayerInputHandler();
+
+            // セーブデータから読み込み
+            InventoryModel playerInventory = SaveDataConverter.LoadPlayerInventory();
+            QuickSlotModel quickSlot = SaveDataConverter.LoadQuickSlot();
+            model = new PlayerModel(data, playerInventory, quickSlot);
+
+            model.Status.OnHPChanged += HandleHPChanged;
+            model.OnOxygenChanged += HandleOxygenChanged;
+            model.OnFuelChanged += HandleFuelChanged;
+            model.OnDepthChanged += HandleDepthChanged;
+            inventoryController.Initialize(Inventory, inputHandler);
+            quickSlotController.Initialize(QuickSlot);
+
+            // インベントリ・クイックスロット変更時に自動保存
+            Inventory.OnValueChanged += OnInventoryChanged;
+            QuickSlot.OnQuickSlotUpdated += OnQuickSlotChanged;
+
+            inputHandler.OnJumpEvent += HandleJump;
+            inputHandler.OnInteractEvent += InteractObject;
+            inputHandler.OnScanEvent += Scan;
+            inputHandler.OnAttackEvent += Attack;
+            inputHandler.OnInventoryToggleEvent += ToggleInventory;
+            inputHandler.OnPauseToggleEvent += TogglePause;
+            inputHandler.OnQuickSlotChangeEvent += QuickSlot.SelectSlot;
+
+            QuickSlot.OnQuickSlotChanged += HandleSlotChanged;
+            Inventory.OnPickUpItem = OnPickUpItem;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            inputHandler.SetInputMap(InputMapType.Main);
+        }
+        
+        private void Cleanup()
+        {
+            model.Status.OnHPChanged -= HandleHPChanged;
+            model.OnOxygenChanged -= HandleOxygenChanged;
+            model.OnFuelChanged -= HandleFuelChanged;
+            model.OnDepthChanged -= HandleDepthChanged;
+
+            // セーブイベント解除
+            if (Inventory != null)
+            {
+                Inventory.OnValueChanged -= OnInventoryChanged;
+            }
+            if (QuickSlot != null)
+            {
+                QuickSlot.OnQuickSlotUpdated -= OnQuickSlotChanged;
+            }
+
+            inputHandler.OnJumpEvent -= HandleJump;
+            inputHandler.OnInteractEvent -= InteractObject;
+            inputHandler.OnScanEvent -= Scan;
+            inputHandler.OnAttackEvent -= Attack;
+            inputHandler.OnInventoryToggleEvent -= ToggleInventory;
+            inputHandler.OnPauseToggleEvent -= TogglePause;
+            inputHandler.OnQuickSlotChangeEvent -= QuickSlot.SelectSlot;
+            inputHandler.Dispose();
+
+            QuickSlot.OnQuickSlotChanged -= HandleSlotChanged;
+
+            inputHandler.SetInputMap(InputMapType.None);
+        }
+
+        private void Update()
+        {
+            LookingObject();
+            HandleViewRotation();
+
+            // bool isBoosting = false;
+
+            // if (inputHandler.BoostHeld)
+            // {
+            //     isBoosting = HandleBoost(Vector3.up);
+            // }
+            // else if (inputHandler.DownBoostHeld)
+            // {
+            //     isBoosting = HandleBoost(Vector3.down);
+            // }
+
+            // if (!isBoosting && boostEffect != null && boostEffect.isPlaying)
+            // {
+            //     boostEffect.Stop();
+            // }
+
+            HandleFuelRecovery();
+
+            if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
+            model.SetDepth(waterLevel - transform.position.y);
+        }
+
+        private void FixedUpdate()
+        {
+            CheckGrounded();
+            HandleMove();
+        }
+
+        private void CheckGrounded()
+        {
+            Vector3 origin = transform.position + groundCheckOffset;
+            int ground_layer_mask = 1 << 8; // Layer 8
+
+            isGrounded = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit hit, groundCheckDistance, ground_layer_mask);
+
+            // デバッグ用：球体の可視化
+            Color debug_color = isGrounded ? Color.green : Color.red;
+            Vector3 end_position = origin + Vector3.down * groundCheckDistance;
+
+            // 中心線
+            Debug.DrawLine(origin, end_position, debug_color);
+
+            // 球体の輪郭（簡易的に8方向の線で表現）
+            for (int i = 0; i < 8; i++)
+            {
+                float angle = i * 45f * Mathf.Deg2Rad;
+                Vector3 offset = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * groundCheckRadius;
+                Debug.DrawLine(origin + offset, end_position + offset, debug_color);
+            }
+        }
+
+        private void HandleJump()
+        {
+            if (isGrounded) Jump();
+        }
+
+        private void DecreaseOxygen()
+        {
+            oxygenDecreaseTimer += Time.deltaTime;
+            if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
+            {
+                oxygenDecreaseTimer = 0f;
+                if (model.Oxygen == 0)
+                {
+                    Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
+                }
+                else
+                {
+                    model.ConsumeOxygen(oxygenDecreaseAmount);
+                    view.PlayBubble();
+                    SoundController.Instance.PlaySE(SEType.Respiratory);
+                }
+            }
+        }
+
+        public void ForwardIngame()
+        {
+            uiController.ShowScreen(ScreenState.Ingame);
+            inputHandler.SetInputMap(InputMapType.Main);
+        }
+
+        public void ForwardMovie()
+        {
+            uiController.ShowScreen(ScreenState.Movie);
+            inputHandler.SetInputMap(InputMapType.Movie);
+        }
+
+        private void HandleMove()
+        {
+            Vector2 move_input = inputHandler.MoveInput;
+            Vector3 forward = camTransform.forward;
+            Vector3 right = camTransform.right;
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+
+            Vector3 move_direction = (forward * move_input.y + right * move_input.x).normalized;
+
+            if (move_input.sqrMagnitude > 0.01f)
+            {
+                // 入力がある場合は目標速度に向かって力を加える
+                Vector3 current_horizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                Vector3 target_velocity = move_direction * moveSpeed;
+                Vector3 velocity_diff = target_velocity - current_horizontal;
+
+                // 加速力を計算
+                Vector3 force = velocity_diff * acceleration;
+                rb.AddForce(force, ForceMode.Acceleration);
+            }
+            else
+            {
+                // 入力がない場合は減速力を加える
+                Vector3 current_horizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                Vector3 decel_force = -current_horizontal * deceleration;
+                rb.AddForce(decel_force, ForceMode.Acceleration);
+            }
+        }
+
+        private void HandleViewRotation()
+        {
+            Vector2 look_input = inputHandler.LookInput;
+            float sensitivity = IsUsingGamepad() ? controllerLookSensitivity : mouseLookSensitivity;
+            Vector2 adjusted_look_input = look_input * sensitivity * Time.deltaTime;
+
+            camVerticalRotation -= adjusted_look_input.y;
+            camVerticalRotation = Mathf.Clamp(camVerticalRotation, -maxLookUpAngle, maxLookUpAngle);
+            camTransform.localRotation = Quaternion.Euler(camVerticalRotation, 0f, 0f);
+
+            transform.Rotate(Vector3.up * adjusted_look_input.x);
+        }
+
+        private void Jump()
+        {
+            rb.AddForce(Vector3.up * jumpStrength, ForceMode.Impulse);
+            isGrounded = false;
+        }
+
+        private bool HandleBoost(Vector3 direction)
+        {
+            if (!isGrounded && model.Fuel > 0 && !fuelDepleted)
+            {
+                float fuel_consumption = fuelConsumptionRate * Time.deltaTime;
+                model.ConsumeFuel(fuel_consumption);
+                rb.AddForce(direction * boostForce, ForceMode.Force);
+
+                if (boostEffect != null)
+                {
+                    boostEffect.transform.rotation = Quaternion.LookRotation(-direction);
+                    if (!boostEffect.isPlaying) boostEffect.Play();
+                }
+
+                if (model.Fuel <= 0)
+                {
+                    fuelDepleted = true;
+                    fuelDepletedTimer = 0f;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private void HandleFuelRecovery()
+        {
+            if (fuelDepleted)
+            {
+                if (isGrounded)
+                {
+                    fuelDepletedTimer += Time.deltaTime;
+                    if (fuelDepletedTimer >= fuelDepletedCooldown)
+                    {
+                        fuelDepleted = false;
+                    }
+                }
+            }
+
+            if (isGrounded && !fuelDepleted && model.Fuel < model.MaxFuel)
+            {
+                float recovery = fuelRecoveryRate * Time.deltaTime;
+                model.RefillFuel(recovery);
+            }
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.layer == 8)
+            {
+                if (!isGrounded)
+                {
+                    Vector3 pos = transform.position;
+                    pos.y -= 0.8f;
+                    Instantiate(cloudOfDust, pos, Quaternion.identity);
+                }
+            }
+        }
+
+        private bool IsUsingGamepad()
+        {
+            return Gamepad.current != null && Gamepad.current.enabled;
+        }
+
+        private void LookingObject()
+        {
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IInteractable interactable))
+            {
+                if (hit.collider.TryGetComponent(out ItemObject item))
+                {
+                    view.SetInspectText($"右クリック：{item.ItemData.Name}を入手");
+                    return;
+                }
+                else
+                {
+                    view.SetInspectText($"右クリック：{interactable.ObjectName}を調べる");
+                }
+            }
+            else view.SetInspectText("");
+        }
+
+        private void InteractObject()
+        {
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IInteractable interactable))
+            {
+                Debug.Log($"調べた: {interactable.ObjectName}");
+                interactable.Interact(this);
+                return;
+            }
+            if (QuickSlot.CurrentEquippedItem != null) UseSelectedItem();
+        }
+
+        private void Scan()
+        {
+            scannerController.Scan(camTransform.position, camTransform.forward);
+            SoundController.Instance.PlaySE(SEType.Scan);
+        }
+
+        private void HandleHPChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetHPRatio(ratio);
+        }
+
+        private void HandleOxygenChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetOxygenRatio(ratio);
+        }
+
+        private void HandleFuelChanged(float current, float max)
+        {
+            float ratio = current / max;
+            playerStatusView.SetFuelRatio(ratio);
+        }
+
+        private void HandleDepthChanged(float depth)
+        {
+            playerStatusView.SetDepth(depth);
+        }
+
+        public void SetOxygenMax()
+        {
+            model.RefillOxygen(model.MaxOxygen);
+        }
+
+        private void Attack()
+        {
+            QuickSlotItem quick_slot_item = QuickSlot.CurrentQuickSlotItem;
+            int attack_power = 1;
+
+            if (quick_slot_item != null && quick_slot_item.ItemData != null && quick_slot_item.ItemData.HasAttribute(ItemAttribute.AttackPower))
+            {
+                attack_power = quick_slot_item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
+            }
+
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
+            {
+                Debug.Log($"攻撃: {hit.collider.gameObject.name}");
+                attackable.Damage(new AttackData(this, attackable, attack_power, AttackType.Melee, transform.position + transform.forward));
+            }
+        }
+
+        public void Damage(AttackData attack_data)
+        {
+            model.Damage(attack_data);
+            Debug.Log($"{attack_data.Attacker}から{attack_data.Power}ダメージを受けた");
+
+            if (model.IsDead) OnDead();
+        }
+
+        public void OnDead()
+        {
+            Debug.Log("PlayerController: 死亡処理実行");
+            inputHandler.DisableInput();
+            SceneLoader.LoadScene("Title");
+        }
+
+        private bool RaycastFromCamera(out RaycastHit hit, float range)
+        {
+            int player_layer = LayerMask.NameToLayer("Player");
+            int layer_mask = ~(1 << player_layer);
+
+            return Physics.Raycast(camTransform.position, camTransform.forward, out hit, range, layer_mask, QueryTriggerInteraction.Ignore);
+        }
+
+        private void ToggleInventory()
+        {
+            if (uiController.CurrentScreenState == ScreenState.Inventory)
+            {
+                CloseCurrentScreen();
+            }
+            else
+            {
+                if (uiController.CurrentScreenState == ScreenState.Ingame) OpenInventory();
+            }
+        }
+
+        private void TogglePause()
+        {
+            if (uiController.CurrentScreenState == ScreenState.Pause)
+            {
+                CloseCurrentScreen();
+            }
+            else
+            {
+                if (uiController.CurrentScreenState == ScreenState.Ingame) OpenPause();
+            }
+        }
+
+        private void OpenInventory()
+        {
+            inventoryController.RefreshInventoryUI();
+            quickSlotController.RefreshQuickSlotUI();
+            uiController.ShowScreen(ScreenState.Inventory);
+            inputHandler.SetInputMap(InputMapType.Inventory);
+        }
+
+        private void OpenPause()
+        {
+            uiController.ShowScreen(ScreenState.Pause);
+            inputHandler.SetInputMap(InputMapType.Menu);
+        }
+
+        private void CloseCurrentScreen()
+        {
+            uiController.HideCurrentScreen();
+            inputHandler.SetInputMap(InputMapType.Main);
+        }
+
+        private void UseSelectedItem()
+        {
+            if (!view.CurrentHeldItem.IsUseble()) return;
+            
+            view.CurrentHeldItem.OnUse(this);
+            QuickSlot.Use(QuickSlot.CurrentSlotIndex);
+        }
+
+        private void HandleSlotChanged(int index, ItemData item)
+        {
+            view.ShowHeldItem(item);
+        }
+
+        public void CaptureEntity(EntityData captured)
+        {
+            model.AddCapturedEntity(captured);
+            view.AddMessage(new MessageData($"{captured.Name}を捕獲しました"));
+
+            if (captured.Name == "ME-G4L0") 
+            {
+                SoundController.Instance.StopBGM(0.5f);
+                GameEventController.Instance.TriggerEvent(EventID.GetMegalo);
+            }
+        }
+
+        public void OnPickUpItem(ItemData item)
+        {
+            view.AddMessage(new MessageData($"{item.Name}を入手：Eキーで確認"));
+        }
+
+        private void OnInventoryChanged()
+        {
+            SaveDataConverter.SavePlayerInventory(Inventory);
+        }
+
+        private void OnQuickSlotChanged()
+        {
+            SaveDataConverter.SaveQuickSlot(QuickSlot);
+        }
+    }
+}
