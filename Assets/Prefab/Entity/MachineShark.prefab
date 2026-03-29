@@ -262,9 +262,6 @@ PrefabInstance:
       addedObject: {fileID: 1275374153513072296}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bd789c529d517aa4ebfa178497215347, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6622853833866743523}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bd789c529d517aa4ebfa178497215347, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2697461084629417256}
     - targetCorrespondingSourceObject: {fileID: -7523898139307217857, guid: bd789c529d517aa4ebfa178497215347, type: 3}
       insertIndex: -1
@@ -365,24 +362,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 6015396426062823030}
   animator: {fileID: 2803676899907042691}
-  highlightController: {fileID: 6622853833866743523}
   deadMaterial: {fileID: 2100000, guid: 09f1ab595246d3b4bb991badf9e9b4a3, type: 2}
   erectric: {fileID: 5603839210918792264}
---- !u!114 &6622853833866743523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8882036559786868035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e103ab262489fcf4994efb48ecaa3325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetRenderer: {fileID: 6015396426062823030}
-  highlightMaterial: {fileID: 2100000, guid: f2785e726eba3384cad6efcb34295c78, type: 2}
-  baseMaterials: []
 --- !u!65 &2697461084629417256
 BoxCollider:
   m_ObjectHideFlags: 0

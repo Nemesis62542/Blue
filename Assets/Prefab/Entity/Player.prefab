@@ -5410,6 +5410,11 @@ MonoBehaviour:
   fieldOfViewAngle: 60
   view: {fileID: 1772258156854996019}
   effectView: {fileID: 723085438577249413, guid: 969c8ecc5489f504487fff68f4c30366, type: 3}
+  highlightMaterial: {fileID: 2100000, guid: c2ec2403ecdd4c143bc9da88ae9a48cf, type: 2}
+  safetyColor: {r: 0, g: 1.4980392, b: 0.3745098, a: 0.5019608}
+  warningColor: {r: 1.4980392, g: 1.1235294, b: 0, a: 0.5019608}
+  dangerColor: {r: 1.4980392, g: 0, b: 0, a: 0.5019608}
+  defaultColor: {r: 0, g: 0.7490196, b: 1.4980392, a: 0.5019608}
 --- !u!114 &941909501785763490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5834,11 +5839,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4876445375597133069, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4876445375597133069, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4876445375597133069, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchorMin.y
@@ -6078,6 +6083,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6580452827241273684, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6779094220643124938, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6938195509949208799, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
@@ -6346,7 +6355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8376064348192193270, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_Size
-      value: 0.9999964
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8376064348192193270, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_Value

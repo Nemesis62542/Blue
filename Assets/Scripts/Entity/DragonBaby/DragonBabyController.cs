@@ -55,14 +55,5 @@ namespace Blue.Entity
             catch (OperationCanceledException) { }
         }
 
-        public void OnScanEnd()
-        {
-            view.DisableHighlight();
-        }
-
-        public void OnScanStart()
-        {
-            view.EnableHighlight();
-        }
     }
 }

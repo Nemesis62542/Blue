@@ -3,12 +3,16 @@ using System.Linq;
 using UnityEngine;
 using Blue.Interface;
 using Blue.UI;
+using Blue.UI.Common;
 using System.Collections;
 
 namespace Blue.Player
 {
     public class ScannerController : MonoBehaviour
     {
+        private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
+        private static readonly int HighlightColorId = Shader.PropertyToID("_HighlightColor");
+
         [Header("Scan Settings")]
         [SerializeField] private float scanRadius = 12f;
         [SerializeField] private float scanDisableDistance = 18f;
@@ -16,12 +20,30 @@ namespace Blue.Player
         [SerializeField] private ScannerView view;
         [SerializeField] private ScannerEffectView effectView;
 
+        [Header("Highlight Settings")]
+        [SerializeField] private Material highlightMaterial;
+        [ColorUsage(true, true)]
+        [SerializeField] private Color safetyColor = new Color(0f, 2f, 0.5f, 1f);
+        [ColorUsage(true, true)]
+        [SerializeField] private Color warningColor = new Color(2f, 1.5f, 0f, 1f);
+        [ColorUsage(true, true)]
+        [SerializeField] private Color dangerColor = new Color(2f, 0f, 0f, 1f);
+        [ColorUsage(true, true)]
+        [SerializeField] private Color defaultColor = new Color(0f, 1f, 2f, 1f);
+
         private readonly List<IScannable> scannedObjects = new List<IScannable>();
+        private readonly Dictionary<IScannable, HighlightData> highlightDataMap = new Dictionary<IScannable, HighlightData>();
         private IScannable lookingScannable = null;
         private ScannerEffectView playingScanEffect = null;
 
         private readonly WaitForSeconds scanDelay = new WaitForSeconds(0.5f);
         private readonly WaitForSeconds itemDelay = new WaitForSeconds(0.05f);
+
+        private class HighlightData
+        {
+            public Renderer[] Renderers;
+            public Material[][] OriginalMaterials;
+        }
 
         private void Awake()
         {
@@ -93,6 +115,7 @@ namespace Blue.Player
 
                 if (target == null)
                 {
+                    highlightDataMap.Remove(scannable);
                     scannedObjects.RemoveAt(i);
                     continue;
                 }
@@ -110,8 +133,9 @@ namespace Blue.Player
 
         private void AddScannable(IScannable scannable)
         {
-            scannable.OnScanStart();
             scannedObjects.Add(scannable);
+            EnableHighlight(scannable);
+            scannable.OnScanStart();
             SetDetailUI(scannable);
         }
 
@@ -135,6 +159,7 @@ namespace Blue.Player
 
         private void RemoveScannable(IScannable scannable, int index)
         {
+            DisableHighlight(scannable);
             scannable?.OnScanEnd();
             scannedObjects.RemoveAt(index);
         }
@@ -145,6 +170,86 @@ namespace Blue.Player
             {
                 RemoveScannable(scannedObjects[i], i);
             }
+        }
+
+        private void EnableHighlight(IScannable scannable)
+        {
+            Renderer[] renderers = scannable.TargetRenderers;
+            if (renderers == null || renderers.Length == 0) return;
+
+            var data = new HighlightData
+            {
+                Renderers = renderers,
+                OriginalMaterials = new Material[renderers.Length][]
+            };
+
+            Color highlightColor = GetColorForThreat(scannable.ScanData.threat);
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Renderer renderer = renderers[i];
+                if (renderer == null) continue;
+
+                // 元のマテリアルをバックアップ
+                data.OriginalMaterials[i] = renderer.sharedMaterials;
+
+                // ハイライトマテリアルを追加
+                Material[] newMaterials = new Material[data.OriginalMaterials[i].Length + 1];
+                data.OriginalMaterials[i].CopyTo(newMaterials, 0);
+                newMaterials[newMaterials.Length - 1] = highlightMaterial;
+                renderer.sharedMaterials = newMaterials;
+
+                // PropertyBlockで色とテクスチャを設定
+                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                int highlightIndex = newMaterials.Length - 1;
+                renderer.GetPropertyBlock(propertyBlock, highlightIndex);
+
+                // 元マテリアルからBaseMapを取得してアルファクリップ用に設定
+                if (data.OriginalMaterials[i].Length > 0 && data.OriginalMaterials[i][0] != null)
+                {
+                    Texture baseMap = data.OriginalMaterials[i][0].GetTexture(BaseMapId);
+                    if (baseMap != null)
+                    {
+                        propertyBlock.SetTexture(BaseMapId, baseMap);
+                    }
+                }
+
+                propertyBlock.SetColor(HighlightColorId, highlightColor);
+                renderer.SetPropertyBlock(propertyBlock, highlightIndex);
+            }
+
+            highlightDataMap[scannable] = data;
+        }
+
+        private void DisableHighlight(IScannable scannable)
+        {
+            if (scannable == null || !highlightDataMap.TryGetValue(scannable, out HighlightData data))
+                return;
+
+            for (int i = 0; i < data.Renderers.Length; i++)
+            {
+                Renderer renderer = data.Renderers[i];
+                if (renderer == null) continue;
+
+                // 元のマテリアルに戻す
+                if (data.OriginalMaterials[i] != null)
+                {
+                    renderer.sharedMaterials = data.OriginalMaterials[i];
+                }
+            }
+
+            highlightDataMap.Remove(scannable);
+        }
+
+        private Color GetColorForThreat(ScanData.Threat threat)
+        {
+            return threat switch
+            {
+                ScanData.Threat.Safety => safetyColor,
+                ScanData.Threat.Warning => warningColor,
+                ScanData.Threat.Danger => dangerColor,
+                _ => defaultColor
+            };
         }
     }
 }

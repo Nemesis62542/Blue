@@ -18,18 +18,5 @@ namespace Blue.Entity
             model = new AmarylisJerryFishModel(data);
         }
 
-        private void Update()
-        {
-        }
-        
-        public void OnScanEnd()
-        {
-            view.DisableHighlight();
-        }
-
-        public void OnScanStart()
-        {
-            view.EnableHighlight();
-        }
     }
 }

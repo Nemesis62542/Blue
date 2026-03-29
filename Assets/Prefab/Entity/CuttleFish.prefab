@@ -4844,6 +4844,8 @@ ParticleSystemRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4865,6 +4867,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -5087,9 +5090,6 @@ PrefabInstance:
       addedObject: {fileID: 1888090129187062961}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5941914455441357007}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 7213503143768511219}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3e4f7ec92e6115b40b8c83dec7737c68, type: 3}
       insertIndex: -1
@@ -5117,10 +5117,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   view: {fileID: 1888090129187062961}
   data: {fileID: 11400000, guid: 744773d9cc1ce5a40899b70f03eb5313, type: 2}
-  threatSizeThreshold: 1
   inkTriggerDistance: 1.5
   inkTriggerTime: 10
-  escapeDistance: 5
   swimmer: {fileID: 7118899816597671920}
 --- !u!114 &1888090129187062961
 MonoBehaviour:
@@ -5139,21 +5137,6 @@ MonoBehaviour:
   dimEmissionColor: {r: 0, g: 0.1872549, b: 0.11764706, a: 1}
   brightEmissionColor: {r: 0, g: 2.9960785, b: 1.882353, a: 1}
   inkEffect: {fileID: 2128378392646408254}
-  highlightController: {fileID: 5941914455441357007}
---- !u!114 &5941914455441357007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1566385464481461660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e103ab262489fcf4994efb48ecaa3325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetRenderer: {fileID: 4433025667461854889}
-  highlightMaterial: {fileID: 2100000, guid: bf435557a5b5db14a9f03c678a8d9afe, type: 2}
 --- !u!135 &7213503143768511219
 SphereCollider:
   m_ObjectHideFlags: 0

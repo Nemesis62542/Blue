@@ -150,9 +150,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8272492256066373824}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2103111673406384913}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
       insertIndex: -1
@@ -182,21 +179,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4059c881ccdd010458b1c53f1d225b43, type: 3}
   m_PrefabInstance: {fileID: 8245491967348786057}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8272492256066373824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9127871291077197528}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e103ab262489fcf4994efb48ecaa3325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.Visual.HighlightController
-  targetRenderer: {fileID: 6238919863375789549}
-  highlightMaterial: {fileID: 2100000, guid: 02521dbf27538814ca8f5d558309e7cd, type: 2}
-  baseMaterials: []
 --- !u!114 &2103111673406384913
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,7 +208,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.DragonBabyView
   skinnedMeshRenderer: {fileID: 6238919863375789549}
-  highlightController: {fileID: 8272492256066373824}
   animator: {fileID: 2524068493568638488}
 --- !u!114 &9209982776800037783
 MonoBehaviour:

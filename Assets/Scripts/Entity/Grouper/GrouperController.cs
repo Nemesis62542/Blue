@@ -62,14 +62,5 @@ namespace Blue.Entity
             return false;
         }
 
-        public void OnScanEnd()
-        {
-            view.DisableHighlight();
-        }
-
-        public void OnScanStart()
-        {
-            view.EnableHighlight();
-        }
     }
 }

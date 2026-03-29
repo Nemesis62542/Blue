@@ -8,7 +8,7 @@ namespace Blue.Interface
         ScanData ScanData { get; }
         Renderer[] TargetRenderers { get; }
 
-        void OnScanStart();
-        void OnScanEnd();
+        void OnScanStart() { }
+        void OnScanEnd() { }
     }
 }

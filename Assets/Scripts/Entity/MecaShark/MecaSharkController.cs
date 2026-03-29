@@ -143,16 +143,6 @@ namespace Blue.Entity
             }
         }
 
-        public void OnScanEnd()
-        {
-            view.DisableHighlight();
-        }
-
-        public void OnScanStart()
-        {
-            view.EnableHighlight();
-        }
-
         public void Damage(AttackData attack_data)
         {
             model.Damage(attack_data);
