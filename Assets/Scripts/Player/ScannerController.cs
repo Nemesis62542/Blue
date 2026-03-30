@@ -1,10 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Blue.Interface;
 using Blue.UI;
 using Blue.UI.Common;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 
 namespace Blue.Player
 {
@@ -16,7 +18,7 @@ namespace Blue.Player
         [Header("Scan Settings")]
         [SerializeField] private float scanRadius = 12f;
         [SerializeField] private float scanDisableDistance = 18f;
-        [SerializeField] private float fieldOfViewAngle = 60f;
+        [SerializeField] private float scanCooldown = 5f;
         [SerializeField] private ScannerView view;
         [SerializeField] private ScannerEffectView effectView;
 
@@ -35,6 +37,8 @@ namespace Blue.Player
         private readonly Dictionary<IScannable, HighlightData> highlightDataMap = new Dictionary<IScannable, HighlightData>();
         private IScannable lookingScannable = null;
         private ScannerEffectView playingScanEffect = null;
+        private bool isCooldown = false;
+        private CancellationTokenSource cts;
 
         private readonly WaitForSeconds scanDelay = new WaitForSeconds(0.5f);
         private readonly WaitForSeconds itemDelay = new WaitForSeconds(0.05f);
@@ -50,9 +54,15 @@ namespace Blue.Player
             playingScanEffect = Instantiate(effectView, transform.position, Quaternion.identity);
         }
 
-        public void Scan(Vector3 origin, Vector3 forward)
+        private void OnDestroy()
         {
-            if (playingScanEffect.gameObject.activeSelf) return;
+            cts?.Cancel();
+            cts?.Dispose();
+        }
+
+        public bool Scan(Vector3 origin, Vector3 forward)
+        {
+            if (isCooldown) return false;
 
             CancelScan();
             ToggleLookingScannable(null);
@@ -69,6 +79,23 @@ namespace Blue.Player
                                     !scannedObjects.Contains(scannable));
 
             StartCoroutine(AddScannables(hits));
+            StartCooldownAsync().Forget();
+            return true;
+        }
+
+        private async UniTaskVoid StartCooldownAsync()
+        {
+            isCooldown = true;
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
+
+            try
+            {
+                await UniTask.Delay((int)(scanCooldown * 1000), cancellationToken: cts.Token);
+            }
+            catch (System.OperationCanceledException) { }
+
+            isCooldown = false;
         }
         
         private IEnumerator AddScannables(IEnumerable<IScannable> scannables)
@@ -119,16 +146,18 @@ namespace Blue.Player
                     scannedObjects.RemoveAt(i);
                     continue;
                 }
-                view.UpdateDetailUI(scannable, Vector3.Distance(transform.position, target.transform.position) < scanDisableDistance);
-            }
-        }
 
-        private bool IsWithinFieldOfView(Vector3 origin, Vector3 forward, Vector3 target_position)
-        {
-            Vector3 direction = (target_position - origin).normalized;
-            float dot = Vector3.Dot(forward.normalized, direction);
-            float threshold = Mathf.Cos(fieldOfViewAngle * 0.5f * Mathf.Deg2Rad);
-            return dot >= threshold;
+                float distance = Vector3.Distance(transform.position, target.transform.position);
+                if (distance >= scanDisableDistance)
+                {
+                    // 距離が離れたらスキャン解除
+                    view.HideScanUI(scannable);
+                    RemoveScannable(scannable, i);
+                    continue;
+                }
+
+                view.UpdateDetailUI(scannable, true);
+            }
         }
 
         private void AddScannable(IScannable scannable)
@@ -177,7 +206,7 @@ namespace Blue.Player
             Renderer[] renderers = scannable.TargetRenderers;
             if (renderers == null || renderers.Length == 0) return;
 
-            var data = new HighlightData
+            HighlightData data = new HighlightData
             {
                 Renderers = renderers,
                 OriginalMaterials = new Material[renderers.Length][]
