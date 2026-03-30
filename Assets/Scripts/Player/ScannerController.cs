@@ -87,7 +87,7 @@ namespace Blue.Player
         {
             IEnumerable<SchoolChild> school_fish = scannedObjects
                                                     .Select(scannable => ((MonoBehaviour)scannable).GetComponent<SchoolChild>())
-                                                    .Where(scannable => scannable.Spawner == obj.Spawner);
+                                                    .Where(scannable => scannable != null && scannable.Spawner == obj.Spawner);
 
             return school_fish.Count() > 1;
         }
