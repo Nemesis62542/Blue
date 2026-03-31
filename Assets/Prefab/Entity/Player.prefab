@@ -5407,9 +5407,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scanRadius: 12
   scanDisableDistance: 18
-  fieldOfViewAngle: 60
+  scanCooldown: 5
   view: {fileID: 1772258156854996019}
   effectView: {fileID: 723085438577249413, guid: 969c8ecc5489f504487fff68f4c30366, type: 3}
+  cooldownSlider: {fileID: 2319685866141507546}
   highlightMaterial: {fileID: 2100000, guid: c2ec2403ecdd4c143bc9da88ae9a48cf, type: 2}
   safetyColor: {r: 0, g: 1.4980392, b: 0.3745098, a: 0.5019608}
   warningColor: {r: 1.4980392, g: 1.1235294, b: 0, a: 0.5019608}
@@ -6438,6 +6439,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540fd409d79cff344a03c20387edb88b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2319685866141507546 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1061120475689256029, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
+  m_PrefabInstance: {fileID: 3353199792829356935}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!114 &3824263624148568653 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1989032971693396426, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}

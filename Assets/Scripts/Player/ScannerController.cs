@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 using Blue.Interface;
 using Blue.UI;
 using Blue.UI.Common;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 namespace Blue.Player
 {
@@ -21,6 +23,7 @@ namespace Blue.Player
         [SerializeField] private float scanCooldown = 5f;
         [SerializeField] private ScannerView view;
         [SerializeField] private ScannerEffectView effectView;
+        [SerializeField] private Slider cooldownSlider;
 
         [Header("Highlight Settings")]
         [SerializeField] private Material highlightMaterial;
@@ -58,6 +61,7 @@ namespace Blue.Player
         {
             cts?.Cancel();
             cts?.Dispose();
+            cooldownSlider?.DOKill();
         }
 
         public bool Scan(Vector3 origin, Vector3 forward)
@@ -88,6 +92,13 @@ namespace Blue.Player
             isCooldown = true;
             cts?.Cancel();
             cts = new CancellationTokenSource();
+
+            // スライダーを0にしてクールダウン中にアニメーション
+            if (cooldownSlider != null)
+            {
+                cooldownSlider.value = 0f;
+                cooldownSlider.DOValue(1f, scanCooldown).SetEase(Ease.Linear);
+            }
 
             try
             {
