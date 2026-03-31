@@ -1,4 +1,3 @@
-using Blue.Visual;
 using UnityEngine;
 
 namespace Blue.Entity
@@ -7,13 +6,10 @@ namespace Blue.Entity
     {
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         [SerializeField] private Animator animator;
-        [SerializeField] private HighlightController highlightController;
         [SerializeField] private Material deadMaterial;
         [SerializeField] private ParticleSystem erectric;
 
         public SkinnedMeshRenderer Renderer => skinnedMeshRenderer;
-        public void EnableHighlight() => highlightController.EnableHighlight();
-        public void DisableHighlight() => highlightController.DisableHighlight();
 
         public void LockOn(bool is_lock_on)
         {
@@ -27,7 +23,6 @@ namespace Blue.Entity
             {
                 materials[0] = deadMaterial;
                 skinnedMeshRenderer.materials = materials;
-                highlightController.baseMaterials = materials;
             }
 
             animator.speed = 0;

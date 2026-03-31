@@ -145,9 +145,6 @@ PrefabInstance:
       addedObject: {fileID: 8684183043232286711}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fe4319aa0671b4744a1985da223e944b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 196579533464850073}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fe4319aa0671b4744a1985da223e944b, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 103095859509510648}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fe4319aa0671b4744a1985da223e944b, type: 3}
       insertIndex: -1
@@ -230,21 +227,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.31750488, y: 0.314682, z: 0.6273804}
   m_Center: {x: -0.0006713867, y: 0.12397003, z: -0.06314087}
---- !u!114 &196579533464850073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3084643546200101481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e103ab262489fcf4994efb48ecaa3325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.Visual.HighlightController
-  targetRenderer: {fileID: 213768059309347164}
-  highlightMaterial: {fileID: 2100000, guid: 921201bde584d504aaac942c50e018aa, type: 2}
-  baseMaterials: []
 --- !u!114 &103095859509510648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,7 +257,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.GrouperView
   skinnedMeshRenderer: {fileID: 213768059309347164}
-  highlightController: {fileID: 196579533464850073}
   animator: {fileID: 8603325055867867817}
 --- !u!95 &8603325055867867817 stripped
 Animator:

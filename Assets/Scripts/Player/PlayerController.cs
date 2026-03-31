@@ -388,8 +388,10 @@ namespace Blue.Player
 
         private void Scan()
         {
-            scannerController.Scan(camTransform.position, camTransform.forward);
-            SoundController.Instance.PlaySE(SEType.Scan);
+            if (scannerController.Scan(camTransform.position, camTransform.forward))
+            {
+                SoundController.Instance.PlaySE(SEType.Scan);
+            }
         }
 
         private void HandleHPChanged(float current, float max)

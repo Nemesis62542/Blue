@@ -1,6 +1,5 @@
 using UnityEngine;
 using DG.Tweening;
-using Blue.Visual;
 
 namespace Blue.Entity
 {
@@ -11,7 +10,6 @@ namespace Blue.Entity
         [SerializeField, ColorUsage(false, true)] private Color dimEmissionColor;
         [SerializeField, ColorUsage(false, true)] private Color brightEmissionColor;
         [SerializeField] private ParticleSystem inkEffect;
-        [SerializeField] private HighlightController highlightController;
 
         private Material cachedMaterial;
         private Tween emissionTween;
@@ -23,10 +21,6 @@ namespace Blue.Entity
         {
             Initialize();
         }
-
-        public void EnableHighlight() => highlightController.EnableHighlight();
-        
-        public void DisableHighlight() => highlightController.DisableHighlight();
 
         private void Initialize()
         {

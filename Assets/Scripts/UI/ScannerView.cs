@@ -110,6 +110,16 @@ namespace Blue.UI
             }
         }
 
+        public void HideScanUI(IScannable scannable)
+        {
+            if (details.TryGetValue(scannable, out ScanUIElement element))
+            {
+                element.gameObject.SetActive(false);
+                pool.Enqueue(element);
+                details.Remove(scannable);
+            }
+        }
+
         public void HideScanUIAll()
         {
             foreach (ScanUIElement element in details.Values)

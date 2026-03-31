@@ -20,18 +20,5 @@ namespace Blue.Entity
             model = new CoelacanthModel(data);
         }
 
-        private void Update()
-        {
-        }
-        
-        public void OnScanEnd()
-        {
-            view.DisableHighlight();
-        }
-
-        public void OnScanStart()
-        {
-            view.EnableHighlight();
-        }
     }
 }

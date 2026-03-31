@@ -117,14 +117,5 @@ namespace Blue.Entity
             yield return null;
         }
 
-        public void OnScanStart()
-        {
-            view.EnableHighlight();
-        }
-
-        public void OnScanEnd()
-        {
-            view.DisableHighlight();
-        }
     }
 }
