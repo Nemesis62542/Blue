@@ -37,13 +37,19 @@ namespace Blue.UI
 
         public void ShowScreen(ScreenState state)
         {
-            HideAllScreen();
+            // 前の画面を非表示
+            if (screenDictionary.TryGetValue(currentScreenState, out CanvasGroup previousScreen))
+            {
+                SetScreenVisible(previousScreen, false);
+            }
+
             currentScreenState = state;
             OnScreenStateChanged?.Invoke(state);
 
-            if (screenDictionary.TryGetValue(state, out CanvasGroup screen))
+            // 新しい画面を表示
+            if (screenDictionary.TryGetValue(state, out CanvasGroup newScreen))
             {
-                SetScreenVisible(screen, true);
+                SetScreenVisible(newScreen, true);
             }
 
             ShowCursor(state != ScreenState.Ingame);
