@@ -72,15 +72,15 @@ namespace Blue.UI
             switch (data.threat)
             {
                 case ScanData.Threat.Safety:
-                    detail += "危険度：<color=green>低</color>\n";
+                    detail += "危険度： 低\n";
                     break;
 
                 case ScanData.Threat.Warning:
-                    detail += "危険度：<color=yellow>中</color>\n";
+                    detail += "危険度： 中\n";
                     break;
 
                 case ScanData.Threat.Danger:
-                    detail += "危険度：<color=red>高</color>\n";
+                    detail += "危険度： 高\n";
                     break;
             }
 
