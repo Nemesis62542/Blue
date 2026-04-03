@@ -1,3 +1,4 @@
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,55 +14,67 @@ namespace Blue.UI
         [SerializeField] private Slider oxygenSliderShadow;
         [SerializeField] private Slider fuelSliderShadow;
         [SerializeField] private TextMeshProUGUI depth;
+        [SerializeField] private float animationDuration = 0.5f;
+        [SerializeField] private float shadowDelay = 0.5f;
 
-        private float targetHPRatio = 1.0f;
-        private float targetOxygenRatio = 1.0f;
-        private float targetFuelRatio = 1.0f;
-        private float animationSpeed = 0.2f;
+        private Tweener hpTweener;
+        private Tweener oxygenTweener;
+        private Tweener fuelTweener;
 
         private void Start()
         {
-            hpSlider.value = targetHPRatio;
-            hpSliderShadow.value = targetHPRatio;
-            oxygenSlider.value = targetOxygenRatio;
-            oxygenSliderShadow.value = targetOxygenRatio;
-            fuelSlider.value = targetFuelRatio;
-            fuelSliderShadow.value = targetFuelRatio;
+            hpSlider.value = 1f;
+            hpSliderShadow.value = 1f;
+            oxygenSlider.value = 1f;
+            oxygenSliderShadow.value = 1f;
+            fuelSlider.value = 1f;
+            fuelSliderShadow.value = 1f;
         }
 
-        private void Update()
+        private void OnDestroy()
         {
-            UpdateGaugeAnimation(hpSlider, hpSliderShadow, targetHPRatio);
-            UpdateGaugeAnimation(oxygenSlider, oxygenSliderShadow, targetOxygenRatio);
-            UpdateGaugeAnimation(fuelSlider, fuelSliderShadow, targetFuelRatio);
+            // Tweenのクリーンアップ
+            hpTweener?.Kill();
+            oxygenTweener?.Kill();
+            fuelTweener?.Kill();
         }
 
         public void SetHPRatio(float ratio)
         {
-            targetHPRatio = Mathf.Clamp01(ratio);
+            ratio = Mathf.Clamp01(ratio);
+            AnimateGauge(hpSlider, hpSliderShadow, ratio, ref hpTweener);
         }
 
         public void SetOxygenRatio(float ratio)
         {
-            targetOxygenRatio = Mathf.Clamp01(ratio);
+            ratio = Mathf.Clamp01(ratio);
+            AnimateGauge(oxygenSlider, oxygenSliderShadow, ratio, ref oxygenTweener);
         }
 
         public void SetFuelRatio(float ratio)
         {
-            targetFuelRatio = Mathf.Clamp01(ratio);
+            ratio = Mathf.Clamp01(ratio);
+            AnimateGauge(fuelSlider, fuelSliderShadow, ratio, ref fuelTweener);
         }
 
-        private void UpdateGaugeAnimation(Slider front, Slider shadow, float targetRatio)
+        private void AnimateGauge(Slider front, Slider shadow, float targetValue, ref Tweener tweener)
         {
-            if (targetRatio > front.value)
+            // 既存のアニメーションをキャンセル
+            tweener?.Kill();
+
+            float currentValue = front.value;
+
+            if (targetValue > currentValue)
             {
-                shadow.value = targetRatio;
-                front.value = Mathf.MoveTowards(front.value, targetRatio, animationSpeed * Time.deltaTime);
+                // 増加時: Shadowが先に伸びてからFrontが追従
+                shadow.value = targetValue;
+                tweener = front.DOValue(targetValue, animationDuration).SetEase(Ease.OutCubic);
             }
-            else if (targetRatio < shadow.value)
+            else if (targetValue < currentValue)
             {
-                front.value = targetRatio;
-                shadow.value = Mathf.MoveTowards(shadow.value, targetRatio, animationSpeed * Time.deltaTime);
+                // 減少時: Frontが先に縮んでからShadowが追従
+                front.value = targetValue;
+                tweener = shadow.DOValue(targetValue, animationDuration).SetDelay(shadowDelay).SetEase(Ease.OutCubic);
             }
         }
 

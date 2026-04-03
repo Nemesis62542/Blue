@@ -1684,6 +1684,8 @@ MonoBehaviour:
   oxygenSliderShadow: {fileID: 2874621804201376389}
   fuelSliderShadow: {fileID: 5487516287081112642}
   depth: {fileID: 7969357631164211548}
+  animationDuration: 0.5
+  shadowDelay: 0.5
 --- !u!1 &4863314377869391129
 GameObject:
   m_ObjectHideFlags: 0
