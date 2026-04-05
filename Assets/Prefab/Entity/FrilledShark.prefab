@@ -13,6 +13,18 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e44ffa41927761443926317ac40ce6f5, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e44ffa41927761443926317ac40ce6f5, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e44ffa41927761443926317ac40ce6f5, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e44ffa41927761443926317ac40ce6f5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 491.94604
       objectReference: {fileID: 0}
@@ -187,7 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1
-  rotationSpeed: 35
+  rotationSpeed: 1
   waypointDistance: 1
   useAvoidance: 1
   avoidDistance: 2

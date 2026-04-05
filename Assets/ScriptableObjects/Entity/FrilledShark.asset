@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
   m_Name: FrilledShark
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
-  id: 0
+  id: 6
   cachedGUID: 
-  name: 
-  hp: 0
+  name: "\u30D6\u30E9\u30C3\u30C7\u30A3\u30B7\u30E3\u30FC\u30AF"
+  hp: 20
   attackPower: 0
-  displaySize: 0
-  habitation: 0
-  object: {fileID: 0}
+  displaySize: 5
+  habitation: 2
+  object: {fileID: 102363748872707561, guid: 3391f70a2d212f940af9d7c6cbf17134, type: 3}
   school: {fileID: 0}
