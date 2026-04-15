@@ -1,5 +1,8 @@
+using System;
+using Blue.Interface;
 using Blue.UI.Common;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,15 +18,26 @@ namespace Blue.UI
         [SerializeField] private Slider scanProgressBar;
 
         private Transform target;
+        private IScannable scannable;
+        private IDisposable subscription;
 
         public Transform Target => target;
         public bool IsShowedDetail => name.gameObject.activeSelf;
 
-        public void Initialize(Transform target, ScanData data)
+        public void Initialize(Transform target, IScannable scannable)
         {
             this.target = target;
-            nameText.text = data.displayName;
-            detailText.text = GenerateDetail(data);
+            this.scannable = scannable;
+
+            // 既存の購読を解除
+            subscription?.Dispose();
+
+            // イベント購読
+            subscription = scannable.OnScanDataChanged
+                .Subscribe(_ => Refresh())
+                .AddTo(this);
+
+            Refresh();
             name.gameObject.SetActive(false);
             detail.gameObject.SetActive(false);
             gameObject.SetActive(true);
@@ -31,9 +45,23 @@ namespace Blue.UI
             scanProgressBar.value = 0f;
         }
 
+        public void Refresh()
+        {
+            if (scannable == null) return;
+            ScanData data = scannable.ScanData;
+            nameText.text = data.displayName;
+            detailText.text = GenerateDetail(data);
+        }
+
         void Update()
         {
             if (target == null) Destroy(gameObject);
+        }
+
+        void OnDisable()
+        {
+            subscription?.Dispose();
+            subscription = null;
         }
 
         public void ShowDetail()
@@ -69,28 +97,50 @@ namespace Blue.UI
             if (data == null) return "詳細不明";
             string detail = "";
 
-            switch (data.threat)
+            // 危険度表記（カスタムラベルがあれば優先）
+            if (!string.IsNullOrEmpty(data.threatLabel))
             {
-                case ScanData.Threat.Safety:
-                    detail += "危険度： 低\n";
-                    break;
-
-                case ScanData.Threat.Warning:
-                    detail += "危険度： 中\n";
-                    break;
-
-                case ScanData.Threat.Danger:
-                    detail += "危険度： 高\n";
-                    break;
-            }
-
-            if (data.isCapturable)
-            {
-                detail += "捕獲可能";
+                detail += data.threatLabel + "\n";
             }
             else
             {
-                detail += "捕獲不可。体力を減らしてください";
+                switch (data.threat)
+                {
+                    case ScanData.Threat.Safety:
+                        detail += "危険度： 低\n";
+                        break;
+
+                    case ScanData.Threat.Warning:
+                        detail += "危険度： 中\n";
+                        break;
+
+                    case ScanData.Threat.Danger:
+                        detail += "危険度： 高\n";
+                        break;
+                }
+            }
+
+            // 捕獲可否表記（カスタムラベルがあれば優先）
+            if (!string.IsNullOrEmpty(data.capturableLabel))
+            {
+                detail += data.capturableLabel;
+            }
+            else
+            {
+                if (data.isCapturable)
+                {
+                    detail += "捕獲可能";
+                }
+                else
+                {
+                    detail += "捕獲不可。体力を減らしてください";
+                }
+            }
+
+            // 詳細文章があれば追加
+            if (!string.IsNullOrEmpty(data.description))
+            {
+                detail += "\n" + data.description;
             }
 
             return detail;

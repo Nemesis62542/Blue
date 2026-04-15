@@ -1,7 +1,9 @@
+using System;
 using Blue.Attack;
 using Blue.Interface;
 using Blue.Player;
 using Blue.UI.Common;
+using UniRx;
 using UnityEngine;
 
 namespace Blue.Entity
@@ -12,6 +14,8 @@ namespace Blue.Entity
         [SerializeField] private float attackRange = 5f;
         [SerializeField] private float attackCooldown = 2f;
         [SerializeField] private AttackHitBox attackHitbox;
+
+        public IObservable<Unit> OnScanDataChanged => Observable.Never<Unit>();
 
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
         public Status Status => model.Status;

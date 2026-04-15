@@ -1,6 +1,8 @@
+using System;
 using Blue.Attack;
 using Blue.Interface;
 using Blue.UI.Common;
+using UniRx;
 using UnityEngine;
 
 namespace Blue.Entity
@@ -28,8 +30,21 @@ namespace Blue.Entity
         private Transform player;
         private Vector3 chargeTarget;
 
+        private readonly Subject<Unit> scanDataChanged = new Subject<Unit>();
+
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
-        public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Danger, IsCapturable);
+        public ScanData ScanData => new ScanData(model.Status.Name, GetThreatLevel(), IsCapturable)
+        {
+            threatLabel = model.Status.IsDead ? "無力化済み" : "危険度：高",
+            capturableLabel = IsCapturable ? "捕獲可能" : "まだ動いている。体力を減らしてください",
+        };
+        public IObservable<Unit> OnScanDataChanged => scanDataChanged;
+
+        private ScanData.Threat GetThreatLevel()
+        {
+            if (model.Status.IsDead) return ScanData.Threat.Safety;
+            return ScanData.Threat.Danger;
+        }
         public Status Status => model.Status;
         public EntityData EntityData => model.Data;
         public bool IsCapturable => model.Status.IsDead;
@@ -155,6 +170,9 @@ namespace Blue.Entity
         {
             state = BossState.Dead;
             view.OnDead();
+            
+            // スキャンデータ変更を通知
+            scanDataChanged.OnNext(Unit.Default);
         }
     }
 }
