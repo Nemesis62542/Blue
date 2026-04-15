@@ -10,6 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4357798803324376752}
   - component: {fileID: 3961173095662079296}
+  - component: {fileID: 3869031786140698457}
+  - component: {fileID: 823909578495498486}
+  - component: {fileID: 4626075259209314272}
   m_Layer: 0
   m_Name: GameEventController
   m_TagString: Untagged
@@ -46,4 +49,154 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventList:
   - {fileID: 11400000, guid: 9861d6614e603464c9a7e1b11e6ca7aa, type: 2}
-  director: {fileID: 0}
+  director: {fileID: 3869031786140698457}
+  runtimeBridge: {fileID: 4626075259209314272}
+--- !u!320 &3869031786140698457
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4501426093640551739}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 840ce3e5b9a249c49b6a87bddd8fbbd7, type: 2}
+  m_InitialState: 0
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: 7128019132469690507, guid: 9b085f58d3eaa3c4b874f35e545aefb6, type: 2}
+    value: {fileID: 823909578495498486}
+  - key: {fileID: 6531367735257458689, guid: 232eb6d5b13e1ce4aa5a875fa6ae47ca, type: 2}
+    value: {fileID: 823909578495498486}
+  - key: {fileID: -947065311220187126, guid: d20d9513a9e6bcb4aa743ebce711abb9, type: 2}
+    value: {fileID: 823909578495498486}
+  - key: {fileID: 6634124963845216592, guid: cae1d9c6c288b054298e16f024ef8630, type: 2}
+    value: {fileID: 823909578495498486}
+  - key: {fileID: 7285128874585271111, guid: 775c50e8dcb291b4dac9ca7de1b26d32, type: 2}
+    value: {fileID: 823909578495498486}
+  - key: {fileID: -2778267912863012293, guid: dd3c33325b0953b46a658cd3c1d88721, type: 2}
+    value: {fileID: 823909578495498486}
+  - key: {fileID: -5005856193774943565, guid: 840ce3e5b9a249c49b6a87bddd8fbbd7, type: 2}
+    value: {fileID: 823909578495498486}
+  m_ExposedReferences:
+    m_References: []
+--- !u!114 &823909578495498486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4501426093640551739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 14e815a16ec3f374cbd899a8a125c2bf, type: 2}
+    - {fileID: 11400000, guid: 4daf3c9fdae372349bbc6ec031d3203d, type: 2}
+    - {fileID: 11400000, guid: 591e105ba67afe84dac2ce94f77db9fe, type: 2}
+    - {fileID: 11400000, guid: 8942f5fdc2ba7724c99573aac1d2777a, type: 2}
+    - {fileID: 11400000, guid: 2b1dba3e0068e0943b67f73221fc87cd, type: 2}
+    - {fileID: 11400000, guid: a4f2af9abd8f8134ab66c572e2f310c4, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3961173095662079296}
+          m_TargetAssemblyTypeName: GameEventController, Assembly-CSharp
+          m_MethodName: ShowNextDialogueLine
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3961173095662079296}
+          m_TargetAssemblyTypeName: GameEventController, Assembly-CSharp
+          m_MethodName: ForwardIngame
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3961173095662079296}
+          m_TargetAssemblyTypeName: GameEventController, Assembly-CSharp
+          m_MethodName: EmergencyMessage
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3961173095662079296}
+          m_TargetAssemblyTypeName: GameEventController, Assembly-CSharp
+          m_MethodName: BattleStart
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3961173095662079296}
+          m_TargetAssemblyTypeName: GameEventController, Assembly-CSharp
+          m_MethodName: FoundEMP
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3961173095662079296}
+          m_TargetAssemblyTypeName: GameEventController, Assembly-CSharp
+          m_MethodName: ForwardAquariumScene
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &4626075259209314272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4501426093640551739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91799aa96ccf85b438077b6bcc33e5a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Game.GameEventRuntimeBridge
+  shark: {fileID: 0}

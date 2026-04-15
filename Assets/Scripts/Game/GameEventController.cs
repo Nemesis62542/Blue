@@ -1,26 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Playables;
-using Blue.UI;
-using Blue.Input;
 using Blue.Game;
 using UnityEngine.Timeline;
-using Blue.UI.Screen;
-using Blue.Entity;
-using Blue.Player;
-using Blue.Audio;
 
 public class GameEventController : MonoBehaviour
 {
     [SerializeField] private List<GameEventData> eventList;
     [SerializeField] private PlayableDirector director;
-    [SerializeField] private MecaSharkController shark;
+    [SerializeField] private GameEventRuntimeBridge runtimeBridge;
 
     private GameEventData currentEvent;
     private int dialogueIndex = 0;
     private Dictionary<EventID, GameEventData> eventDict;
     
     public static GameEventController Instance { get; private set; }
+
+    private IGameEventRuntime Runtime => runtimeBridge;
 
     private void Awake()
     {
@@ -31,6 +27,11 @@ public class GameEventController : MonoBehaviour
         }
 
         Instance = this;
+
+        if (runtimeBridge == null)
+        {
+            Debug.LogError("GameEventRuntimeBridge is not assigned.");
+        }
 
         eventDict = new Dictionary<EventID, GameEventData>();
         foreach (GameEventData data in eventList)
@@ -62,51 +63,51 @@ public class GameEventController : MonoBehaviour
         }
 
         string message = currentEvent.DialogueLines[dialogueIndex].text;
-        SubtitleUIController.Instance.ShowMessage(message);
+        Runtime.ShowSubtitle(message);
 
         dialogueIndex++;
     }
 
     public void ForwardIngame()
     {
-        PlayerController.Instance.ForwardIngame();
+        Runtime.ForwardIngame();
     }
 
     public void ForwardMovie()
     {
-        PlayerController.Instance.ForwardMovie();
+        Runtime.ForwardMovie();
     }
 
     public void ShallowSeaBGM()
     {
-        SoundController.Instance.PlayBGM(BGMType.ShallowSea);
+        Runtime.PlayShallowSeaBGM();
     }
 
     public void EmergencyMessage()
     {
-        SoundController.Instance.StopBGM(0.5f);
-        MessageView.Instance.ShowMessage(new MessageData("周囲に大型の動態反応を検知。危険度：<color=red>高</color>"), 5.0f);
+        Runtime.StopBGM(0.5f);
+        Runtime.ShowMessage("周囲に大型の動態反応を検知。危険度：<color=red>高</color>", 5.0f);
     }
 
     public void BattleStart()
     {
-        shark.StartBattle();
-        SoundController.Instance.PlayBGM(BGMType.MecaShark);
-        MessageView.Instance.ShowMessage(new MessageData("ME-G4L0の敵対反応を検知。速やかな対応を推奨"), 8.0f);
+        Runtime.StartMecaSharkBattle();
+        Runtime.PlayMecaSharkBGM();
+        Runtime.ShowMessage("ME-G4L0の敵対反応を検知。速やかな対応を推奨", 8.0f);
     }
 
     public void FoundEMP()
     {
-        MessageView.Instance.ShowMessage(new MessageData("付近にEMP装置を検知。ME-G4L0に対し有効"), 15.0f);
+        Runtime.ShowMessage("付近にEMP装置を検知。ME-G4L0に対し有効", 15.0f);
     }
 
     public void ForwardAquariumScene()
     {
-        SoundController.Instance.StopEnvironmentSound();
-        SoundController.Instance.PlayBGM(BGMType.ShallowSea);
+        Runtime.StopEnvironmentSound();
+        Runtime.PlayShallowSeaBGM();
         ForwardIngame();
         EndEvent();
-        SceneLoader.LoadScene("Aquarium");
+        Runtime.LoadScene("Aquarium");
     }
 
     public void EndEvent()
