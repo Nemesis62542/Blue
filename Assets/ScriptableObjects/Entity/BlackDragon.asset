@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f59900defc73f8447acefe019300940d, type: 3}
+  m_Name: BlackDragon
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
+  id: 7
+  cachedGUID: 
+  name: "\u30AF\u30ED\u30DF\u30CE\u30A6\u30DF\u30A6\u30B7"
+  hp: 200
+  attackPower: 10
+  displaySize: 40
+  habitation: 2
+  object: {fileID: 1222064841754009265, guid: e0ebf01cf7b854648b2b0b0c3fcc2af1, type: 3}
+  school: {fileID: 0}

@@ -21,6 +21,9 @@ namespace Blue.Entity.Common
         [Tooltip("末端に向かうほど遅延を増加させる係数")]
         [SerializeField, Range(0f, 2f)] private float dampingFalloff = 0.5f;
 
+        [Tooltip("Animatorアニメーションを使用するか")]
+        [SerializeField] private bool useAnimatorRotation = true;
+
         [Header("Constraints")]
         [SerializeField] private bool constrainBoneLength = true;
         [SerializeField, Range(0f, 180f)] private float maxBendAngle = 60f;
@@ -172,13 +175,16 @@ namespace Blue.Entity.Common
 
             // === Step 2: 回転の追従（親の回転に滑らかに追従） ===
 
-            // 目標回転 = 親の回転（ローカルオフセットを適用）
-            Quaternion targetRotation = parentBone.rotation * segment.InitialLocalRotation;
+            // 目標回転を計算
+            // useAnimatorRotation: Animatorが設定した現在のローカル回転を使用（くねくね等が反映）
+            // false: 初期ローカル回転を使用（Animatorを無視）
+            Quaternion localRotation = useAnimatorRotation ? bone.localRotation : segment.InitialLocalRotation;
+            Quaternion targetRotation = parentBone.rotation * localRotation;
 
             // 角度制限の適用
             if (maxBendAngle < 180f)
             {
-                targetRotation = ApplyAngleConstraint(targetRotation, parent.CurrentRotation, segment.InitialLocalRotation);
+                targetRotation = ApplyAngleConstraint(targetRotation, parent.CurrentRotation, localRotation);
             }
 
             // ダンピング計算（シンプルな指数減衰）
