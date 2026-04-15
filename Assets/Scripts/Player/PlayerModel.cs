@@ -13,21 +13,28 @@ namespace Blue.Player
         private InventoryModel inventory = new InventoryModel();
         private Dictionary<EntityData, int> capturedEntities = new Dictionary<EntityData, int>();
         private QuickSlotModel quickSlotModel;
+        private IPlayerProgressPersistence persistence;
         private int maxOxygen = 100;
         private int oxygen;
         private float maxFuel = 100f;
         private float fuel;
         private float depth;
 
-        public PlayerModel(EntityData data, InventoryModel inventory = null, QuickSlotModel quickSlot = null, int? initialOxygen = null) : base(data)
+        public PlayerModel(
+            EntityData data,
+            InventoryModel inventory = null,
+            QuickSlotModel quickSlot = null,
+            int? initialOxygen = null,
+            IPlayerProgressPersistence persistence = null) : base(data)
         {
+            this.persistence = persistence ?? new SaveDataPlayerProgressPersistence();
             this.inventory = inventory ?? new InventoryModel();
             quickSlotModel = quickSlot ?? new QuickSlotModel();
             oxygen = initialOxygen ?? maxOxygen;
             fuel = maxFuel;
 
             // セーブデータから捕獲した生物を読み込む
-            capturedEntities = SaveDataConverter.LoadCapturedEntities();
+            capturedEntities = this.persistence.LoadCapturedEntities();
         }
 
         public InventoryModel Inventory => inventory;
@@ -116,7 +123,7 @@ namespace Blue.Player
             }
 
             // セーブデータに保存
-            SaveDataConverter.SaveCapturedEntities(capturedEntities);
+            persistence.SaveCapturedEntities(capturedEntities);
         }
     }
 }

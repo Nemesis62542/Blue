@@ -56,6 +56,7 @@ namespace Blue.Player
         private int oxygenDecreaseAmount = 1;
         private bool fuelDepleted = false;
         private float fuelDepletedTimer = 0f;
+        private IPlayerProgressPersistence persistence;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotModel QuickSlot => model.QuickSlot;
@@ -87,11 +88,12 @@ namespace Blue.Player
             }
             Instance = this;
             inputHandler = new PlayerInputHandler();
+            persistence = new SaveDataPlayerProgressPersistence();
 
             // セーブデータから読み込み
-            InventoryModel playerInventory = SaveDataConverter.LoadPlayerInventory();
-            QuickSlotModel quickSlot = SaveDataConverter.LoadQuickSlot();
-            model = new PlayerModel(data, playerInventory, quickSlot);
+            InventoryModel playerInventory = persistence.LoadPlayerInventory();
+            QuickSlotModel quickSlot = persistence.LoadQuickSlot();
+            model = new PlayerModel(data, playerInventory, quickSlot, persistence: persistence);
 
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
@@ -538,12 +540,12 @@ namespace Blue.Player
 
         private void OnInventoryChanged()
         {
-            SaveDataConverter.SavePlayerInventory(Inventory);
+            persistence.SavePlayerInventory(Inventory);
         }
 
         private void OnQuickSlotChanged()
         {
-            SaveDataConverter.SaveQuickSlot(QuickSlot);
+            persistence.SaveQuickSlot(QuickSlot);
         }
     }
 }
