@@ -6,38 +6,54 @@ using Blue.UI.QuickSlot;
 namespace Blue.Save
 {
     /// <summary>
-    /// SaveDataConverterを利用したプレイヤー進行データ永続化
+    /// SaveDataConverter(ドメイン変換) + SaveDataRepository(I/O) で構成した永続化
     /// </summary>
     public class SaveDataPlayerProgressPersistence : IPlayerProgressPersistence
     {
+        private readonly ISaveDataRepository repository;
+
+        public SaveDataPlayerProgressPersistence(ISaveDataRepository repository = null)
+        {
+            this.repository = repository ?? new SaveManagerRepository();
+        }
+
         public InventoryModel LoadPlayerInventory()
         {
-            return SaveDataConverter.LoadPlayerInventory();
+            SaveData save_data = repository.LoadCurrent();
+            return SaveDataConverter.ConvertFromSaveData(save_data.playerInventory);
         }
 
         public QuickSlotModel LoadQuickSlot()
         {
-            return SaveDataConverter.LoadQuickSlot();
+            SaveData save_data = repository.LoadCurrent();
+            return SaveDataConverter.ConvertFromSaveData(save_data.quickSlot);
         }
 
         public Dictionary<EntityData, int> LoadCapturedEntities()
         {
-            return SaveDataConverter.LoadCapturedEntities();
+            SaveData save_data = repository.LoadCurrent();
+            return SaveDataConverter.ConvertFromSaveData(save_data.capturedEntity);
         }
 
         public void SavePlayerInventory(InventoryModel inventory)
         {
-            SaveDataConverter.SavePlayerInventory(inventory);
+            SaveData save_data = repository.LoadCurrent();
+            save_data.playerInventory = SaveDataConverter.ConvertToSaveData(inventory);
+            repository.Save(save_data);
         }
 
         public void SaveQuickSlot(QuickSlotModel quickSlot)
         {
-            SaveDataConverter.SaveQuickSlot(quickSlot);
+            SaveData save_data = repository.LoadCurrent();
+            save_data.quickSlot = SaveDataConverter.ConvertToSaveData(quickSlot);
+            repository.Save(save_data);
         }
 
         public void SaveCapturedEntities(Dictionary<EntityData, int> capturedEntities)
         {
-            SaveDataConverter.SaveCapturedEntities(capturedEntities);
+            SaveData save_data = repository.LoadCurrent();
+            save_data.capturedEntity = SaveDataConverter.ConvertToSaveData(capturedEntities);
+            repository.Save(save_data);
         }
     }
 }

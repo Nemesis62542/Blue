@@ -13,7 +13,14 @@ namespace Blue.Item
     {
         private static Dictionary<string, ItemData> guidToItemCache = new Dictionary<string, ItemData>();
         private static Dictionary<ItemData, string> itemToGuidCache = new Dictionary<ItemData, string>();
+        private static ItemDataRegistry registryOverride;
         private static bool isInitialized = false;
+
+        public static void SetRegistry(ItemDataRegistry registry)
+        {
+            registryOverride = registry;
+            RebuildCache();
+        }
 
         /// <summary>
         /// キャッシュを初期化（ゲーム起動時に一度だけ呼び出す）
@@ -37,7 +44,7 @@ namespace Blue.Item
             }
 #else
             // ビルド版ではレジストリから読み込み
-            ItemDataRegistry registry = ItemDataRegistry.Instance;
+            ItemDataRegistry registry = registryOverride != null ? registryOverride : ItemDataRegistry.Instance;
             if (registry != null)
             {
                 foreach (ItemData item in registry.Items)
