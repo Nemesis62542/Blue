@@ -13,7 +13,14 @@ namespace Blue.Entity
     {
         private static Dictionary<string, EntityData> guidToEntityCache = new Dictionary<string, EntityData>();
         private static Dictionary<EntityData, string> entityToGuidCache = new Dictionary<EntityData, string>();
+        private static EntityDataRegistry registryOverride;
         private static bool isInitialized = false;
+
+        public static void SetRegistry(EntityDataRegistry registry)
+        {
+            registryOverride = registry;
+            RebuildCache();
+        }
 
         /// <summary>
         /// キャッシュを初期化（ゲーム起動時に一度だけ呼び出す）
@@ -37,7 +44,7 @@ namespace Blue.Entity
             }
 #else
             // ビルド版ではレジストリから読み込み
-            EntityDataRegistry registry = EntityDataRegistry.Instance;
+            EntityDataRegistry registry = registryOverride != null ? registryOverride : EntityDataRegistry.Instance;
             if (registry != null)
             {
                 foreach (EntityData entity in registry.Entities)
