@@ -150,14 +150,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 299767744}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 2
     m_Resolution: -1
@@ -262,6 +262,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27cd3940e89707848ab1bdc66c2901a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &658735109 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8698531705469006319, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
+  m_PrefabInstance: {fileID: 8713586970980963754}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &658735110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 658735109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e84eb82e2430e94aa4cb4449c475840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Visual.DepthEnvironmentController
+  skyboxMaterial: {fileID: 2100000, guid: 0acba0a56e005d94b822d024809efe8e, type: 2}
+  directionalLight: {fileID: 299767745}
+  minDepth: 0
+  maxDepth: 100
+  surfaceLightIntensity: 1
+  deepLightIntensity: 0
+  surfaceAmbientIntensity: 1
+  deepAmbientIntensity: 0
+  surfaceAmbientColor: {r: 0.5, g: 0.7, b: 0.9, a: 1}
+  deepAmbientColor: {r: 0, g: 0, b: 0, a: 1}
+  surfaceFogColor: {r: 0.21, g: 0.53, b: 0.77, a: 1}
+  deepFogColor: {r: 0, g: 0, b: 0, a: 1}
+  surfaceSkyboxFogIntensity: 1
+  deepSkyboxFogIntensity: 2
+  depthCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  debugMode: 0
+  debugDepth: 200
 --- !u!1 &1398936973
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,7 +821,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7424724188950865022, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.008327929
+      value: -0.0063394704
       objectReference: {fileID: 0}
     - target: {fileID: 7572315621613004497, guid: 6044134aedb7b1c4c8c762ce3b999e83, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1158,6 +1215,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 397691855}
+    - target: {fileID: 2707614161174757743, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
+      propertyPath: depthEnvironmentController
+      value: 
+      objectReference: {fileID: 658735110}
     - target: {fileID: 5479085443314377856, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
       propertyPath: m_LocalPosition.x
       value: 627.1
@@ -1200,7 +1261,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7684539236657209966, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 280.7
+      value: 233.4
       objectReference: {fileID: 0}
     - target: {fileID: 7945228172733148131, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -1221,7 +1282,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8698531705469006319, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 658735110}
   m_SourcePrefab: {fileID: 100100000, guid: 4eaf772ecee5a984599ab1192aafbc56, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
