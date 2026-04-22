@@ -27,6 +27,10 @@ namespace Blue.Visual
         [SerializeField] private Color surfaceAmbientColor = new Color(0.5f, 0.7f, 0.9f);
         [SerializeField] private Color deepAmbientColor = new Color(0.05f, 0.1f, 0.2f);
 
+        [Header("Environment Reflections設定")]
+        [SerializeField] private float surfaceReflectionIntensity = 1f;
+        [SerializeField] private float deepReflectionIntensity = 0f;
+
         [Header("Fog設定（Lighting/Skybox共通）")]
         [SerializeField] private Color surfaceFogColor = new Color(0.21f, 0.53f, 0.77f);
         [SerializeField] private Color deepFogColor = new Color(0.02f, 0.05f, 0.15f);
@@ -97,6 +101,7 @@ namespace Blue.Visual
             // 各要素を更新
             UpdateDirectionalLight(t);
             UpdateAmbientLight(t);
+            UpdateReflections(t);
             UpdateLightingFog(fogColor);
             UpdateSkybox(t, fogColor);
         }
@@ -118,6 +123,11 @@ namespace Blue.Visual
             RenderSettings.ambientSkyColor = ambientColor;
             RenderSettings.ambientEquatorColor = ambientColor;
             RenderSettings.ambientGroundColor = Color.Lerp(ambientColor, Color.black, 0.5f);
+        }
+
+        private void UpdateReflections(float t)
+        {
+            RenderSettings.reflectionIntensity = Mathf.Lerp(surfaceReflectionIntensity, deepReflectionIntensity, t);
         }
 
         private void UpdateLightingFog(Color fogColor)
