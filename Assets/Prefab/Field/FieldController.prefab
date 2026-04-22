@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5479085443314377856}
   - component: {fileID: 2707614161174757743}
+  - component: {fileID: 7622866951688455547}
   m_Layer: 0
   m_Name: FieldController
   m_TagString: Untagged
@@ -48,6 +49,59 @@ MonoBehaviour:
   waterSurface: {fileID: 7945228172733148131}
   godRay: {fileID: 0}
   player: {fileID: 0}
+  depthEnvironmentController: {fileID: 7622866951688455547}
+--- !u!114 &7622866951688455547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8698531705469006319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e84eb82e2430e94aa4cb4449c475840, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Visual.DepthEnvironmentController
+  skyboxMaterial: {fileID: 2100000, guid: 0acba0a56e005d94b822d024809efe8e, type: 2}
+  directionalLight: {fileID: 0}
+  minDepth: 0
+  maxDepth: 100
+  surfaceLightIntensity: 1
+  deepLightIntensity: 0
+  surfaceAmbientIntensity: 1
+  deepAmbientIntensity: 0
+  surfaceAmbientColor: {r: 0.5, g: 0.7, b: 0.9, a: 1}
+  deepAmbientColor: {r: 0, g: 0, b: 0, a: 1}
+  surfaceFogColor: {r: 0.21, g: 0.53, b: 0.77, a: 1}
+  deepFogColor: {r: 0, g: 0, b: 0, a: 1}
+  surfaceSkyboxFogIntensity: 1
+  deepSkyboxFogIntensity: 2
+  depthCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  debugMode: 0
+  debugDepth: 200
 --- !u!1001 &7908064956084826369
 PrefabInstance:
   m_ObjectHideFlags: 0

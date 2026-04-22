@@ -1,5 +1,6 @@
 using Blue.Audio;
 using Blue.Player;
+using Blue.Visual;
 using UnityEngine;
 
 namespace Blue.Game
@@ -9,6 +10,7 @@ namespace Blue.Game
         [SerializeField] private GameObject waterSurface;
         [SerializeField] private ParticleSystem godRay;
         [SerializeField] private PlayerController player;
+        [SerializeField] private DepthEnvironmentController depthEnvironmentController;
 
         private bool isGodRayPlaying = false;
 
@@ -35,7 +37,8 @@ namespace Blue.Game
         {
             godRay.transform.position = new Vector3(player.transform.position.x, WaterLevel, player.transform.position.z);
 
-            bool shouldPlay = WaterLevel - player.transform.position.y <= GodRayThreshold;
+            float depth = WaterLevel - player.transform.position.y;
+            bool shouldPlay = depth <= GodRayThreshold;
 
             if (shouldPlay != isGodRayPlaying)
             {
@@ -48,6 +51,12 @@ namespace Blue.Game
                     godRay.Stop();
                 }
                 isGodRayPlaying = shouldPlay;
+            }
+
+            // 深度に応じて環境を更新
+            if (depthEnvironmentController != null)
+            {
+                depthEnvironmentController.UpdateEnvironment(depth);
             }
 
             SoundController.Instance.PlayEnvironmentSound(EnvironmentSoundType.UnderWater);
