@@ -49,7 +49,7 @@ MonoBehaviour:
   waterSurface: {fileID: 7945228172733148131}
   godRay: {fileID: 0}
   player: {fileID: 0}
-  depthEnvironmentController: {fileID: 0}
+  depthEnvironmentController: {fileID: 7622866951688455547}
 --- !u!114 &7622866951688455547
 MonoBehaviour:
   m_ObjectHideFlags: 0
