@@ -257,6 +257,105 @@ namespace Blue.Procedural.Coral
         }
 
         /// <summary>
+        /// 平たいBox（幅と厚さを個別指定）を追加
+        /// テーブルサンゴの平板状の枝に使用
+        /// </summary>
+        /// <param name="start">開始点（中心）</param>
+        /// <param name="end">終了点（中心）</param>
+        /// <param name="width">横幅（left-right方向の半幅）</param>
+        /// <param name="thickness">厚さ（up方向の半幅）</param>
+        /// <param name="up">上方向の参照ベクトル</param>
+        /// <param name="color">頂点カラー</param>
+        public void AddFlatBox(Vector3 start, Vector3 end, float width, float thickness, Vector3 up, Color color)
+        {
+            Vector3 direction = (end - start);
+            float length = direction.magnitude;
+            if (length < 0.0001f) return;
+
+            direction /= length;
+
+            // 上方向に垂直な2つの軸を計算
+            Vector3 right = Vector3.Cross(up, direction);
+            if (right.sqrMagnitude < 0.001f)
+            {
+                right = Vector3.Cross(Vector3.forward, direction);
+            }
+            right.Normalize();
+            Vector3 localUp = Vector3.Cross(direction, right).normalized;
+
+            // 8つの頂点を計算（widthはright方向、thicknessはlocalUp方向）
+            Vector3[] corners = new Vector3[8];
+            // 下面（start側）
+            corners[0] = start + right * width + localUp * thickness;   // 右上
+            corners[1] = start - right * width + localUp * thickness;   // 左上
+            corners[2] = start - right * width - localUp * thickness;   // 左下
+            corners[3] = start + right * width - localUp * thickness;   // 右下
+            // 上面（end側）
+            corners[4] = end + right * width + localUp * thickness;     // 右上
+            corners[5] = end - right * width + localUp * thickness;     // 左上
+            corners[6] = end - right * width - localUp * thickness;     // 左下
+            corners[7] = end + right * width - localUp * thickness;     // 右下
+
+            // 6つの面を追加
+
+            // 上面 (+localUp)
+            Vector3 topNormal = localUp;
+            int t0 = AddVertex(corners[0], topNormal, new Vector2(1, 0), color);
+            int t1 = AddVertex(corners[1], topNormal, new Vector2(0, 0), color);
+            int t2 = AddVertex(corners[5], topNormal, new Vector2(0, 1), color);
+            int t3 = AddVertex(corners[4], topNormal, new Vector2(1, 1), color);
+            AddQuad(t0, t1, t2, t3);
+
+            // 下面 (-localUp)
+            Vector3 bottomNormal = -localUp;
+            int b0 = AddVertex(corners[3], bottomNormal, new Vector2(1, 0), color);
+            int b1 = AddVertex(corners[2], bottomNormal, new Vector2(0, 0), color);
+            int b2 = AddVertex(corners[6], bottomNormal, new Vector2(0, 1), color);
+            int b3 = AddVertex(corners[7], bottomNormal, new Vector2(1, 1), color);
+            AddQuad(b3, b2, b1, b0);
+
+            // 右面 (+right)
+            Vector3 rightNormal = right;
+            int r0 = AddVertex(corners[3], rightNormal, new Vector2(1, 0), color);
+            int r1 = AddVertex(corners[0], rightNormal, new Vector2(0, 0), color);
+            int r2 = AddVertex(corners[4], rightNormal, new Vector2(0, 1), color);
+            int r3 = AddVertex(corners[7], rightNormal, new Vector2(1, 1), color);
+            AddQuad(r0, r1, r2, r3);
+
+            // 左面 (-right)
+            Vector3 leftNormal = -right;
+            int l0 = AddVertex(corners[1], leftNormal, new Vector2(1, 0), color);
+            int l1 = AddVertex(corners[2], leftNormal, new Vector2(0, 0), color);
+            int l2 = AddVertex(corners[6], leftNormal, new Vector2(0, 1), color);
+            int l3 = AddVertex(corners[5], leftNormal, new Vector2(1, 1), color);
+            AddQuad(l0, l1, l2, l3);
+
+            // 前面（start側、-direction）
+            Vector3 frontNormal = -direction;
+            int f0 = AddVertex(corners[0], frontNormal, new Vector2(1, 1), color);
+            int f1 = AddVertex(corners[3], frontNormal, new Vector2(1, 0), color);
+            int f2 = AddVertex(corners[2], frontNormal, new Vector2(0, 0), color);
+            int f3 = AddVertex(corners[1], frontNormal, new Vector2(0, 1), color);
+            AddQuad(f0, f1, f2, f3);
+
+            // 後面（end側、+direction）
+            Vector3 backNormal = direction;
+            int k0 = AddVertex(corners[4], backNormal, new Vector2(1, 0), color);
+            int k1 = AddVertex(corners[5], backNormal, new Vector2(0, 0), color);
+            int k2 = AddVertex(corners[6], backNormal, new Vector2(0, 1), color);
+            int k3 = AddVertex(corners[7], backNormal, new Vector2(1, 1), color);
+            AddQuad(k0, k1, k2, k3);
+        }
+
+        /// <summary>
+        /// 平たいBox（幅と厚さを個別指定）を追加（カラーは白）
+        /// </summary>
+        public void AddFlatBox(Vector3 start, Vector3 end, float width, float thickness, Vector3 up)
+        {
+            AddFlatBox(start, end, width, thickness, up, Color.white);
+        }
+
+        /// <summary>
         /// 球キャップを追加（枝の先端用の半球）
         /// </summary>
         /// <param name="center">球の中心</param>
