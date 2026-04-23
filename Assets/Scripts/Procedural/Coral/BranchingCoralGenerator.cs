@@ -43,6 +43,16 @@ namespace Blue.Procedural.Coral
         [Tooltip("枝の太さのランダム変動")]
         [SerializeField, Range(0f, 0.3f)] private float radiusVariance = 0.1f;
 
+        [Header("Mid-Branch Split")]
+        [Tooltip("枝の途中で分岐する確率（0=すべて先端、1=すべて途中）")]
+        [SerializeField, Range(0f, 1f)] private float midSplitProbability = 0.3f;
+
+        [Tooltip("途中分岐の位置範囲（最小）")]
+        [SerializeField, Range(0.2f, 0.5f)] private float midSplitPositionMin = 0.3f;
+
+        [Tooltip("途中分岐の位置範囲（最大）")]
+        [SerializeField, Range(0.5f, 0.9f)] private float midSplitPositionMax = 0.7f;
+
         [Header("Upward Growth")]
         [Tooltip("先端が上方向に向く強さ（0=影響なし、1=完全に上向き）")]
         [SerializeField, Range(0f, 1f)] private float upwardBias = 0f;
@@ -103,6 +113,12 @@ namespace Blue.Procedural.Coral
 
             float segmentLength = actualLength / segmentsPerBranch;
 
+            // セグメント位置を記録（途中分岐用）
+            Vector3[] segmentPositions = new Vector3[segmentsPerBranch + 1];
+            Vector3[] segmentDirections = new Vector3[segmentsPerBranch + 1];
+            segmentPositions[0] = currentPos;
+            segmentDirections[0] = currentDir;
+
             // 各セグメントをBoxとして追加
             for (int i = 0; i < segmentsPerBranch; i++)
             {
@@ -142,6 +158,8 @@ namespace Blue.Procedural.Coral
                 meshData.AddBox(segmentStart, segmentEnd, actualRadius, Vector3.up, segmentColor);
 
                 currentPos = segmentEnd;
+                segmentPositions[i + 1] = currentPos;
+                segmentDirections[i + 1] = currentDir;
             }
 
             // 先端位置
@@ -150,14 +168,16 @@ namespace Blue.Procedural.Coral
             if (depth < maxDepth - 1)
             {
                 // まだ分岐可能：子枝を生成
-                GenerateChildBranches(tipPosition, currentDir, actualLength, actualRadius * branchRadiusRatio, depth);
+                GenerateChildBranches(tipPosition, currentDir, actualLength, actualRadius * branchRadiusRatio, depth,
+                    segmentPositions, segmentDirections, actualRadius);
             }
         }
 
         /// <summary>
         /// 子枝を生成
         /// </summary>
-        private void GenerateChildBranches(Vector3 origin, Vector3 parentDirection, float parentLength, float parentRadius, int depth)
+        private void GenerateChildBranches(Vector3 tipOrigin, Vector3 parentDirection, float parentLength, float parentRadius, int depth,
+            Vector3[] segmentPositions, Vector3[] segmentDirections, float currentRadius)
         {
             // 枝の数を決定（ランダム変動あり）
             int actualBranchCount = branchCount;
@@ -173,6 +193,36 @@ namespace Blue.Procedural.Coral
 
             for (int i = 0; i < actualBranchCount; i++)
             {
+                // 途中分岐するかどうかを判定
+                bool isMidSplit = RandomRange(0f, 1f) < midSplitProbability && segmentsPerBranch > 1;
+
+                Vector3 branchOrigin;
+                Vector3 branchParentDir;
+                float radiusAtSplit;
+
+                if (isMidSplit)
+                {
+                    // 途中で分岐：ランダムな位置を選択
+                    float splitT = RandomRange(midSplitPositionMin, midSplitPositionMax);
+                    int segmentIndex = Mathf.FloorToInt(splitT * segmentsPerBranch);
+                    segmentIndex = Mathf.Clamp(segmentIndex, 0, segmentsPerBranch - 1);
+
+                    // セグメント内での補間
+                    float localT = (splitT * segmentsPerBranch) - segmentIndex;
+                    branchOrigin = Vector3.Lerp(segmentPositions[segmentIndex], segmentPositions[segmentIndex + 1], localT);
+                    branchParentDir = Vector3.Lerp(segmentDirections[segmentIndex], segmentDirections[segmentIndex + 1], localT).normalized;
+
+                    // 途中位置での半径を計算
+                    radiusAtSplit = currentRadius * (1f - splitT * 0.3f);
+                }
+                else
+                {
+                    // 通常通り先端で分岐
+                    branchOrigin = tipOrigin;
+                    branchParentDir = parentDirection;
+                    radiusAtSplit = parentRadius;
+                }
+
                 // 水平方向の角度
                 float horizontalAngle = startAngle + baseAngleStep * i + RandomRange(-20f, 20f);
 
@@ -180,14 +230,14 @@ namespace Blue.Procedural.Coral
                 float verticalAngle = branchAngle + RandomRange(-branchAngleVariance, branchAngleVariance);
 
                 // 子枝の方向を計算
-                Vector3 childDirection = CalculateBranchDirection(parentDirection, horizontalAngle, verticalAngle);
+                Vector3 childDirection = CalculateBranchDirection(branchParentDir, horizontalAngle, verticalAngle);
 
                 // 子枝のパラメータ
                 float childLength = parentLength * branchLengthRatio;
-                float childRadius = parentRadius * branchRadiusRatio;
+                float childRadius = radiusAtSplit * branchRadiusRatio;
 
                 // 再帰呼び出し
-                GenerateBranch(origin, childDirection, childLength, childRadius, depth + 1);
+                GenerateBranch(branchOrigin, childDirection, childLength, childRadius, depth + 1);
             }
         }
 

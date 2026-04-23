@@ -53,6 +53,16 @@ namespace Blue.Procedural.Coral
         [Tooltip("長さのランダム変動")]
         [SerializeField, Range(0f, 0.3f)] private float lengthVariance = 0.15f;
 
+        [Header("Mid-Branch Split")]
+        [Tooltip("枝の途中で分岐する確率（0=すべて先端、1=すべて途中）")]
+        [SerializeField, Range(0f, 1f)] private float midSplitProbability = 0.3f;
+
+        [Tooltip("途中分岐の位置範囲（最小）")]
+        [SerializeField, Range(0.3f, 0.5f)] private float midSplitPositionMin = 0.4f;
+
+        [Tooltip("途中分岐の位置範囲（最大）")]
+        [SerializeField, Range(0.5f, 0.8f)] private float midSplitPositionMax = 0.7f;
+
         [Header("Material Blend")]
         [Tooltip("シェーダーブレンド用の頂点カラーを設定")]
         [SerializeField] private bool useShaderBlend = true;
@@ -138,16 +148,6 @@ namespace Blue.Procedural.Coral
             // 長さにランダム変動を加える
             float actualLength = currentLength * (1f + RandomRange(-lengthVariance, lengthVariance));
 
-            Vector3 end = origin + direction * actualLength;
-
-            // ブレンド係数を深さに基づいて計算
-            float depthRatio = (float)(depth + 1) / branchDepth;
-            float blendFactor = useShaderBlend ? blendCurve.Evaluate(depthRatio) : 0f;
-            Color color = new Color(blendFactor, blendFactor, blendFactor, 1f);
-
-            // 平たいボックスを追加
-            meshData.AddFlatBox(origin, end, currentWidth, branchThickness, Vector3.up, color);
-
             // 次の深さのパラメータ
             float nextWidth = currentWidth * widthDecay;
             float nextLength = currentLength * lengthDecay;
@@ -155,6 +155,9 @@ namespace Blue.Procedural.Coral
             // 最終深さでなければ枝分かれ
             if (depth < branchDepth - 1)
             {
+                // 各サブブランチの分岐位置を決定
+                int actualSubBranchCount = subBranchCount;
+
                 // 分岐方向を計算
                 Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
                 if (right.sqrMagnitude < 0.001f)
@@ -162,20 +165,92 @@ namespace Blue.Procedural.Coral
                     right = Vector3.Cross(Vector3.forward, direction).normalized;
                 }
 
-                for (int i = 0; i < subBranchCount; i++)
+                // 途中分岐する枝の数を決定
+                int midSplitCount = 0;
+                for (int i = 0; i < actualSubBranchCount; i++)
                 {
-                    // 分岐角度を計算（左右に広がる）
-                    float spreadT = (subBranchCount == 1) ? 0f : (float)i / (subBranchCount - 1) - 0.5f;
-                    float horizontalAngle = spreadT * forkAngle * 2f + RandomRange(-angleVariance, angleVariance);
-                    float verticalAngle = RandomRange(-angleVariance * 0.5f, angleVariance * 0.5f);
-
-                    // 新しい方向を計算
-                    Quaternion horizontalRot = Quaternion.AngleAxis(horizontalAngle, Vector3.up);
-                    Quaternion verticalRot = Quaternion.AngleAxis(verticalAngle, right);
-                    Vector3 newDirection = (verticalRot * horizontalRot * direction).normalized;
-
-                    GenerateBranch(end, newDirection, depth + 1, nextWidth, nextLength);
+                    if (RandomRange(0f, 1f) < midSplitProbability)
+                    {
+                        midSplitCount++;
+                    }
                 }
+
+                // 途中分岐がある場合、枝を分割して描画
+                if (midSplitCount > 0)
+                {
+                    // 途中分岐位置を計算
+                    float splitT = RandomRange(midSplitPositionMin, midSplitPositionMax);
+                    Vector3 midPoint = origin + direction * actualLength * splitT;
+                    Vector3 end = origin + direction * actualLength;
+
+                    // 根本から分岐点までのボックス
+                    float depthRatio1 = (float)depth / branchDepth;
+                    float blendFactor1 = useShaderBlend ? blendCurve.Evaluate(depthRatio1) : 0f;
+                    Color color1 = new Color(blendFactor1, blendFactor1, blendFactor1, 1f);
+                    meshData.AddFlatBox(origin, midPoint, currentWidth, branchThickness, Vector3.up, color1);
+
+                    // 分岐点から先端までのボックス（先端まで伸びる枝用）
+                    float depthRatio2 = (float)(depth + 1) / branchDepth;
+                    float blendFactor2 = useShaderBlend ? blendCurve.Evaluate(depthRatio2) : 0f;
+                    Color color2 = new Color(blendFactor2, blendFactor2, blendFactor2, 1f);
+                    meshData.AddFlatBox(midPoint, end, currentWidth * 0.9f, branchThickness, Vector3.up, color2);
+
+                    int branchIndex = 0;
+                    for (int i = 0; i < actualSubBranchCount; i++)
+                    {
+                        bool isMidSplit = branchIndex < midSplitCount;
+                        branchIndex++;
+
+                        Vector3 branchOrigin = isMidSplit ? midPoint : end;
+                        float widthAtSplit = isMidSplit ? currentWidth * (1f - splitT * 0.2f) : nextWidth;
+
+                        // 分岐角度を計算（左右に広がる）
+                        float spreadT = (actualSubBranchCount == 1) ? 0f : (float)i / (actualSubBranchCount - 1) - 0.5f;
+                        float horizontalAngle = spreadT * forkAngle * 2f + RandomRange(-angleVariance, angleVariance);
+                        float verticalAngle = RandomRange(-angleVariance * 0.5f, angleVariance * 0.5f);
+
+                        // 新しい方向を計算
+                        Quaternion horizontalRot = Quaternion.AngleAxis(horizontalAngle, Vector3.up);
+                        Quaternion verticalRot = Quaternion.AngleAxis(verticalAngle, right);
+                        Vector3 newDirection = (verticalRot * horizontalRot * direction).normalized;
+
+                        GenerateBranch(branchOrigin, newDirection, depth + 1, widthAtSplit * widthDecay, nextLength);
+                    }
+                }
+                else
+                {
+                    // 通常の処理（すべて先端で分岐）
+                    Vector3 end = origin + direction * actualLength;
+
+                    float depthRatio = (float)(depth + 1) / branchDepth;
+                    float blendFactor = useShaderBlend ? blendCurve.Evaluate(depthRatio) : 0f;
+                    Color color = new Color(blendFactor, blendFactor, blendFactor, 1f);
+                    meshData.AddFlatBox(origin, end, currentWidth, branchThickness, Vector3.up, color);
+
+                    for (int i = 0; i < actualSubBranchCount; i++)
+                    {
+                        float spreadT = (actualSubBranchCount == 1) ? 0f : (float)i / (actualSubBranchCount - 1) - 0.5f;
+                        float horizontalAngle = spreadT * forkAngle * 2f + RandomRange(-angleVariance, angleVariance);
+                        float verticalAngle = RandomRange(-angleVariance * 0.5f, angleVariance * 0.5f);
+
+                        Quaternion horizontalRot = Quaternion.AngleAxis(horizontalAngle, Vector3.up);
+                        Quaternion verticalRot = Quaternion.AngleAxis(verticalAngle, right);
+                        Vector3 newDirection = (verticalRot * horizontalRot * direction).normalized;
+
+                        GenerateBranch(end, newDirection, depth + 1, nextWidth, nextLength);
+                    }
+                }
+            }
+            else
+            {
+                // 最終深さ：単純にボックスを追加
+                Vector3 end = origin + direction * actualLength;
+
+                float depthRatio = (float)(depth + 1) / branchDepth;
+                float blendFactor = useShaderBlend ? blendCurve.Evaluate(depthRatio) : 0f;
+                Color color = new Color(blendFactor, blendFactor, blendFactor, 1f);
+
+                meshData.AddFlatBox(origin, end, currentWidth, branchThickness, Vector3.up, color);
             }
         }
 
