@@ -49,17 +49,19 @@ namespace Blue.Entity.Common
 
         #region Unity Lifecycle
 
-        private void Start()
-        {
-            Initialize();
-        }
-
         /// <summary>
         /// LateUpdateでAnimator更新後にボーンを制御
         /// </summary>
         private void LateUpdate()
         {
-            if (!isInitialized || segments.Count == 0) return;
+            // 最初のLateUpdateで初期化（Animatorがボーンを更新した後）
+            if (!isInitialized)
+            {
+                Initialize();
+                return; // 初期化フレームは更新しない
+            }
+
+            if (segments.Count == 0) return;
 
             UpdateBoneChain();
             UpdateBranches();
