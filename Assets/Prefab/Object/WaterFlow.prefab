@@ -26,14 +26,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6470487228851218679}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 505.90204, y: 298.388, z: 882.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6933895462466317936}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1391371200479908210
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -71,10 +71,6 @@ MonoBehaviour:
   strength: 40
   isActive: 1
   flowParticle: {fileID: 5692847286238441142}
-  impactLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
-  impactParticlePrefab: {fileID: 0}
 --- !u!1001 &697421621166892251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -152,7 +148,8 @@ PrefabInstance:
       value: WaterFlowParticle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4887983090944945740, guid: 405bf5cf16e1cdf46929bb6ad5d897f2, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 405bf5cf16e1cdf46929bb6ad5d897f2, type: 3}
