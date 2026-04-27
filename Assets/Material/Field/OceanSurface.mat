@@ -155,11 +155,11 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DeepColor: {r: 0.28235295, g: 0.63172024, b: 0.6431373, a: 0.95}
+    - _DeepColor: {r: 0.1882353, g: 0.5568628, b: 0.6117647, a: 0.9607843}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _NormalSpeed1: {r: 0.02, g: 0.01, b: 0, a: 0}
     - _NormalSpeed2: {r: -0.01, g: 0.02, b: 0, a: 0}
-    - _ShallowColor: {r: 0.19999996, g: 0.5, b: 0.7, a: 0.8}
+    - _ShallowColor: {r: 0.16862746, g: 0.7058824, b: 0.7, a: 0.19607843}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Wave2Direction: {r: 0.7, g: 0, b: 0.7, a: 0}
     - _Wave3Direction: {r: 0.5, g: 0, b: -0.866, a: 0}
