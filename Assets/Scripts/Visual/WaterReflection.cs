@@ -13,6 +13,14 @@ public class WaterReflection : MonoBehaviour
     [Tooltip("The texture used by the Water shader to display the reflection")]
     public RenderTexture outputTexture;
 
+    [Header("Shader Integration")]
+    [Tooltip("The ocean surface material to receive reflection texture")]
+    public Material oceanMaterial;
+
+    // Shader property IDs
+    private static readonly int ReflectionTexProperty = Shader.PropertyToID("_ReflectionTex");
+    private static readonly int WaterSurfaceYProperty = Shader.PropertyToID("_WaterSurfaceY");
+
     // parameters
     public bool copyCameraParamerers;
     public float verticalOffset;
@@ -35,6 +43,20 @@ public class WaterReflection : MonoBehaviour
     {
         if (isReady)
             RenderReflection();
+    }
+
+    private void LateUpdate()
+    {
+        // Update shader properties
+        if (oceanMaterial != null && outputTexture != null)
+        {
+            oceanMaterial.SetTexture(ReflectionTexProperty, outputTexture);
+
+            if (reflectionPlane != null)
+            {
+                oceanMaterial.SetFloat(WaterSurfaceYProperty, reflectionPlane.position.y);
+            }
+        }
     }
 
     private void RenderReflection()
