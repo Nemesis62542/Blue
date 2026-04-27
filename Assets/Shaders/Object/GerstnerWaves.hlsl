@@ -23,12 +23,13 @@ struct GerstnerWaveOutput
 };
 
 // ============================================================================
-// Evaluate Single Gerstner Wave
+// Evaluate Single Gerstner Wave (World Space)
 // Calculates displacement and tangent/binormal contributions for a single wave
+// positionWS: World space position (scaled by worldScale)
 // ============================================================================
 void EvaluateGerstnerWave(
     GerstnerWave wave,
-    float3 positionOS,
+    float2 scaledPosXZ,
     float time,
     inout float3 displacement,
     inout float3 tangent,
@@ -41,9 +42,9 @@ void EvaluateGerstnerWave(
     float Q = wave.steepness;
     float phi = wave.speed;
 
-    // Calculate phase
+    // Calculate phase using scaled world position
     // phase = w * (D.x * x + D.y * z) + phi * t
-    float phase = w * dot(D, positionOS.xz) + phi * time;
+    float phase = w * dot(D, scaledPosXZ) + phi * time;
     float sinPhase = sin(phase);
     float cosPhase = cos(phase);
 
@@ -72,11 +73,14 @@ void EvaluateGerstnerWave(
 }
 
 // ============================================================================
-// Evaluate Multiple Gerstner Waves
+// Evaluate Multiple Gerstner Waves (World Space)
 // Combines multiple wave layers and computes the final displacement and normal
+// positionWS: World space position
+// worldScale: Scale factor to normalize world coordinates
 // ============================================================================
 GerstnerWaveOutput EvaluateGerstnerWaves(
-    float3 positionOS,
+    float3 positionWS,
+    float worldScale,
     float time,
     float amplitude1, float frequency1, float speed1, float steepness, float2 direction1,
     float amplitude2, float frequency2, float speed2, float2 direction2,
@@ -84,6 +88,9 @@ GerstnerWaveOutput EvaluateGerstnerWaves(
 {
     GerstnerWaveOutput output;
     output.displacement = float3(0, 0, 0);
+
+    // Scale world position for consistent wave density
+    float2 scaledPosXZ = positionWS.xz * worldScale;
 
     // Initialize tangent and binormal
     float3 tangent = float3(1, 0, 0);
@@ -96,7 +103,7 @@ GerstnerWaveOutput EvaluateGerstnerWaves(
     wave1.speed = speed1;
     wave1.steepness = steepness;
     wave1.direction = direction1;
-    EvaluateGerstnerWave(wave1, positionOS, time, output.displacement, tangent, binormal);
+    EvaluateGerstnerWave(wave1, scaledPosXZ, time, output.displacement, tangent, binormal);
 
     // Wave 2 - Secondary wave
     GerstnerWave wave2;
@@ -105,7 +112,7 @@ GerstnerWaveOutput EvaluateGerstnerWaves(
     wave2.speed = speed2;
     wave2.steepness = steepness * 0.9;
     wave2.direction = direction2;
-    EvaluateGerstnerWave(wave2, positionOS, time, output.displacement, tangent, binormal);
+    EvaluateGerstnerWave(wave2, scaledPosXZ, time, output.displacement, tangent, binormal);
 
     // Wave 3 - Tertiary wave (smallest, high frequency detail)
     GerstnerWave wave3;
@@ -114,7 +121,7 @@ GerstnerWaveOutput EvaluateGerstnerWaves(
     wave3.speed = speed3;
     wave3.steepness = steepness * 0.8;
     wave3.direction = direction3;
-    EvaluateGerstnerWave(wave3, positionOS, time, output.displacement, tangent, binormal);
+    EvaluateGerstnerWave(wave3, scaledPosXZ, time, output.displacement, tangent, binormal);
 
     // Calculate normal from tangent and binormal (cross product)
     // Normal = Binormal x Tangent
@@ -124,12 +131,14 @@ GerstnerWaveOutput EvaluateGerstnerWaves(
 }
 
 // ============================================================================
-// Simplified Gerstner Waves (using material properties)
+// Simplified Gerstner Waves (using material properties, World Space)
+// positionWS: World space position
 // ============================================================================
-GerstnerWaveOutput EvaluateGerstnerWavesSimple(float3 positionOS, float time)
+GerstnerWaveOutput EvaluateGerstnerWavesSimple(float3 positionWS, float time)
 {
     return EvaluateGerstnerWaves(
-        positionOS,
+        positionWS,
+        _WorldScale,
         time,
         _WaveAmplitude, _WaveFrequency, _WaveSpeed, _WaveSteepness, _WaveDirection.xz,
         _Wave2Amplitude, _Wave2Frequency, _Wave2Speed, _Wave2Direction.xz,

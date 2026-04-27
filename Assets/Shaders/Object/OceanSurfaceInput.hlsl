@@ -37,6 +37,10 @@ struct Varyings
 // Material Properties (CBUFFER)
 // ============================================================================
 CBUFFER_START(UnityPerMaterial)
+    // World scale
+    float _WorldScale;
+    float _NormalTiling;
+
     // Wave parameters - Primary wave
     float _WaveAmplitude;
     float _WaveFrequency;

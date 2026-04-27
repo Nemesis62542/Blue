@@ -2,6 +2,10 @@ Shader "Custom/OceanSurface"
 {
     Properties
     {
+        [Header(World Scale)]
+        _WorldScale ("World Scale", Float) = 0.1
+        _NormalTiling ("Normal Map Tiling", Float) = 0.05
+
         [Header(Wave Settings Primary)]
         _WaveAmplitude ("Wave Amplitude", Float) = 0.5
         _WaveFrequency ("Wave Frequency", Float) = 1.0
@@ -112,30 +116,36 @@ Shader "Custom/OceanSurface"
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                // Store original position for wave calculation
-                output.positionOS = input.positionOS.xyz;
+                // First, get world position (before wave displacement)
+                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
-                // Apply Gerstner waves
+                // Store world position for fragment shader (normal map sampling)
+                output.positionOS = positionWS; // Reusing positionOS to pass world position
+
+                // Apply Gerstner waves using world position
                 float time = _Time.y;
-                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(input.positionOS.xyz, time);
+                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, time);
 
-                float3 displacedPosition = input.positionOS.xyz + waveOutput.displacement;
+                // Apply displacement in world space
+                float3 displacedPositionWS = positionWS + waveOutput.displacement;
 
-                // Transform positions
-                VertexPositionInputs posInputs = GetVertexPositionInputs(displacedPosition);
-                output.positionCS = posInputs.positionCS;
-                output.positionWS = posInputs.positionWS;
+                // Transform to clip space
+                output.positionCS = TransformWorldToHClip(displacedPositionWS);
+                output.positionWS = displacedPositionWS;
 
                 // Transform normals using wave-computed normal
-                VertexNormalInputs normInputs = GetVertexNormalInputs(waveOutput.normal, input.tangentOS);
-                output.normalWS = normInputs.normalWS;
-                output.tangentWS = float4(normInputs.tangentWS, input.tangentOS.w);
+                // Note: waveOutput.normal is already in world space orientation
+                output.normalWS = waveOutput.normal;
+
+                // Calculate tangent in world space
+                float3 tangentWS = TransformObjectToWorldDir(input.tangentOS.xyz);
+                output.tangentWS = float4(tangentWS, input.tangentOS.w);
 
                 // Other outputs
                 output.uv = input.uv;
                 output.screenPos = ComputeScreenPos(output.positionCS);
                 output.viewDirWS = GetWorldSpaceViewDir(output.positionWS);
-                output.fogFactor = ComputeFogFactor(posInputs.positionCS.z);
+                output.fogFactor = ComputeFogFactor(output.positionCS.z);
 
                 return output;
             }
@@ -167,12 +177,17 @@ Shader "Custom/OceanSurface"
                     tangentWS = -tangentWS;
                 }
 
-                // Sample and blend normal maps
+                // Sample and blend normal maps using world position
                 float time = _Time.y;
+
+                // Use world XZ coordinates for consistent tiling regardless of mesh scale
+                // input.positionOS now contains world position (passed from vertex shader)
+                float2 worldUV = input.positionOS.xz * _NormalTiling;
+
                 float3 normalTS = SampleBlendedNormals(
                     TEXTURE2D_ARGS(_NormalMap1, sampler_NormalMap1),
                     TEXTURE2D_ARGS(_NormalMap2, sampler_NormalMap2),
-                    input.uv,
+                    worldUV,
                     _NormalMap1_ST,
                     _NormalMap2_ST,
                     _NormalSpeed1,
@@ -389,11 +404,14 @@ Shader "Custom/OceanSurface"
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                // Apply Gerstner waves
-                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(input.positionOS.xyz, _Time.y);
-                float3 displacedPosition = input.positionOS.xyz + waveOutput.displacement;
+                // Get world position first
+                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
-                output.positionCS = TransformObjectToHClip(displacedPosition);
+                // Apply Gerstner waves using world position
+                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
+                float3 displacedPositionWS = positionWS + waveOutput.displacement;
+
+                output.positionCS = TransformWorldToHClip(displacedPositionWS);
 
                 return output;
             }
@@ -445,14 +463,17 @@ Shader "Custom/OceanSurface"
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                // Apply Gerstner waves
-                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(input.positionOS.xyz, _Time.y);
-                float3 displacedPosition = input.positionOS.xyz + waveOutput.displacement;
+                // Get world position first
+                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
-                float3 positionWS = TransformObjectToWorld(displacedPosition);
-                float3 normalWS = TransformObjectToWorldNormal(waveOutput.normal);
+                // Apply Gerstner waves using world position
+                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
+                float3 displacedPositionWS = positionWS + waveOutput.displacement;
 
-                output.positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, _LightDirection));
+                // Wave normal is already in world-space orientation
+                float3 normalWS = waveOutput.normal;
+
+                output.positionCS = TransformWorldToHClip(ApplyShadowBias(displacedPositionWS, normalWS, _LightDirection));
 
                 #if UNITY_REVERSED_Z
                 output.positionCS.z = min(output.positionCS.z, UNITY_NEAR_CLIP_VALUE);
