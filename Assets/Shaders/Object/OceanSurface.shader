@@ -62,6 +62,11 @@ Shader "Custom/OceanSurface"
 
         [Header(Rendering)]
         [Enum(Both,0,Front,1,Back,2)] _CullMode ("Cull Mode", Float) = 0
+
+        [Header(Tessellation)]
+        _TessellationFactor ("Tessellation Factor", Range(1, 64)) = 8
+        _TessellationMinDistance ("Min Distance", Float) = 10
+        _TessellationMaxDistance ("Max Distance", Float) = 100
     }
 
     SubShader
@@ -88,8 +93,10 @@ Shader "Custom/OceanSurface"
             Cull [_CullMode]
 
             HLSLPROGRAM
-            #pragma target 4.5
-            #pragma vertex OceanVert
+            #pragma target 4.6
+            #pragma vertex TessellationVert
+            #pragma hull OceanHullShader
+            #pragma domain OceanDomainShader
             #pragma fragment OceanFrag
 
             // Shader features
@@ -104,51 +111,7 @@ Shader "Custom/OceanSurface"
             #include "OceanSurfaceInput.hlsl"
             #include "GerstnerWaves.hlsl"
             #include "OceanLighting.hlsl"
-
-            // ================================================================
-            // Vertex Shader
-            // ================================================================
-            Varyings OceanVert(Attributes input)
-            {
-                Varyings output;
-
-                UNITY_SETUP_INSTANCE_ID(input);
-                UNITY_TRANSFER_INSTANCE_ID(input, output);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-                // First, get world position (before wave displacement)
-                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
-
-                // Store world position for fragment shader (normal map sampling)
-                output.positionOS = positionWS; // Reusing positionOS to pass world position
-
-                // Apply Gerstner waves using world position
-                float time = _Time.y;
-                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, time);
-
-                // Apply displacement in world space
-                float3 displacedPositionWS = positionWS + waveOutput.displacement;
-
-                // Transform to clip space
-                output.positionCS = TransformWorldToHClip(displacedPositionWS);
-                output.positionWS = displacedPositionWS;
-
-                // Transform normals using wave-computed normal
-                // Note: waveOutput.normal is already in world space orientation
-                output.normalWS = waveOutput.normal;
-
-                // Calculate tangent in world space
-                float3 tangentWS = TransformObjectToWorldDir(input.tangentOS.xyz);
-                output.tangentWS = float4(tangentWS, input.tangentOS.w);
-
-                // Other outputs
-                output.uv = input.uv;
-                output.screenPos = ComputeScreenPos(output.positionCS);
-                output.viewDirWS = GetWorldSpaceViewDir(output.positionWS);
-                output.fogFactor = ComputeFogFactor(output.positionCS.z);
-
-                return output;
-            }
+            #include "OceanTessellation.hlsl"
 
             // ================================================================
             // Fragment Shader
@@ -382,8 +345,10 @@ Shader "Custom/OceanSurface"
             Cull [_CullMode]
 
             HLSLPROGRAM
-            #pragma target 4.5
-            #pragma vertex DepthOnlyVert
+            #pragma target 4.6
+            #pragma vertex DepthTessVert
+            #pragma hull DepthHullShader
+            #pragma domain DepthDomainShader
             #pragma fragment DepthOnlyFrag
 
             #include "OceanSurfaceInput.hlsl"
@@ -396,23 +361,74 @@ Shader "Custom/OceanSurface"
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
-            DepthOnlyVaryings DepthOnlyVert(Attributes input)
+            struct DepthTessControlPoint
             {
-                DepthOnlyVaryings output;
+                float4 positionOS : INTERNALTESSPOS;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
 
+            struct DepthTessFactors
+            {
+                float edge[3] : SV_TessFactor;
+                float inside : SV_InsideTessFactor;
+            };
+
+            float CalcDepthEdgeTessFactor(float3 pos0WS, float3 pos1WS)
+            {
+                float3 edgeCenter = (pos0WS + pos1WS) * 0.5;
+                float3 cameraPos = GetCameraPositionWS();
+                float dist = distance(edgeCenter, cameraPos);
+                float f = saturate((_TessellationMaxDistance - dist) / (_TessellationMaxDistance - _TessellationMinDistance));
+                return lerp(1.0, _TessellationFactor, f);
+            }
+
+            DepthTessControlPoint DepthTessVert(Attributes input)
+            {
+                DepthTessControlPoint output;
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
+                output.positionOS = input.positionOS;
+                return output;
+            }
+
+            DepthTessFactors DepthPatchConstant(InputPatch<DepthTessControlPoint, 3> patch)
+            {
+                UNITY_SETUP_INSTANCE_ID(patch[0]);
+                DepthTessFactors f;
+                float3 pos0WS = TransformObjectToWorld(patch[0].positionOS.xyz);
+                float3 pos1WS = TransformObjectToWorld(patch[1].positionOS.xyz);
+                float3 pos2WS = TransformObjectToWorld(patch[2].positionOS.xyz);
+                f.edge[0] = CalcDepthEdgeTessFactor(pos1WS, pos2WS);
+                f.edge[1] = CalcDepthEdgeTessFactor(pos2WS, pos0WS);
+                f.edge[2] = CalcDepthEdgeTessFactor(pos0WS, pos1WS);
+                f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0;
+                return f;
+            }
+
+            [domain("tri")]
+            [partitioning("fractional_odd")]
+            [outputtopology("triangle_cw")]
+            [outputcontrolpoints(3)]
+            [patchconstantfunc("DepthPatchConstant")]
+            [maxtessfactor(64)]
+            DepthTessControlPoint DepthHullShader(InputPatch<DepthTessControlPoint, 3> patch, uint id : SV_OutputControlPointID)
+            {
+                return patch[id];
+            }
+
+            [domain("tri")]
+            DepthOnlyVaryings DepthDomainShader(DepthTessFactors factors, OutputPatch<DepthTessControlPoint, 3> patch, float3 bary : SV_DomainLocation)
+            {
+                DepthOnlyVaryings output;
+                UNITY_SETUP_INSTANCE_ID(patch[0]);
+                UNITY_TRANSFER_INSTANCE_ID(patch[0], output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                // Get world position first
-                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
-
-                // Apply Gerstner waves using world position
+                float3 positionOS = patch[0].positionOS.xyz * bary.x + patch[1].positionOS.xyz * bary.y + patch[2].positionOS.xyz * bary.z;
+                float3 positionWS = TransformObjectToWorld(positionOS);
                 GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
                 float3 displacedPositionWS = positionWS + waveOutput.displacement;
-
                 output.positionCS = TransformWorldToHClip(displacedPositionWS);
-
                 return output;
             }
 
@@ -437,8 +453,10 @@ Shader "Custom/OceanSurface"
             Cull [_CullMode]
 
             HLSLPROGRAM
-            #pragma target 4.5
-            #pragma vertex ShadowPassVert
+            #pragma target 4.6
+            #pragma vertex ShadowTessVert
+            #pragma hull ShadowHullShader
+            #pragma domain ShadowDomainShader
             #pragma fragment ShadowPassFrag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -455,22 +473,76 @@ Shader "Custom/OceanSurface"
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
-            ShadowVaryings ShadowPassVert(Attributes input)
+            struct ShadowTessControlPoint
             {
-                ShadowVaryings output;
+                float4 positionOS : INTERNALTESSPOS;
+                float3 normalOS : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
 
+            struct ShadowTessFactors
+            {
+                float edge[3] : SV_TessFactor;
+                float inside : SV_InsideTessFactor;
+            };
+
+            float CalcShadowEdgeTessFactor(float3 pos0WS, float3 pos1WS)
+            {
+                float3 edgeCenter = (pos0WS + pos1WS) * 0.5;
+                float3 cameraPos = GetCameraPositionWS();
+                float dist = distance(edgeCenter, cameraPos);
+                float f = saturate((_TessellationMaxDistance - dist) / (_TessellationMaxDistance - _TessellationMinDistance));
+                return lerp(1.0, _TessellationFactor, f);
+            }
+
+            ShadowTessControlPoint ShadowTessVert(Attributes input)
+            {
+                ShadowTessControlPoint output;
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
+                output.positionOS = input.positionOS;
+                output.normalOS = input.normalOS;
+                return output;
+            }
+
+            ShadowTessFactors ShadowPatchConstant(InputPatch<ShadowTessControlPoint, 3> patch)
+            {
+                UNITY_SETUP_INSTANCE_ID(patch[0]);
+                ShadowTessFactors f;
+                float3 pos0WS = TransformObjectToWorld(patch[0].positionOS.xyz);
+                float3 pos1WS = TransformObjectToWorld(patch[1].positionOS.xyz);
+                float3 pos2WS = TransformObjectToWorld(patch[2].positionOS.xyz);
+                f.edge[0] = CalcShadowEdgeTessFactor(pos1WS, pos2WS);
+                f.edge[1] = CalcShadowEdgeTessFactor(pos2WS, pos0WS);
+                f.edge[2] = CalcShadowEdgeTessFactor(pos0WS, pos1WS);
+                f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0;
+                return f;
+            }
+
+            [domain("tri")]
+            [partitioning("fractional_odd")]
+            [outputtopology("triangle_cw")]
+            [outputcontrolpoints(3)]
+            [patchconstantfunc("ShadowPatchConstant")]
+            [maxtessfactor(64)]
+            ShadowTessControlPoint ShadowHullShader(InputPatch<ShadowTessControlPoint, 3> patch, uint id : SV_OutputControlPointID)
+            {
+                return patch[id];
+            }
+
+            [domain("tri")]
+            ShadowVaryings ShadowDomainShader(ShadowTessFactors factors, OutputPatch<ShadowTessControlPoint, 3> patch, float3 bary : SV_DomainLocation)
+            {
+                ShadowVaryings output;
+                UNITY_SETUP_INSTANCE_ID(patch[0]);
+                UNITY_TRANSFER_INSTANCE_ID(patch[0], output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-                // Get world position first
-                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
+                float3 positionOS = patch[0].positionOS.xyz * bary.x + patch[1].positionOS.xyz * bary.y + patch[2].positionOS.xyz * bary.z;
+                float3 positionWS = TransformObjectToWorld(positionOS);
 
-                // Apply Gerstner waves using world position
                 GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
                 float3 displacedPositionWS = positionWS + waveOutput.displacement;
-
-                // Wave normal is already in world-space orientation
                 float3 normalWS = waveOutput.normal;
 
                 output.positionCS = TransformWorldToHClip(ApplyShadowBias(displacedPositionWS, normalWS, _LightDirection));
