@@ -16,10 +16,10 @@ public class CausticsRenderPass : ScriptableRenderPass
     private float m_WaterSurfaceY;
 
     // シェーダープロパティID
-    private static readonly int LayerCountID = Shader.PropertyToID("_LayerCount");
     private static readonly int CellSizeID = Shader.PropertyToID("_CellSize");
     private static readonly int JitterID = Shader.PropertyToID("_Jitter");
     private static readonly int IntensityID = Shader.PropertyToID("_CausticsIntensity");
+    private static readonly int PowerID = Shader.PropertyToID("_Power");
     private static readonly int PixelCountID = Shader.PropertyToID("_PixelCount");
     private static readonly int Speed1ID = Shader.PropertyToID("_Speed1");
     private static readonly int Speed2ID = Shader.PropertyToID("_Speed2");
@@ -55,10 +55,10 @@ public class CausticsRenderPass : ScriptableRenderPass
         if (m_Material == null || m_Settings == null)
             return;
 
-        m_Material.SetInt(LayerCountID, m_Settings.layerCount);
         m_Material.SetFloat(CellSizeID, m_Settings.cellSize);
         m_Material.SetFloat(JitterID, m_Settings.jitter);
         m_Material.SetFloat(IntensityID, m_Settings.intensity);
+        m_Material.SetFloat(PowerID, m_Settings.power);
         m_Material.SetFloat(PixelCountID, m_Settings.pixelCount);
         m_Material.SetVector(Speed1ID, new Vector4(m_Settings.speed1.x, m_Settings.speed1.y, 0, 0));
         m_Material.SetVector(Speed2ID, new Vector4(m_Settings.speed2.x, m_Settings.speed2.y, 0, 0));

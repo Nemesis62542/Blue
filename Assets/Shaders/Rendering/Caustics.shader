@@ -2,10 +2,10 @@ Shader "Hidden/Caustics"
 {
     Properties
     {
-        _LayerCount ("Layer Count", Int) = 3
         _CellSize ("Cell Size", Float) = 0.5
         _Jitter ("Jitter", Float) = 0.9
         _CausticsIntensity ("Intensity", Float) = 1.0
+        _Power ("Power", Float) = 2.0
         _PixelCount ("Pixel Count", Float) = 0
         _Speed1 ("Speed 1", Vector) = (0.5, 0.3, 0, 0)
         _Speed2 ("Speed 2", Vector) = (-0.4, 0.5, 0, 0)
@@ -47,10 +47,10 @@ Shader "Hidden/Caustics"
             SAMPLER(sampler_BlitTexture);
 
             CBUFFER_START(UnityPerMaterial)
-                int _LayerCount;
                 float _CellSize;
                 float _Jitter;
                 float _CausticsIntensity;
+                float _Power;
                 float _PixelCount;
                 float4 _Speed1;
                 float4 _Speed2;
@@ -105,32 +105,23 @@ Shader "Hidden/Caustics"
                 return minDist;
             }
 
-            // Generate caustics pattern using multiple layers of Voronoi
+            // Generate caustics pattern using two layers of Voronoi
             float GenerateCaustics(float2 uv, float time)
             {
-                float caustics = 1.0;
+                // Layer 1
+                float2 layerUV1 = uv + time * _Speed1.xy;
+                float v1 = Voronoi(layerUV1, _CellSize, _Jitter);
 
-                // Generate multiple layers and blend with min
-                for (int i = 0; i < _LayerCount; i++)
-                {
-                    // Each layer has different scale, speed, and offset
-                    float scale = 1.0 + i * 0.27;
-                    float speedMult = 1.0 - i * 0.15;
-                    float2 offset = float2(i * 1.7, i * 2.3);
+                // Layer 2
+                float2 layerUV2 = uv * 1.27 + time * _Speed2.xy * 0.85 + float2(1.7, 2.3);
+                float v2 = Voronoi(layerUV2, _CellSize, _Jitter);
 
-                    // Alternate between speed1 and speed2
-                    float2 speed = (i % 2 == 0) ? _Speed1.xy : _Speed2.xy;
+                // Min blending
+                float caustics = min(v1, v2);
 
-                    float2 layerUV = uv * scale + time * speed * speedMult + offset;
-                    float v = Voronoi(layerUV, _CellSize, _Jitter);
-
-                    // Min blending - each layer fills in gaps from others
-                    caustics = min(caustics, v);
-                }
-
-                // Boost and sharpen the pattern
-                caustics = pow(caustics, 1.2);
-                caustics = saturate(caustics * 3.0);
+                // Apply power and saturate
+                caustics = pow(caustics, _Power);
+                caustics = saturate(caustics);
 
                 return caustics;
             }

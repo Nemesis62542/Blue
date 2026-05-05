@@ -12,10 +12,6 @@ public class CausticsRendererFeature : ScriptableRendererFeature
     public class CausticsSettings
     {
         [Header("Caustics Pattern")]
-        [Tooltip("Voronoiの層の数（多いほど空洞が埋まる）")]
-        [Range(2, 8)]
-        public int layerCount = 3;
-
         [Tooltip("Voronoiセルのサイズ（小さいほど細かいパターン）")]
         [Range(0.05f, 5f)]
         public float cellSize = 0.5f;
@@ -27,6 +23,10 @@ public class CausticsRendererFeature : ScriptableRendererFeature
         [Tooltip("コースティクスの強度")]
         [Range(0f, 5f)]
         public float intensity = 1.0f;
+
+        [Tooltip("パターンのコントラスト（値が大きいほど鋭いパターン）")]
+        [Range(0.5f, 5f)]
+        public float power = 2.0f;
 
         [Tooltip("ピクセル化の解像度（0=無効、値が大きいほど細かいドット）")]
         [Range(0f, 64f)]
