@@ -57,9 +57,6 @@ Shader "Custom/OceanSurface"
         [Toggle(_SNELLS_WINDOW)] _EnableSnellsWindow ("Enable Snells Window", Float) = 0
         _SnellEdgeSoftness ("Edge Softness", Range(0.01, 0.3)) = 0.1
 
-        [Header(Underwater Detection)]
-        _WaterSurfaceY ("Water Surface Y Position", Float) = 0.0
-
         [Header(Rendering)]
         [Enum(Both,0,Front,1,Back,2)] _CullMode ("Cull Mode", Float) = 0
 
