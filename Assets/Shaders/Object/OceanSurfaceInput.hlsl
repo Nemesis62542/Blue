@@ -92,6 +92,11 @@ CBUFFER_START(UnityPerMaterial)
     // Specular
     float _SpecularPower;
     float _SpecularIntensity;
+
+    // Tessellation
+    float _TessellationFactor;
+    float _TessellationMinDistance;
+    float _TessellationMaxDistance;
 CBUFFER_END
 
 // ============================================================================
