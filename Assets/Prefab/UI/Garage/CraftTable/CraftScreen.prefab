@@ -103,6 +103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -301,6 +302,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -550,8 +552,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -494.99994, y: 0}
-  m_SizeDelta: {x: -1010, y: -20}
+  m_AnchoredPosition: {x: 460, y: 155}
+  m_SizeDelta: {x: -940, y: -330}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &367919042709712630
 CanvasRenderer:
@@ -850,6 +852,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1109,7 +1112,6 @@ MonoBehaviour:
   view: {fileID: 6821598331885421722}
   recipes:
   - {fileID: 11400000, guid: 4e76d168440e8f246a69d020c484ec1d, type: 2}
-  item: {fileID: 11400000, guid: 9ab7f6a67a6f7f64ebf2617a6dc8e4e7, type: 2}
 --- !u!114 &6821598331885421722
 MonoBehaviour:
   m_ObjectHideFlags: 0
