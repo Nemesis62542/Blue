@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Blue.UI.Screen;
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Blue.UI.Garage
@@ -10,7 +10,7 @@ namespace Blue.UI.Garage
     public class ScreenCameraMapping
     {
         public ScreenState screenState;
-        public CinemachineVirtualCamera virtualCamera;
+        public CinemachineCamera virtualCamera;
     }
 
     public class GarageCameraController : MonoBehaviour
@@ -20,7 +20,7 @@ namespace Blue.UI.Garage
         [SerializeField] private int activePriority = 10;
         [SerializeField] private int inactivePriority = 0;
 
-        private Dictionary<ScreenState, CinemachineVirtualCamera> cameraDictionary;
+        private Dictionary<ScreenState, CinemachineCamera> cameraDictionary;
 
         private void Awake()
         {
@@ -45,9 +45,9 @@ namespace Blue.UI.Garage
 
         private void InitializeCameraDictionary()
         {
-            cameraDictionary = new Dictionary<ScreenState, CinemachineVirtualCamera>();
+            cameraDictionary = new Dictionary<ScreenState, CinemachineCamera>();
 
-            foreach (var mapping in cameraMappings)
+            foreach (ScreenCameraMapping mapping in cameraMappings)
             {
                 if (mapping.virtualCamera != null)
                 {
@@ -62,7 +62,7 @@ namespace Blue.UI.Garage
 
             SetAllCamerasInactive();
 
-            if (cameraDictionary.TryGetValue(newState, out var camera))
+            if (cameraDictionary.TryGetValue(newState, out CinemachineCamera camera))
             {
                 camera.Priority = activePriority;
             }
@@ -70,7 +70,7 @@ namespace Blue.UI.Garage
 
         private void SetAllCamerasInactive()
         {
-            foreach (var camera in cameraDictionary.Values)
+            foreach (CinemachineCamera camera in cameraDictionary.Values)
             {
                 if (camera != null)
                 {
