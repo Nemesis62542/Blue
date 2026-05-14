@@ -7039,6 +7039,14 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1144420317}
+    - target: {fileID: 3319602844903962666, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319602844903962666, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4913121865703759352, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -7119,6 +7127,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5093876330288412376, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5093876330288412376, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5093876330288412376, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5093876330288412376, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5093876330288412376, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5093876330288412376, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5668499030490988809, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -300
+      objectReference: {fileID: 0}
     - target: {fileID: 6698821557561667990, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
       propertyPath: m_Name
       value: CraftTableScreenCanvas
@@ -7129,7 +7165,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8640613652669680580, guid: 07c5fee326f7e594e955f22f2591379b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -465
+      value: -464.99994
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7540,10 +7576,6 @@ PrefabInstance:
     - target: {fileID: 5526221129094679821, guid: 9bfad2fb16ef97840a389dda592e5c1f, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6490675213154726365, guid: 9bfad2fb16ef97840a389dda592e5c1f, type: 3}
-      propertyPath: m_VolumeLayerMask.m_Bits
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7723668645106739266, guid: 9bfad2fb16ef97840a389dda592e5c1f, type: 3}
       propertyPath: m_AnchorMax.y
