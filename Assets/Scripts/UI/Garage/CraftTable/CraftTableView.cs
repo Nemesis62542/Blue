@@ -14,6 +14,7 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private TMP_Text itemName;
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
+        [SerializeField] private TMP_Text ownedCount;
         [SerializeField] private Slider progressGauge;
         [SerializeField] private MeshFilter itemModelDisplay;
         [SerializeField] private float modelRotationSpeed = 30f;
@@ -37,7 +38,7 @@ namespace Blue.UI.Garage.CraftTable
             {
                 RecipePanel panel = Instantiate(panelPrefab, panelParent);
                 panel.Initialize(recipe);
-                panel.OnPointerEnter += SetItemInfomation;
+                panel.OnPointerEnter += recipe => SetItemInfomation(recipe);
                 panel.OnPointerDown += OnPanelPointerDown;
                 panel.OnPointerUp += OnPanelPointerUp;
             }
@@ -95,18 +96,24 @@ namespace Blue.UI.Garage.CraftTable
         {
             if (currentRecipe != null)
             {
-                SetItemInfomation(currentRecipe);
+                SetItemInfomation(currentRecipe, forceRefresh: true);
             }
         }
 
-        private void SetItemInfomation(RecipeData recipe)
+        private void SetItemInfomation(RecipeData recipe, bool forceRefresh = false)
         {
-            if (currentRecipe == recipe) return;
+            if (!forceRefresh && currentRecipe == recipe) return;
 
             currentRecipe = recipe;
             itemName.text = recipe.ResultItem.Name;
             description.text = recipe.ResultItem.Description;
             requireItems.text = GenerateRequireItemText(recipe.RequireResources);
+
+            if (ownedCount != null)
+            {
+                int count = model.GetItemCount(recipe.ResultItem);
+                ownedCount.text = $"所持数: {count}";
+            }
 
             if (itemModelDisplay != null)
             {
