@@ -137,7 +137,7 @@ namespace Blue.UI.Garage.CraftTable
             foreach(RequireItemData require in requires)
             {
                 bool hasEnough = model.CheckEnoughResource(require.Item, require.Count);
-                string color = hasEnough ? "orange" : "red";
+                string color = hasEnough ? "#FF9600" : "red";
                 result += $"<color={color}>{require.Item.Name} x {require.Count}</color>\n";
             }
 
