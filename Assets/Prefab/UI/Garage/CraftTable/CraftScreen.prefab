@@ -824,9 +824,12 @@ MonoBehaviour:
   itemName: {fileID: 0}
   description: {fileID: 0}
   requireItems: {fileID: 0}
+  ownedCount: {fileID: 0}
   progressGauge: {fileID: 0}
   itemModelDisplay: {fileID: 0}
   modelRotationSpeed: 30
+  craftCompleteNotification: {fileID: 0}
+  notificationDisplayDuration: 0.5
 --- !u!114 &7476357483510349419
 MonoBehaviour:
   m_ObjectHideFlags: 0

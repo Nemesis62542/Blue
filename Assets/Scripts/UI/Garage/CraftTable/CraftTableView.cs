@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Blue.Recipe;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +19,13 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private Slider progressGauge;
         [SerializeField] private MeshFilter itemModelDisplay;
         [SerializeField] private float modelRotationSpeed = 30f;
+        [SerializeField] private CanvasGroup craftCompleteNotification;
+        [SerializeField] private float notificationDisplayDuration = 2f;
+        [SerializeField] private int blinkCount = 2;
+        [SerializeField] private float blinkInterval = 0.1f;
 
         private CraftTableModel model;
+        private Tween notificationTween;
         private RecipeData currentRecipe;
         private bool isPointerPressed;
 
@@ -66,6 +72,7 @@ namespace Blue.UI.Garage.CraftTable
                 {
                     progressGauge.value = 0f;
                     OnConfirmCraftItem?.Invoke(currentRecipe);
+                    ShowCraftCompleteNotification();
                 }
             }
             else
@@ -134,6 +141,27 @@ namespace Blue.UI.Garage.CraftTable
             }
 
             return result;
+        }
+
+        private void ShowCraftCompleteNotification()
+        {
+            if (craftCompleteNotification == null) return;
+
+            notificationTween?.Kill();
+
+            craftCompleteNotification.gameObject.SetActive(true);
+            craftCompleteNotification.alpha = 1f;
+
+            notificationTween = DOTween.Sequence()
+                .Append(craftCompleteNotification.DOFade(0.2f, blinkInterval).SetLoops(blinkCount * 2, LoopType.Yoyo))
+                .AppendInterval(notificationDisplayDuration)
+                .Append(craftCompleteNotification.DOFade(0f, 0.05f))
+                .OnComplete(() => craftCompleteNotification.gameObject.SetActive(false));
+        }
+
+        private void OnDestroy()
+        {
+            notificationTween?.Kill();
         }
     }
 }
