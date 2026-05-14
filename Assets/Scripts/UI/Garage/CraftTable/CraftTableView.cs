@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Blue.Recipe;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Blue.UI.Garage.CraftTable
 {
@@ -10,11 +11,14 @@ namespace Blue.UI.Garage.CraftTable
     {
         [SerializeField] private RecipePanel panelPrefab;
         [SerializeField] private Transform panelParent;
+        [SerializeField] private TMP_Text itemName;
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
+        [SerializeField] private Slider progressGauge;
 
         private CraftTableModel model;
         private RecipeData currentRecipe;
+        private bool isPointerPressed;
 
         public Action<RecipeData> OnConfirmCraftItem;
 
@@ -32,8 +36,44 @@ namespace Blue.UI.Garage.CraftTable
                 RecipePanel panel = Instantiate(panelPrefab, panelParent);
                 panel.Initialize(recipe);
                 panel.OnPointerEnter += SetItemInfomation;
-                panel.OnConfirmCraftItem += OnConfirmCraftItem;
+                panel.OnPointerDown += OnPanelPointerDown;
+                panel.OnPointerUp += OnPanelPointerUp;
             }
+
+            if (progressGauge != null)
+            {
+                progressGauge.value = 0f;
+            }
+        }
+
+        private void Update()
+        {
+            if (progressGauge == null) return;
+
+            if (isPointerPressed && currentRecipe != null)
+            {
+                progressGauge.value += Time.deltaTime;
+                if (progressGauge.value >= 1f)
+                {
+                    progressGauge.value = 0f;
+                    OnConfirmCraftItem?.Invoke(currentRecipe);
+                }
+            }
+            else
+            {
+                progressGauge.value = 0f;
+            }
+        }
+
+        private void OnPanelPointerDown(RecipeData recipe)
+        {
+            SetItemInfomation(recipe);
+            isPointerPressed = true;
+        }
+
+        private void OnPanelPointerUp(RecipeData recipe)
+        {
+            isPointerPressed = false;
         }
 
         public void RefreshDisplay()
@@ -47,6 +87,7 @@ namespace Blue.UI.Garage.CraftTable
         private void SetItemInfomation(RecipeData recipe)
         {
             currentRecipe = recipe;
+            itemName.text = recipe.ResultItem.Name;
             description.text = recipe.ResultItem.Description;
             requireItems.text = GenerateRequireItemText(recipe.RequireResources);
         }
