@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7937452192422901282}
   - component: {fileID: 5940267617074230079}
   - component: {fileID: 1688910375836492259}
+  - component: {fileID: 5727658130448117837}
   m_Layer: 5
   m_Name: GarageScreenManager
   m_TagString: Untagged
@@ -126,6 +127,30 @@ MonoBehaviour:
   - {fileID: 7268364580834681231}
   - {fileID: 1469636954926827139}
   - {fileID: 1300878762864618895}
+--- !u!114 &5727658130448117837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8836064994782149486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2107c59404c2ec04a8c53279d3d8d0ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.GarageCameraController
+  garageSceneController: {fileID: 1688910375836492259}
+  cameraMappings:
+  - screenState: 6
+    virtualCamera: {fileID: 0}
+  - screenState: 7
+    virtualCamera: {fileID: 0}
+  - screenState: 8
+    virtualCamera: {fileID: 0}
+  - screenState: 9
+    virtualCamera: {fileID: 0}
+  activePriority: 10
+  inactivePriority: 0
 --- !u!1001 &2610748149714552402
 PrefabInstance:
   m_ObjectHideFlags: 0
