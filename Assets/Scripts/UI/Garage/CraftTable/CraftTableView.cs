@@ -15,6 +15,8 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
         [SerializeField] private Slider progressGauge;
+        [SerializeField] private MeshFilter itemModelDisplay;
+        [SerializeField] private float modelRotationSpeed = 30f;
 
         private CraftTableModel model;
         private RecipeData currentRecipe;
@@ -48,6 +50,12 @@ namespace Blue.UI.Garage.CraftTable
 
         private void Update()
         {
+            UpdateProgressGauge();
+            UpdateModelRotation();
+        }
+
+        private void UpdateProgressGauge()
+        {
             if (progressGauge == null) return;
 
             if (isPointerPressed && currentRecipe != null)
@@ -65,9 +73,16 @@ namespace Blue.UI.Garage.CraftTable
             }
         }
 
+        private void UpdateModelRotation()
+        {
+            if (itemModelDisplay == null || itemModelDisplay.mesh == null) return;
+
+            itemModelDisplay.transform.Rotate(0f, modelRotationSpeed * Time.deltaTime, 0f);
+        }
+
         private void OnPanelPointerDown(RecipeData recipe)
         {
-            SetItemInfomation(recipe);
+            currentRecipe = recipe;
             isPointerPressed = true;
         }
 
@@ -86,10 +101,18 @@ namespace Blue.UI.Garage.CraftTable
 
         private void SetItemInfomation(RecipeData recipe)
         {
+            if (currentRecipe == recipe) return;
+
             currentRecipe = recipe;
             itemName.text = recipe.ResultItem.Name;
             description.text = recipe.ResultItem.Description;
             requireItems.text = GenerateRequireItemText(recipe.RequireResources);
+
+            if (itemModelDisplay != null)
+            {
+                itemModelDisplay.mesh = recipe.ResultItem.ModelMesh;
+                itemModelDisplay.transform.localRotation = Quaternion.identity;
+            }
         }
 
         private string GenerateRequireItemText(List<RequireItemData> requires)
