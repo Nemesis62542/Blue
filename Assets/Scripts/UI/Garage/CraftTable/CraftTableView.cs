@@ -65,7 +65,7 @@ namespace Blue.UI.Garage.CraftTable
         {
             if (progressGauge == null) return;
 
-            if (isPointerPressed && currentRecipe != null)
+            if (isPointerPressed && currentRecipe != null && model.HasAllRequiredResources(currentRecipe))
             {
                 progressGauge.value += Time.deltaTime;
                 if (progressGauge.value >= 1f)

@@ -30,7 +30,7 @@ namespace Blue.UI.Garage.CraftTable
             Debug.Log($"{recipe.ResultItem.Name}を{recipe.ResultCount}個作成");
         }
 
-        private bool HasAllRequiredResources(RecipeData recipe)
+        public bool HasAllRequiredResources(RecipeData recipe)
         {
             foreach(RequireItemData require in recipe.RequireResources)
             {
