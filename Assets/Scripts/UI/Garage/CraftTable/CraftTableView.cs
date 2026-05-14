@@ -111,6 +111,7 @@ namespace Blue.UI.Garage.CraftTable
         {
             if (!forceRefresh && currentRecipe == recipe) return;
 
+            bool isNewRecipe = currentRecipe != recipe;
             currentRecipe = recipe;
             itemName.text = recipe.ResultItem.Name;
             description.text = recipe.ResultItem.Description;
@@ -122,7 +123,7 @@ namespace Blue.UI.Garage.CraftTable
                 ownedCount.text = $"所持数: {count}";
             }
 
-            if (itemModelDisplay != null)
+            if (itemModelDisplay != null && isNewRecipe)
             {
                 itemModelDisplay.mesh = recipe.ResultItem.ModelMesh;
                 itemModelDisplay.transform.localRotation = Quaternion.identity;
@@ -136,7 +137,7 @@ namespace Blue.UI.Garage.CraftTable
             foreach(RequireItemData require in requires)
             {
                 bool hasEnough = model.CheckEnoughResource(require.Item, require.Count);
-                string color = hasEnough ? "white" : "red";
+                string color = hasEnough ? "orange" : "red";
                 result += $"<color={color}>{require.Item.Name} x {require.Count}</color>\n";
             }
 
