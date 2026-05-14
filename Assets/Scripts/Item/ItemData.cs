@@ -13,6 +13,7 @@ namespace Blue.Item
         [SerializeField] private new string name;    // アイテムの名前
         [SerializeField, TextArea] private string description; // 説明
         [SerializeField] private Sprite icon;        // アイコン
+        [SerializeField] private Mesh modelMesh;     // 3Dモデル用メッシュ
         [SerializeField] private ItemType type;  // アイテムの種類
         [SerializeField] private bool isStackable;   // スタックできるか
         [SerializeField] private ItemUseHandler heldItemPrefab;
@@ -24,6 +25,7 @@ namespace Blue.Item
         public string Name => name;
         public string Description => description;
         public Sprite Icon => icon;
+        public Mesh ModelMesh => modelMesh;
         public ItemType Type => type;
         public bool IsStackable => isStackable;
         public ItemUseHandler HeldItemPrefab => heldItemPrefab;

@@ -30,7 +30,7 @@ namespace Blue.UI.Garage.CraftTable
             Debug.Log($"{recipe.ResultItem.Name}を{recipe.ResultCount}個作成");
         }
 
-        private bool HasAllRequiredResources(RecipeData recipe)
+        public bool HasAllRequiredResources(RecipeData recipe)
         {
             foreach(RequireItemData require in recipe.RequireResources)
             {
@@ -65,7 +65,12 @@ namespace Blue.UI.Garage.CraftTable
 
         public bool CheckEnoughResource(ItemData item, int count)
         {
-            // 倉庫とプレイヤーインベントリの合計数をチェック
+            return GetItemCount(item) >= count;
+        }
+
+        public int GetItemCount(ItemData item)
+        {
+            // 倉庫とプレイヤーインベントリの合計数を返す
             int storage_count = 0;
             int player_count = 0;
 
@@ -79,7 +84,7 @@ namespace Blue.UI.Garage.CraftTable
                 player_count = player_item.Quantity;
             }
 
-            return (storage_count + player_count) >= count;
+            return storage_count + player_count;
         }
     }
 }
