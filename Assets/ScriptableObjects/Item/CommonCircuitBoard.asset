@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Item.ItemData
   name: "\u57FA\u672C\u96FB\u5B50\u90E8\u54C1"
   description: "\u6A5F\u68B0\u985E\u306E\u88FD\u9020\u306B\u4F7F\u7528\u3055\u308C\u308B\u3001\u3054\u304F\u4E00\u822C\u7684\u306A\u96FB\u5B50\u90E8\u54C1\u3002"
-  icon: {fileID: 0}
-  modelMesh: {fileID: 0}
+  icon: {fileID: 21300000, guid: 57085aa31c456c94bae21d614271438d, type: 3}
+  modelMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   type: 4
   isStackable: 1
   heldItemPrefab: {fileID: 0}

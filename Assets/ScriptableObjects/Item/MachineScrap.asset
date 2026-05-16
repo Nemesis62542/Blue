@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 913543138e12b6946b5169ecf1aef7e9, type: 3}
   m_Name: MachineScrap
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Item.ItemData
-  name: 
-  description: 
+  name: "\u5EC3\u68C4\u3055\u308C\u305F\u96FB\u5B50\u90E8\u54C1"
+  description: "\u6D77\u5E95\u306B\u6C88\u3093\u3067\u3044\u305F\u96FB\u5B50\u90E8\u54C1\u306E\u6D77\u6D0B\u30B4\u30DF\u3002"
   icon: {fileID: 0}
   modelMesh: {fileID: 0}
-  type: 0
-  isStackable: 0
+  type: 4
+  isStackable: 1
   heldItemPrefab: {fileID: 0}
   attributes: []
   cachedGUID: 
