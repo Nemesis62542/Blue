@@ -25,7 +25,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _SCANLINE_MODE_WORLD_SPACE
+  - _SCANLINE_MODE_SCREEN_SPACE
   - _USE_SCENE_INTERSECTIONS
   m_InvalidKeywords:
   - _DISABLE_SSR_TRANSPARENT
@@ -92,7 +92,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ScanlineTexture:
-        m_Texture: {fileID: 2800000, guid: 2fb7a39156e2c6d4f80de5cbcdd2d3e1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7c16822fb62a9794c938db2f6814c234, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -144,7 +144,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _SCANLINE_MODE: 1
+    - _SCANLINE_MODE: 0
     - _ScanlineRotation: 0
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
@@ -158,11 +158,11 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseEmissionColor: {r: 1.9999999, g: 0.6701571, b: 0, a: 0.003921569}
+    - _BaseEmissionColor: {r: 1.4980391, g: 0.5019608, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _FresnelColor: {r: 31.999996, g: 10.722512, b: 0, a: 1}
-    - _ScanlineDirection: {r: 1, g: 1, b: -1, a: 0}
+    - _FresnelColor: {r: 0.7490196, g: 0.2509804, b: 0, a: 1}
+    - _ScanlineDirection: {r: 1, g: 0, b: 1, a: 0}
     - _ScanlineMinMaxAlpha: {r: 0, g: 1, b: 0, a: 0}
     - _ScanlineVelocity: {r: 0, g: 0.02, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
