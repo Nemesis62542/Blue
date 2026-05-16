@@ -21,3 +21,15 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 2f0e53b7465f45941b1ba357a6dacf1e, type: 3}
     minDistance: 1
     maxDistance: 5
+  - type: 4
+    clip: {fileID: 8300000, guid: add1c57f023e4714683d79a79cd2e85c, type: 3}
+    minDistance: 1
+    maxDistance: 100
+  - type: 5
+    clip: {fileID: 8300000, guid: f5a5866dacb75bb418a51dede85b9965, type: 3}
+    minDistance: 1
+    maxDistance: 100
+  - type: 6
+    clip: {fileID: 8300000, guid: 19c5e22dc1ee3fa48ba64cbe5838d5a1, type: 3}
+    minDistance: 1
+    maxDistance: 100
