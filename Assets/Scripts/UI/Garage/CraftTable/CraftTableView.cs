@@ -18,6 +18,7 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private TMP_Text ownedCount;
         [SerializeField] private Slider progressGauge;
         [SerializeField] private MeshFilter itemModelDisplay;
+        [SerializeField] private MeshRenderer itemModelRenderer;
         [SerializeField] private float modelRotationSpeed = 30f;
         [SerializeField] private CanvasGroup craftCompleteNotification;
         [SerializeField] private float notificationDisplayDuration = 2f;
@@ -123,11 +124,44 @@ namespace Blue.UI.Garage.CraftTable
                 ownedCount.text = $"所持数: {count}";
             }
 
-            if (itemModelDisplay != null && isNewRecipe)
+            if (itemModelDisplay != null && itemModelRenderer != null && isNewRecipe)
             {
-                itemModelDisplay.mesh = recipe.ResultItem.ModelMesh;
+                ApplyModelToDisplay(recipe.ResultItem.Model);
                 itemModelDisplay.transform.localRotation = Quaternion.identity;
             }
+        }
+
+        private void ApplyModelToDisplay(GameObject model)
+        {
+            if (model == null) return;
+
+            // モデルからMeshFilterとMeshRendererを取得
+            MeshFilter modelMeshFilter = model.GetComponentInChildren<MeshFilter>();
+            MeshRenderer modelMeshRenderer = model.GetComponentInChildren<MeshRenderer>();
+
+            if (modelMeshFilter == null || modelMeshRenderer == null) return;
+
+            // メッシュを設定
+            itemModelDisplay.mesh = modelMeshFilter.sharedMesh;
+
+            // マテリアルをインスタンス化してテクスチャをコピー
+            Material instanceMaterial = new Material(itemModelRenderer.sharedMaterial);
+            Texture sourceTexture = GetMainTexture(modelMeshRenderer.sharedMaterial);
+            if (sourceTexture != null)
+            {
+                SetMainTexture(instanceMaterial, sourceTexture);
+            }
+            itemModelRenderer.material = instanceMaterial;
+        }
+
+        private Texture GetMainTexture(Material material)
+        {
+            return material.GetTexture("_BaseMap");
+        }
+
+        private void SetMainTexture(Material material, Texture texture)
+        {
+           material.SetTexture("_BaseEmissionTexture", texture);
         }
 
         private string GenerateRequireItemText(List<RequireItemData> requires)
