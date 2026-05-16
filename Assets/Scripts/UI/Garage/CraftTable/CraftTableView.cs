@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Blue.Audio;
 using Blue.Item;
 using Blue.Recipe;
 using DG.Tweening;
@@ -111,6 +112,7 @@ namespace Blue.UI.Garage.CraftTable
                 {
                     progressGauge.value = 0f;
                     OnConfirmCraftItem?.Invoke(currentRecipe);
+                    SoundController.Instance.PlaySE(SEType.CraftSuccess);
                     ShowCraftCompleteNotification();
                 }
             }
@@ -131,11 +133,21 @@ namespace Blue.UI.Garage.CraftTable
         {
             currentRecipe = recipe;
             isPointerPressed = true;
+
+            if (model.HasAllRequiredResources(recipe))
+            {
+                SoundController.Instance.PlayLoopSE(SEType.CraftCharge);
+            }
+            else
+            {
+                SoundController.Instance.PlaySE(SEType.CraftFailed);
+            }
         }
 
         private void OnPanelPointerUp(RecipeData recipe)
         {
             isPointerPressed = false;
+            SoundController.Instance.StopLoopSE();
         }
 
         public void RefreshDisplay()

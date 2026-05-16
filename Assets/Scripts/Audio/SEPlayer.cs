@@ -5,6 +5,9 @@ namespace Blue.Audio
     public class SEPlayer : MonoBehaviour
     {
         [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioSource loopAudioSource;
+
+        public bool IsLoopPlaying => loopAudioSource != null && loopAudioSource.isPlaying;
 
         public void Play(AudioClip clip)
         {
@@ -40,6 +43,29 @@ namespace Blue.Audio
             // clip.lengthが0の場合も考慮し、最低1秒は保証
             float destroyTime = Mathf.Max(clip.length, 1.0f);
             Destroy(temp_obj, destroyTime);
+        }
+
+        public void PlayLoop(AudioClip clip)
+        {
+            if (clip == null || loopAudioSource == null)
+            {
+                Debug.LogWarning("ループ再生に必要な情報が不足しています。");
+                return;
+            }
+
+            if (loopAudioSource.isPlaying && loopAudioSource.clip == clip) return;
+
+            loopAudioSource.clip = clip;
+            loopAudioSource.loop = true;
+            loopAudioSource.Play();
+        }
+
+        public void StopLoop()
+        {
+            if (loopAudioSource == null) return;
+
+            loopAudioSource.Stop();
+            loopAudioSource.clip = null;
         }
     }
 }

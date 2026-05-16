@@ -13,7 +13,25 @@ namespace Blue.Audio
         [SerializeField] private SEAudioClip seAudioClip;
         [SerializeField] private EnvironmentSoundAudioClip environmentSoundAudioClip;
 
-        public static SoundController Instance => instance;
+        public static SoundController Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    SoundController prefab = Resources.Load<SoundController>("Audio/SoundController");
+                    if (prefab != null)
+                    {
+                        instance = Instantiate(prefab);
+                    }
+                    else
+                    {
+                        Debug.LogError("SoundController prefab not found in Resources/Audio/SoundController");
+                    }
+                }
+                return instance;
+            }
+        }
 
         private void Awake()
         {
@@ -63,6 +81,22 @@ namespace Blue.Audio
 
             sePlayer.PlayAt(clip, position, min, max);
         }
+
+        public void PlayLoopSE(SEType type)
+        {
+            if (!ValidateSE()) return;
+
+            AudioClip clip = seAudioClip.GetClip(type);
+            sePlayer.PlayLoop(clip);
+        }
+
+        public void StopLoopSE()
+        {
+            if (!ValidateSE()) return;
+            sePlayer.StopLoop();
+        }
+
+        public bool IsLoopSEPlaying => sePlayer != null && sePlayer.IsLoopPlaying;
 
         public void StopBGM(float fade_time = 0f)
         {
