@@ -159,6 +159,22 @@ namespace Blue.Editor
 
                 GUI.enabled = true;
             }
+
+            // クリアボタン
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUI.enabled = Application.isPlaying;
+
+                if (GUILayout.Button("アイテムをクリア", GUILayout.Height(30)))
+                {
+                    if (EditorUtility.DisplayDialog("確認", "インベントリの全アイテムを削除しますか？", "削除", "キャンセル"))
+                    {
+                        ClearInventory();
+                    }
+                }
+
+                GUI.enabled = true;
+            }
         }
 
         private void DrawItemRow(ScriptableObject item)
@@ -254,6 +270,55 @@ namespace Blue.Editor
                 {
                     AddItemToInventory(item, quantity);
                 }
+            }
+        }
+
+        private void ClearInventory()
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning("[DebugItemWindow] プレイモードでのみ使用可能です");
+                return;
+            }
+
+            object inventory = FindTargetInventory();
+            if (inventory == null)
+            {
+                Debug.LogError("[DebugItemWindow] インベントリが見つかりません");
+                return;
+            }
+
+            // inventoryItemsフィールドを取得してクリア
+            FieldInfo itemsField = inventory.GetType().GetField("inventoryItems",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (itemsField != null)
+            {
+                object itemsList = itemsField.GetValue(inventory);
+                if (itemsList != null)
+                {
+                    MethodInfo clearMethod = itemsList.GetType().GetMethod("Clear");
+                    if (clearMethod != null)
+                    {
+                        clearMethod.Invoke(itemsList, null);
+
+                        // OnValueChangedイベントを発火（eventのバッキングフィールドを取得）
+                        FieldInfo eventField = inventory.GetType().GetField("OnValueChanged",
+                            BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+                        if (eventField != null)
+                        {
+                            Action onValueChanged = eventField.GetValue(inventory) as Action;
+                            onValueChanged?.Invoke();
+                        }
+
+                        string targetName = currentTarget == InventoryTarget.Player ? "プレイヤー" : "倉庫";
+                        Debug.Log($"[DebugItemWindow] {targetName}のインベントリをクリアしました");
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("[DebugItemWindow] inventoryItemsフィールドが見つかりません");
             }
         }
 
