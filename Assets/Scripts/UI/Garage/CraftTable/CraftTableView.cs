@@ -107,10 +107,17 @@ namespace Blue.UI.Garage.CraftTable
 
             if (isPointerPressed && currentRecipe != null && model.HasAllRequiredResources(currentRecipe))
             {
+                // ゲージが溜まり始めたらループSE開始
+                if (!SoundController.Instance.IsLoopSEPlaying)
+                {
+                    SoundController.Instance.PlayLoopSE(SEType.CraftCharge);
+                }
+
                 progressGauge.value += Time.deltaTime;
                 if (progressGauge.value >= 1f)
                 {
                     progressGauge.value = 0f;
+                    SoundController.Instance.StopLoopSE();
                     OnConfirmCraftItem?.Invoke(currentRecipe);
                     SoundController.Instance.PlaySE(SEType.CraftSuccess);
                     ShowCraftCompleteNotification();
@@ -134,11 +141,7 @@ namespace Blue.UI.Garage.CraftTable
             currentRecipe = recipe;
             isPointerPressed = true;
 
-            if (model.HasAllRequiredResources(recipe))
-            {
-                SoundController.Instance.PlayLoopSE(SEType.CraftCharge);
-            }
-            else
+            if (!model.HasAllRequiredResources(recipe))
             {
                 SoundController.Instance.PlaySE(SEType.CraftFailed);
             }
