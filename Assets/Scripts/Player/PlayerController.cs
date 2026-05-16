@@ -87,7 +87,7 @@ namespace Blue.Player
                 return;
             }
             Instance = this;
-            inputHandler = new PlayerInputHandler();
+            inputHandler = PlayerInputHandler.Instance;
             persistence = new SaveDataPlayerProgressPersistence();
 
             // セーブデータから読み込み

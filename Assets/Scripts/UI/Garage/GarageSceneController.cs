@@ -19,6 +19,8 @@ namespace Blue.UI.Garage
 
         private void Awake()
         {
+            if(PlayerInputHandler.Instance == null) new PlayerInputHandler();
+
             InitializeScreenDictionary();
             InitializeIScreenController();
             ShowScreen(ScreenState.GarageHome);
