@@ -827,11 +827,15 @@ MonoBehaviour:
   ownedCount: {fileID: 0}
   progressGauge: {fileID: 0}
   itemModelDisplay: {fileID: 0}
+  itemModelRenderer: {fileID: 0}
   modelRotationSpeed: 30
   craftCompleteNotification: {fileID: 0}
   notificationDisplayDuration: 0.5
   blinkCount: 2
-  blinkInterval: 0.1
+  blinkInterval: 0.05
+  screenTransitionPanel: {fileID: 0}
+  screenBlinkCount: 3
+  screenBlinkInterval: 0.05
 --- !u!114 &7476357483510349419
 MonoBehaviour:
   m_ObjectHideFlags: 0

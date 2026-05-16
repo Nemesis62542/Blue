@@ -25,8 +25,14 @@ namespace Blue.UI.Garage.CraftTable
         [SerializeField] private int blinkCount = 2;
         [SerializeField] private float blinkInterval = 0.1f;
 
+        [Header("Screen Transition")]
+        [SerializeField] private CanvasGroup screenTransitionPanel;
+        [SerializeField] private int screenBlinkCount = 3;
+        [SerializeField] private float screenBlinkInterval = 0.08f;
+
         private CraftTableModel model;
         private Tween notificationTween;
+        private Tween screenTransitionTween;
         private RecipeData currentRecipe;
         private bool isPointerPressed;
 
@@ -50,10 +56,8 @@ namespace Blue.UI.Garage.CraftTable
                 panel.OnPointerUp += OnPanelPointerUp;
             }
 
-            if (progressGauge != null)
-            {
-                progressGauge.value = 0f;
-            }
+            ClearDisplay();
+            PlayScreenOnAnimation();
         }
 
         private void Update()
@@ -106,6 +110,20 @@ namespace Blue.UI.Garage.CraftTable
             {
                 SetItemInfomation(currentRecipe, forceRefresh: true);
             }
+        }
+
+        private void ClearDisplay()
+        {
+            currentRecipe = null;
+
+            itemName.text = "";
+            description.text = "";
+            requireItems.text = "";
+            ownedCount.text = "";
+
+            progressGauge.value = 0f;
+
+            itemModelDisplay.mesh = null;
         }
 
         private void SetItemInfomation(RecipeData recipe, bool forceRefresh = false)
@@ -194,9 +212,34 @@ namespace Blue.UI.Garage.CraftTable
                 .OnComplete(() => craftCompleteNotification.gameObject.SetActive(false));
         }
 
+        private void PlayScreenOnAnimation()
+        {
+            if (screenTransitionPanel == null) return;
+
+            screenTransitionTween?.Kill();
+
+            screenTransitionPanel.gameObject.SetActive(true);
+            screenTransitionPanel.alpha = 1f;
+
+            screenTransitionTween = DOTween.Sequence()
+                .Append(screenTransitionPanel.DOFade(0f, screenBlinkInterval).SetLoops(screenBlinkCount * 2, LoopType.Yoyo))
+                .Append(screenTransitionPanel.DOFade(0f, screenBlinkInterval))
+                .OnComplete(() => screenTransitionPanel.gameObject.SetActive(false));
+        }
+
+        public void ShowScreenOffPanel()
+        {
+            if (screenTransitionPanel == null) return;
+
+            screenTransitionTween?.Kill();
+            screenTransitionPanel.gameObject.SetActive(true);
+            screenTransitionPanel.alpha = 1f;
+        }
+
         private void OnDestroy()
         {
             notificationTween?.Kill();
+            screenTransitionTween?.Kill();
         }
     }
 }
