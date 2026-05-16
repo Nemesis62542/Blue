@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Blue.Audio;
+using Blue.Item;
 using Blue.Recipe;
 using DG.Tweening;
 using TMPro;
@@ -8,26 +10,40 @@ using UnityEngine.UI;
 
 namespace Blue.UI.Garage.CraftTable
 {
+    [Serializable]
+    public class CategoryParent
+    {
+        public ItemType category;
+        public Transform parent;
+    }
     public class CraftTableView : MonoBehaviour
     {
         [SerializeField] private RecipePanel panelPrefab;
-        [SerializeField] private Transform panelParent;
+        [SerializeField] private List<CategoryParent> categoryParents;
         [SerializeField] private TMP_Text itemName;
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
         [SerializeField] private TMP_Text ownedCount;
         [SerializeField] private Slider progressGauge;
         [SerializeField] private MeshFilter itemModelDisplay;
+        [SerializeField] private MeshRenderer itemModelRenderer;
         [SerializeField] private float modelRotationSpeed = 30f;
         [SerializeField] private CanvasGroup craftCompleteNotification;
         [SerializeField] private float notificationDisplayDuration = 2f;
         [SerializeField] private int blinkCount = 2;
         [SerializeField] private float blinkInterval = 0.1f;
 
+        [Header("Screen Transition")]
+        [SerializeField] private CanvasGroup screenTransitionPanel;
+        [SerializeField] private int screenBlinkCount = 3;
+        [SerializeField] private float screenBlinkInterval = 0.08f;
+
         private CraftTableModel model;
         private Tween notificationTween;
+        private Tween screenTransitionTween;
         private RecipeData currentRecipe;
         private bool isPointerPressed;
+        private Dictionary<ItemType, Transform> categoryParentDict;
 
         public Action<RecipeData> OnConfirmCraftItem;
 
@@ -35,24 +51,48 @@ namespace Blue.UI.Garage.CraftTable
         {
             model = craft_model;
             OnConfirmCraftItem = craft_callback;
-            foreach (Transform child in panelParent)
+
+            // カテゴリ別の親をDictionaryに変換
+            categoryParentDict = new Dictionary<ItemType, Transform>();
+            foreach (CategoryParent categoryParent in categoryParents)
             {
-                Destroy(child.gameObject);
+                categoryParentDict[categoryParent.category] = categoryParent.parent;
+
+                // 既存の子オブジェクトを削除
+                foreach (Transform child in categoryParent.parent)
+                {
+                    Destroy(child.gameObject);
+                }
             }
 
             foreach(RecipeData recipe in recipes)
             {
-                RecipePanel panel = Instantiate(panelPrefab, panelParent);
+                Transform parent = GetParentForCategory(recipe.ResultItem.Type);
+                RecipePanel panel = Instantiate(panelPrefab, parent);
                 panel.Initialize(recipe);
                 panel.OnPointerEnter += recipe => SetItemInfomation(recipe);
                 panel.OnPointerDown += OnPanelPointerDown;
                 panel.OnPointerUp += OnPanelPointerUp;
             }
 
-            if (progressGauge != null)
+            ClearDisplay();
+            PlayScreenOnAnimation();
+        }
+
+        private Transform GetParentForCategory(ItemType type)
+        {
+            if (categoryParentDict.TryGetValue(type, out Transform parent))
             {
-                progressGauge.value = 0f;
+                return parent;
             }
+
+            // カテゴリが見つからない場合は最初の親を使用
+            if (categoryParents.Count > 0)
+            {
+                return categoryParents[0].parent;
+            }
+
+            return null;
         }
 
         private void Update()
@@ -67,11 +107,19 @@ namespace Blue.UI.Garage.CraftTable
 
             if (isPointerPressed && currentRecipe != null && model.HasAllRequiredResources(currentRecipe))
             {
+                // ゲージが溜まり始めたらループSE開始
+                if (!SoundController.Instance.IsLoopSEPlaying)
+                {
+                    SoundController.Instance.PlayLoopSE(SEType.CraftCharge);
+                }
+
                 progressGauge.value += Time.deltaTime;
                 if (progressGauge.value >= 1f)
                 {
                     progressGauge.value = 0f;
+                    SoundController.Instance.StopLoopSE();
                     OnConfirmCraftItem?.Invoke(currentRecipe);
+                    SoundController.Instance.PlaySE(SEType.CraftSuccess);
                     ShowCraftCompleteNotification();
                 }
             }
@@ -92,11 +140,17 @@ namespace Blue.UI.Garage.CraftTable
         {
             currentRecipe = recipe;
             isPointerPressed = true;
+
+            if (!model.HasAllRequiredResources(recipe))
+            {
+                SoundController.Instance.PlaySE(SEType.CraftFailed);
+            }
         }
 
         private void OnPanelPointerUp(RecipeData recipe)
         {
             isPointerPressed = false;
+            SoundController.Instance.StopLoopSE();
         }
 
         public void RefreshDisplay()
@@ -105,6 +159,20 @@ namespace Blue.UI.Garage.CraftTable
             {
                 SetItemInfomation(currentRecipe, forceRefresh: true);
             }
+        }
+
+        private void ClearDisplay()
+        {
+            currentRecipe = null;
+
+            itemName.text = "";
+            description.text = "";
+            requireItems.text = "";
+            ownedCount.text = "";
+
+            progressGauge.value = 0f;
+
+            itemModelDisplay.mesh = null;
         }
 
         private void SetItemInfomation(RecipeData recipe, bool forceRefresh = false)
@@ -123,11 +191,44 @@ namespace Blue.UI.Garage.CraftTable
                 ownedCount.text = $"所持数: {count}";
             }
 
-            if (itemModelDisplay != null && isNewRecipe)
+            if (itemModelDisplay != null && itemModelRenderer != null && isNewRecipe)
             {
-                itemModelDisplay.mesh = recipe.ResultItem.ModelMesh;
+                ApplyModelToDisplay(recipe.ResultItem.Model);
                 itemModelDisplay.transform.localRotation = Quaternion.identity;
             }
+        }
+
+        private void ApplyModelToDisplay(GameObject model)
+        {
+            if (model == null) return;
+
+            // モデルからMeshFilterとMeshRendererを取得
+            MeshFilter modelMeshFilter = model.GetComponentInChildren<MeshFilter>();
+            MeshRenderer modelMeshRenderer = model.GetComponentInChildren<MeshRenderer>();
+
+            if (modelMeshFilter == null || modelMeshRenderer == null) return;
+
+            // メッシュを設定
+            itemModelDisplay.mesh = modelMeshFilter.sharedMesh;
+
+            // マテリアルをインスタンス化してテクスチャをコピー
+            Material instanceMaterial = new Material(itemModelRenderer.sharedMaterial);
+            Texture sourceTexture = GetMainTexture(modelMeshRenderer.sharedMaterial);
+            if (sourceTexture != null)
+            {
+                SetMainTexture(instanceMaterial, sourceTexture);
+            }
+            itemModelRenderer.material = instanceMaterial;
+        }
+
+        private Texture GetMainTexture(Material material)
+        {
+            return material.GetTexture("_BaseMap");
+        }
+
+        private void SetMainTexture(Material material, Texture texture)
+        {
+           material.SetTexture("_BaseEmissionTexture", texture);
         }
 
         private string GenerateRequireItemText(List<RequireItemData> requires)
@@ -160,9 +261,34 @@ namespace Blue.UI.Garage.CraftTable
                 .OnComplete(() => craftCompleteNotification.gameObject.SetActive(false));
         }
 
+        private void PlayScreenOnAnimation()
+        {
+            if (screenTransitionPanel == null) return;
+
+            screenTransitionTween?.Kill();
+
+            screenTransitionPanel.gameObject.SetActive(true);
+            screenTransitionPanel.alpha = 1f;
+
+            screenTransitionTween = DOTween.Sequence()
+                .Append(screenTransitionPanel.DOFade(0f, screenBlinkInterval).SetLoops(screenBlinkCount * 2, LoopType.Yoyo))
+                .Append(screenTransitionPanel.DOFade(0f, screenBlinkInterval))
+                .OnComplete(() => screenTransitionPanel.gameObject.SetActive(false));
+        }
+
+        public void ShowScreenOffPanel()
+        {
+            if (screenTransitionPanel == null) return;
+
+            screenTransitionTween?.Kill();
+            screenTransitionPanel.gameObject.SetActive(true);
+            screenTransitionPanel.alpha = 1f;
+        }
+
         private void OnDestroy()
         {
             notificationTween?.Kill();
+            screenTransitionTween?.Kill();
         }
     }
 }

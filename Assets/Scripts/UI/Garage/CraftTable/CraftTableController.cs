@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using Blue.Inventory;
 using Blue.Recipe;
 using Blue.Save;
+using Blue.UI.Screen;
 using UnityEngine;
 
 namespace Blue.UI.Garage.CraftTable
 {
-    public class CraftTableController : MonoBehaviour
+    public class CraftTableController : MonoBehaviour, IScreenController
     {
         [SerializeField] private CraftTableView view;
         [SerializeField] private List<RecipeData> recipes;
@@ -57,6 +58,22 @@ namespace Blue.UI.Garage.CraftTable
         {
             model.CraftItem(recipe);
             view.RefreshDisplay();
+        }
+
+        public void OnScreenEnter()
+        {
+            Initialize();
+        }
+
+        public void OnScreenExit()
+        {
+            view.ShowScreenOffPanel();
+        }
+
+        public void OnScreenChanged(ScreenState state)
+        {
+            if(state == ScreenState.CraftTable) OnScreenEnter();
+            else OnScreenExit();
         }
     }
 }

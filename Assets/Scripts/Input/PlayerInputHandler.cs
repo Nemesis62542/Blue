@@ -16,6 +16,8 @@ namespace Blue.Input
 
     public class PlayerInputHandler
     {
+        public static PlayerInputHandler Instance { get; private set; }
+
         private PlayerInputActions inputActions;
         private Vector2 moveInput;
         private Vector2 lookInput;
@@ -43,6 +45,7 @@ namespace Blue.Input
 
         public PlayerInputHandler()
         {
+            Instance = this;
             inputActions = new PlayerInputActions();
 
             inputActions.Player.Move.performed += OnMove;

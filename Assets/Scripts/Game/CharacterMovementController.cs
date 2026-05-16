@@ -43,7 +43,7 @@ namespace Blue.Game
 
         private void Initialize()
         {
-            inputHandler = new PlayerInputHandler();
+            inputHandler = PlayerInputHandler.Instance;
 
             Cursor.lockState = CursorLockMode.Locked;
             inputHandler.SetInputMap(defaultInputMap);  

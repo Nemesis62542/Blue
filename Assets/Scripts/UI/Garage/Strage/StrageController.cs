@@ -1,13 +1,13 @@
 using Blue.Input;
 using Blue.Inventory;
-using Blue.Item;
 using Blue.Save;
 using Blue.UI.QuickSlot;
+using Blue.UI.Screen;
 using UnityEngine;
 
 namespace Blue.UI.Garage.Strage
 {
-    public class StrageController : MonoBehaviour
+    public class StrageController : MonoBehaviour, IScreenController
     {
         [SerializeField] private InventoryController strageInventory;
         [SerializeField] private InventoryController playerInventory;
@@ -77,6 +77,21 @@ namespace Blue.UI.Garage.Strage
             strageInventory.RefreshInventoryUI();
             playerInventory.RefreshInventoryUI();
             quickSlot.RefreshQuickSlotUI();
+        }
+
+        public void OnScreenEnter()
+        {
+            Initialize(PlayerInputHandler.Instance);
+        }
+
+        public void OnScreenExit()
+        {
+        }
+
+        public void OnScreenChanged(ScreenState state)
+        {
+            if(state == ScreenState.Strage) OnScreenEnter();
+            else OnScreenExit();
         }
     }
 }

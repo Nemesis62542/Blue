@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Blue.Input;
-using Blue.UI.Garage.CraftTable;
-using Blue.UI.Garage.Strage;
 using Blue.UI.Screen;
 using UnityEngine;
 
@@ -10,22 +8,21 @@ namespace Blue.UI.Garage
 {
     public class GarageSceneController : MonoBehaviour
     {
-        [SerializeField] StrageController strage;
-        [SerializeField] CraftTableController craftTable;
         [SerializeField] private List<CanvasGroup> screenCanvasGroups;
 
         private Dictionary<ScreenState, CanvasGroup> screenDictionary;
+        private List<IScreenController> screenControllers;
         private ScreenState currentScreenState = ScreenState.None;
-        private PlayerInputHandler playerInput;
 
         public ScreenState CurrentScreenState => currentScreenState;
         public event Action<ScreenState> OnScreenStateChanged;
 
         private void Awake()
         {
-            playerInput = new PlayerInputHandler();
+            if(PlayerInputHandler.Instance == null) new PlayerInputHandler();
 
             InitializeScreenDictionary();
+            InitializeIScreenController();
             ShowScreen(ScreenState.GarageHome);
         }
 
@@ -47,6 +44,19 @@ namespace Blue.UI.Garage
             }
         }
 
+        private void InitializeIScreenController()
+        {
+            screenControllers = new List<IScreenController>();
+
+            foreach (CanvasGroup canvas in screenCanvasGroups)
+            {
+                if (canvas.TryGetComponent(out IScreenController screenController))
+                {
+                    screenControllers.Add(screenController);
+                }
+            }
+        }
+
         public void ShowScreen(ScreenState state)
         {
             HideAllScreen();
@@ -58,15 +68,9 @@ namespace Blue.UI.Garage
                 SetScreenVisible(screen, true);
             }
 
-            switch(CurrentScreenState)
+            foreach(IScreenController screenController in screenControllers)
             {
-                case ScreenState.CraftTable:
-                    craftTable.Initialize();
-                break;
-
-                case ScreenState.Strage:
-                    strage.Initialize(playerInput);
-                break;
+                screenController.OnScreenChanged(state);
             }
         }
 
