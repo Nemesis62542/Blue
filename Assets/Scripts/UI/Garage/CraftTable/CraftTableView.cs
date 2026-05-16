@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Blue.Item;
 using Blue.Recipe;
 using DG.Tweening;
 using TMPro;
@@ -8,10 +9,16 @@ using UnityEngine.UI;
 
 namespace Blue.UI.Garage.CraftTable
 {
+    [Serializable]
+    public class CategoryParent
+    {
+        public ItemType category;
+        public Transform parent;
+    }
     public class CraftTableView : MonoBehaviour
     {
         [SerializeField] private RecipePanel panelPrefab;
-        [SerializeField] private Transform panelParent;
+        [SerializeField] private List<CategoryParent> categoryParents;
         [SerializeField] private TMP_Text itemName;
         [SerializeField] private TMP_Text description;
         [SerializeField] private TMP_Text requireItems;
@@ -35,6 +42,7 @@ namespace Blue.UI.Garage.CraftTable
         private Tween screenTransitionTween;
         private RecipeData currentRecipe;
         private bool isPointerPressed;
+        private Dictionary<ItemType, Transform> categoryParentDict;
 
         public Action<RecipeData> OnConfirmCraftItem;
 
@@ -42,14 +50,24 @@ namespace Blue.UI.Garage.CraftTable
         {
             model = craft_model;
             OnConfirmCraftItem = craft_callback;
-            foreach (Transform child in panelParent)
+
+            // カテゴリ別の親をDictionaryに変換
+            categoryParentDict = new Dictionary<ItemType, Transform>();
+            foreach (CategoryParent categoryParent in categoryParents)
             {
-                Destroy(child.gameObject);
+                categoryParentDict[categoryParent.category] = categoryParent.parent;
+
+                // 既存の子オブジェクトを削除
+                foreach (Transform child in categoryParent.parent)
+                {
+                    Destroy(child.gameObject);
+                }
             }
 
             foreach(RecipeData recipe in recipes)
             {
-                RecipePanel panel = Instantiate(panelPrefab, panelParent);
+                Transform parent = GetParentForCategory(recipe.ResultItem.Type);
+                RecipePanel panel = Instantiate(panelPrefab, parent);
                 panel.Initialize(recipe);
                 panel.OnPointerEnter += recipe => SetItemInfomation(recipe);
                 panel.OnPointerDown += OnPanelPointerDown;
@@ -58,6 +76,22 @@ namespace Blue.UI.Garage.CraftTable
 
             ClearDisplay();
             PlayScreenOnAnimation();
+        }
+
+        private Transform GetParentForCategory(ItemType type)
+        {
+            if (categoryParentDict.TryGetValue(type, out Transform parent))
+            {
+                return parent;
+            }
+
+            // カテゴリが見つからない場合は最初の親を使用
+            if (categoryParents.Count > 0)
+            {
+                return categoryParents[0].parent;
+            }
+
+            return null;
         }
 
         private void Update()
