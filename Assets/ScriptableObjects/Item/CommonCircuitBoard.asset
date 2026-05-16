@@ -15,7 +15,7 @@ MonoBehaviour:
   name: "\u57FA\u672C\u96FB\u5B50\u90E8\u54C1"
   description: "\u6A5F\u68B0\u985E\u306E\u88FD\u9020\u306B\u4F7F\u7528\u3055\u308C\u308B\u3001\u3054\u304F\u4E00\u822C\u7684\u306A\u96FB\u5B50\u90E8\u54C1\u3002"
   icon: {fileID: 21300000, guid: 06cfb25a88da5e84d96cc90bc68c39bb, type: 3}
-  modelMesh: {fileID: -5693465255985014742, guid: 44598420baa30474fb6eb9cb970b4458, type: 3}
+  model: {fileID: 919132149155446097, guid: 44598420baa30474fb6eb9cb970b4458, type: 3}
   type: 4
   isStackable: 1
   heldItemPrefab: {fileID: 0}
