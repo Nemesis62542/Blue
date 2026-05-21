@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 2443951363018493996}
   - component: {fileID: 78739840307579654}
   - component: {fileID: 1034234212931689616}
+  - component: {fileID: 7599473435796119230}
+  - component: {fileID: 1296224144379202923}
   m_Layer: 5
   m_Name: CustomizeScreen
   m_TagString: Untagged
@@ -66,6 +68,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Screen.ScreenStateIdentifier
   screenState: 10
+--- !u!114 &7599473435796119230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778371796159481652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3a9744516030c1489f7afbeb33aad67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.Customize.CustomizeScreenController
+  view: {fileID: 1296224144379202923}
+  upgrades:
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &1296224144379202923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778371796159481652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c9ff36b33e56ed43b253a578cb40ae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.Customize.CustomizeScreenView
+  upgradePanels: []
+  upgradeName: {fileID: 0}
+  description: {fileID: 0}
+  currentLevel: {fileID: 3446714148709014105}
+  currentEffect: {fileID: 0}
+  nextEffect: {fileID: 6254790225299807583}
+  requireItems: {fileID: 0}
+  progressGauge: {fileID: 0}
+  upgradeCompleteNotification: {fileID: 0}
+  notificationDisplayDuration: 0.5
+  blinkCount: 2
+  blinkInterval: 0.05
+  screenTransitionPanel: {fileID: 0}
+  screenBlinkCount: 3
+  screenBlinkInterval: 0.05
 --- !u!1 &3990798826397223522
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,6 +665,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8879486276384493699, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
   m_PrefabInstance: {fileID: 3883647913694307355}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6254790225299807583 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7144969198706047300, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
+  m_PrefabInstance: {fileID: 3883647913694307355}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &5547651754824704797
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -725,6 +781,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
+--- !u!114 &3446714148709014105 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7144969198706047300, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
+  m_PrefabInstance: {fileID: 5547651754824704797}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &4019306922724078494 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8879486276384493699, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
