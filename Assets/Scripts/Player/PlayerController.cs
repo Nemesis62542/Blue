@@ -93,6 +93,7 @@ namespace Blue.Player
                 return;
             }
             Instance = this;
+            if(PlayerInputHandler.Instance == null) new PlayerInputHandler();
             inputHandler = PlayerInputHandler.Instance;
             persistence = new SaveDataPlayerProgressPersistence();
 
@@ -603,14 +604,6 @@ namespace Blue.Player
 
                 depthExceededTimer += Time.deltaTime;
 
-                // 残り時間の警告
-                float remainingTime = depthExceededDeathTime - depthExceededTimer;
-                if (remainingTime > 0 && remainingTime <= 3f)
-                {
-                    int seconds = Mathf.CeilToInt(remainingTime);
-                    playerStatusView.SetDepthWarning(true, seconds);
-                }
-
                 if (depthExceededTimer >= depthExceededDeathTime)
                 {
                     // 圧壊による即死
@@ -624,7 +617,6 @@ namespace Blue.Player
                 {
                     isDepthExceeded = false;
                     depthExceededTimer = 0f;
-                    playerStatusView.SetDepthWarning(false, 0);
                 }
             }
         }
