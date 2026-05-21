@@ -82,8 +82,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.Customize.CustomizeScreenController
   view: {fileID: 1296224144379202923}
   upgrades:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 715b5d5af4ed844439cb65870f3d2ef5, type: 2}
+  - {fileID: 11400000, guid: ac080c72d1ac965459a3e6131748afe2, type: 2}
 --- !u!114 &1296224144379202923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,7 +96,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c9ff36b33e56ed43b253a578cb40ae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.Customize.CustomizeScreenView
-  upgradePanels: []
+  upgradePanels:
+  - {fileID: 3552077536618210398}
+  - {fileID: 5211730610221769560}
   upgradeName: {fileID: 0}
   description: {fileID: 0}
   currentLevel: {fileID: 3446714148709014105}
@@ -660,6 +662,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
+--- !u!114 &3552077536618210398 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 337486849161969733, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
+  m_PrefabInstance: {fileID: 3883647913694307355}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b30e6f329a23adb489482b54e56df2ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.Customize.UpgradePanel
 --- !u!224 &5683323422062752920 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8879486276384493699, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
@@ -797,3 +810,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8879486276384493699, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
   m_PrefabInstance: {fileID: 5547651754824704797}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5211730610221769560 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 337486849161969733, guid: 6a962c21762611e4aa6e813cf9af7f2c, type: 3}
+  m_PrefabInstance: {fileID: 5547651754824704797}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b30e6f329a23adb489482b54e56df2ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.UI.Garage.Customize.UpgradePanel
