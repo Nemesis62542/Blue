@@ -8,23 +8,28 @@ namespace Blue.UI.Garage.Customize
 {
     /// <summary>
     /// サブアップグレードパネルのUI制御
-    /// 解放状態と装備状態の表示を管理する
+    /// - ロック中: 長押しで解放
+    /// - 解放後: クリックでオン/オフ切り替え
     /// </summary>
     public class SubUpgradePanel : MonoBehaviour
     {
         [SerializeField] private Image icon;
         [SerializeField] private Image lockOverlay;
-        [SerializeField] private Image equippedIndicator;
+        [SerializeField] private Image enabledIndicator;
         [SerializeField] private float pressAnimationDuration = 0.3f;
 
         private SubUpgradeData subUpgradeData;
         private Tweener iconMoveTween;
+        private bool isUnlocked;
+        private bool isEnabled;
 
         public event Action<SubUpgradeData> OnPointerEnter;
         public event Action<SubUpgradeData> OnPointerDown;
         public event Action<SubUpgradeData> OnPointerUp;
 
         public SubUpgradeData SubUpgradeData => subUpgradeData;
+        public bool IsUnlocked => isUnlocked;
+        public bool IsEnabled => isEnabled;
 
         public void Initialize(SubUpgradeData data)
         {
@@ -36,22 +41,25 @@ namespace Blue.UI.Garage.Customize
             if (icon != null)
             {
                 Vector3 pos = icon.transform.localPosition;
-                icon.transform.localPosition = new Vector3(pos.x, pos.y, -30);
+                icon.transform.localPosition = new Vector3(pos.x, pos.y, 0);
             }
         }
 
         /// <summary>
-        /// 解放/装備状態に応じた表示更新
+        /// 解放/有効状態に応じた表示更新
         /// </summary>
-        public void UpdateState(bool isUnlocked, bool isEquipped)
+        public void UpdateState(bool unlocked, bool enabled)
         {
+            isUnlocked = unlocked;
+            isEnabled = enabled;
+
             if (lockOverlay != null)
             {
                 lockOverlay.gameObject.SetActive(!isUnlocked);
             }
-            if (equippedIndicator != null)
+            if (enabledIndicator != null)
             {
-                equippedIndicator.gameObject.SetActive(isEquipped);
+                enabledIndicator.gameObject.SetActive(isEnabled);
             }
         }
 
@@ -82,7 +90,7 @@ namespace Blue.UI.Garage.Customize
             if (icon == null) return;
             iconMoveTween?.Kill();
             iconMoveTween = icon.transform
-                .DOLocalMoveZ(0, pressAnimationDuration)
+                .DOLocalMoveZ(30, pressAnimationDuration)
                 .SetEase(Ease.OutCubic);
         }
 
@@ -91,7 +99,7 @@ namespace Blue.UI.Garage.Customize
             if (icon == null) return;
             iconMoveTween?.Kill();
             iconMoveTween = icon.transform
-                .DOLocalMoveZ(-30, pressAnimationDuration)
+                .DOLocalMoveZ(0, pressAnimationDuration)
                 .SetEase(Ease.OutCubic);
         }
     }

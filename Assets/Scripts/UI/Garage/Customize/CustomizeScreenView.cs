@@ -32,9 +32,6 @@ namespace Blue.UI.Garage.Customize
         [Header("Sub Upgrade")]
         [SerializeField] private List<SubUpgradePanel> subUpgradePanels;
         [SerializeField] private TMP_Text capacityText;
-        [SerializeField] private Button unlockButton;
-        [SerializeField] private Button equipToggleButton;
-        [SerializeField] private TMP_Text equipToggleButtonText;
 
         private CustomizeScreenModel model;
         private Tween notificationTween;
@@ -45,6 +42,7 @@ namespace Blue.UI.Garage.Customize
         private SubUpgradeData currentSubUpgrade;
         private List<SubUpgradeData> allSubUpgrades;
         private UpgradeData subCapacityUpgrade;
+        private bool isSubUpgradePointerPressed;
 
         public Action<UpgradeData> OnConfirmUpgrade;
         public Action<SubUpgradeData> OnConfirmUnlock;
@@ -83,6 +81,7 @@ namespace Blue.UI.Garage.Customize
         {
             if (progressGauge == null) return;
 
+            // メインアップグレードの長押し処理
             if (isPointerPressed && currentUpgrade != null && model.CanUpgrade(currentUpgrade))
             {
                 if (!SoundController.Instance.IsLoopSEPlaying)
@@ -100,6 +99,25 @@ namespace Blue.UI.Garage.Customize
                     ShowUpgradeCompleteNotification();
                 }
             }
+            // サブアップグレードの長押し解放処理
+            else if (isSubUpgradePointerPressed && currentSubUpgrade != null &&
+                     !model.IsSubUpgradeUnlocked(currentSubUpgrade) && model.CanUnlockSubUpgrade(currentSubUpgrade))
+            {
+                if (!SoundController.Instance.IsLoopSEPlaying)
+                {
+                    SoundController.Instance.PlayLoopSE(SEType.CraftCharge);
+                }
+
+                progressGauge.value += Time.deltaTime;
+                if (progressGauge.value >= 1f)
+                {
+                    progressGauge.value = 0f;
+                    SoundController.Instance.StopLoopSE();
+                    OnConfirmUnlock?.Invoke(currentSubUpgrade);
+                    SoundController.Instance.PlaySE(SEType.CraftSuccess);
+                    ShowUpgradeCompleteNotification();
+                }
+            }
             else
             {
                 progressGauge.value = 0f;
@@ -109,7 +127,9 @@ namespace Blue.UI.Garage.Customize
         private void OnPanelPointerDown(UpgradeData upgrade)
         {
             currentUpgrade = upgrade;
+            currentSubUpgrade = null;
             isPointerPressed = true;
+            isSubUpgradePointerPressed = false;
 
             if (!model.CanUpgrade(upgrade))
             {
@@ -157,6 +177,7 @@ namespace Blue.UI.Garage.Customize
             if (!forceRefresh && currentUpgrade == upgrade) return;
 
             currentUpgrade = upgrade;
+            currentSubUpgrade = null;
             int level = model.GetCurrentLevel(upgrade.UpgradeType);
             bool isMaxLevel = model.IsMaxLevel(upgrade);
             string unit = GetUnitString(upgrade.UpgradeType);
@@ -280,15 +301,6 @@ namespace Blue.UI.Garage.Customize
                 panel.OnPointerUp += OnSubPanelPointerUp;
             }
 
-            if (unlockButton != null)
-            {
-                unlockButton.onClick.AddListener(OnUnlockButtonClicked);
-            }
-            if (equipToggleButton != null)
-            {
-                equipToggleButton.onClick.AddListener(OnEquipToggleButtonClicked);
-            }
-
             RefreshSubUpgradeDisplay();
         }
 
@@ -335,21 +347,35 @@ namespace Blue.UI.Garage.Customize
             if (upgradeName != null) upgradeName.text = subUpgrade.UpgradeName;
             if (description != null) description.text = subUpgrade.Description;
 
-            if (currentEffect != null) currentEffect.text = "";
-            if (nextEffect != null) nextEffect.text = "";
-
-            UpdateSubUpgradeButtons(subUpgrade, isUnlocked, isEquipped);
-
-            if (!isUnlocked)
+            // 状態表示
+            if (currentEffect != null)
             {
-                if (requireItems != null)
+                currentEffect.text = isUnlocked ? "解放済み" : "ロック中";
+            }
+
+            if (nextEffect != null)
+            {
+                if (isUnlocked)
+                {
+                    nextEffect.text = isEquipped ? "有効" : "無効";
+                }
+                else
+                {
+                    nextEffect.text = "";
+                }
+            }
+
+            // 未解放時のみ必要アイテムを表示
+            if (requireItems != null)
+            {
+                if (!isUnlocked)
                 {
                     requireItems.text = GenerateRequireItemText(subUpgrade.RequiredResources);
                 }
-            }
-            else
-            {
-                if (requireItems != null) requireItems.text = "";
+                else
+                {
+                    requireItems.text = "";
+                }
             }
         }
 
@@ -358,53 +384,43 @@ namespace Blue.UI.Garage.Customize
             SetSubUpgradeInformation(subUpgrade, forceRefresh: false);
         }
 
-        private void UpdateSubUpgradeButtons(SubUpgradeData subUpgrade, bool isUnlocked, bool isEquipped)
-        {
-            if (unlockButton != null)
-            {
-                unlockButton.gameObject.SetActive(!isUnlocked);
-                unlockButton.interactable = model.CanUnlockSubUpgrade(subUpgrade);
-            }
-
-            if (equipToggleButton != null)
-            {
-                equipToggleButton.gameObject.SetActive(isUnlocked);
-
-                if (isEquipped)
-                {
-                    if (equipToggleButtonText != null) equipToggleButtonText.text = "解除";
-                    equipToggleButton.interactable = true;
-                }
-                else
-                {
-                    if (equipToggleButtonText != null) equipToggleButtonText.text = "装備";
-                    equipToggleButton.interactable = model.CanEquipSubUpgrade(subUpgrade, subCapacityUpgrade, allSubUpgrades);
-                }
-            }
-        }
-
         private void OnSubPanelPointerDown(SubUpgradeData subUpgrade)
         {
             currentSubUpgrade = subUpgrade;
+            currentUpgrade = null;
+            isSubUpgradePointerPressed = true;
+            isPointerPressed = false;
+
+            bool isUnlocked = model.IsSubUpgradeUnlocked(subUpgrade);
+
+            if (!isUnlocked && !model.CanUnlockSubUpgrade(subUpgrade))
+            {
+                SoundController.Instance.PlaySE(SEType.CraftFailed);
+            }
         }
 
         private void OnSubPanelPointerUp(SubUpgradeData subUpgrade)
         {
-        }
+            isSubUpgradePointerPressed = false;
+            SoundController.Instance.StopLoopSE();
 
-        private void OnUnlockButtonClicked()
-        {
-            if (currentSubUpgrade != null)
-            {
-                OnConfirmUnlock?.Invoke(currentSubUpgrade);
-            }
-        }
+            bool isUnlocked = model.IsSubUpgradeUnlocked(subUpgrade);
 
-        private void OnEquipToggleButtonClicked()
-        {
-            if (currentSubUpgrade != null)
+            // 解放済みの場合はクリックでオン/オフ切り替え
+            if (isUnlocked)
             {
-                OnToggleEquip?.Invoke(currentSubUpgrade);
+                bool isEquipped = model.IsSubUpgradeEquipped(subUpgrade);
+
+                // 装備解除は常に可能、装備は容量チェック
+                if (isEquipped || model.CanEquipSubUpgrade(subUpgrade, subCapacityUpgrade, allSubUpgrades))
+                {
+                    OnToggleEquip?.Invoke(subUpgrade);
+                    SoundController.Instance.PlaySE(SEType.CraftSuccess);
+                }
+                else
+                {
+                    SoundController.Instance.PlaySE(SEType.CraftFailed);
+                }
             }
         }
 

@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907e442dea2d6b049895fd224c206983, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Upgrade.SubUpgradeData
-  upgradeName: 
-  description: 
+  upgradeName: "\u30C6\u30B9\u30C8\u30ED\u30AC\u30FC"
+  description: "\u30C6\u30B9\u30C8\u7528\u30ED\u30B0\u3092\u8868\u793A\u3059\u308B\u3002"
   icon: {fileID: 0}
   subUpgradeType: 0
-  requiredResources: []
+  requiredResources:
+  - item: {fileID: 11400000, guid: fde6bddf77bcd2341a20ddd7dbd2fa77, type: 2}
+    count: 1
   capacityCost: 1

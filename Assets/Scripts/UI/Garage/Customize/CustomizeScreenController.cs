@@ -44,6 +44,10 @@ namespace Blue.UI.Garage.Customize
             {
                 view.InitializeSubUpgrades(subUpgrades, subCapacityUpgrade, UnlockSubUpgrade, ToggleSubUpgradeEquip);
             }
+            else
+            {
+                Debug.LogWarning("subUpgrades is null or empty - SubUpgrade feature disabled");
+            }
         }
 
         private void OnDestroy()
