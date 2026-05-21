@@ -10,8 +10,8 @@ namespace Blue.Editor
     {
         private int oxygenLevel;
         private int depthLevel;
-        private int oxygenMaxLevel = 10;
-        private int depthMaxLevel = 10;
+        private int oxygenMaxLevel;
+        private int depthMaxLevel;
 
         private GUIStyle headerStyle;
         private GUIStyle boxStyle;
@@ -121,7 +121,7 @@ namespace Blue.Editor
 
             // 酸素レベル
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("酸素レベル:", GUILayout.Width(80));
+            EditorGUILayout.LabelField($"酸素 Lv.{oxygenLevel + 1}:", GUILayout.Width(80));
             oxygenLevel = EditorGUILayout.IntSlider(oxygenLevel, 0, oxygenMaxLevel);
             if (GUILayout.Button("適用", GUILayout.Width(50)))
             {
@@ -131,7 +131,7 @@ namespace Blue.Editor
 
             // 深度レベル
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("深度レベル:", GUILayout.Width(80));
+            EditorGUILayout.LabelField($"深度 Lv.{depthLevel + 1}:", GUILayout.Width(80));
             depthLevel = EditorGUILayout.IntSlider(depthLevel, 0, depthMaxLevel);
             if (GUILayout.Button("適用", GUILayout.Width(50)))
             {
@@ -155,7 +155,7 @@ namespace Blue.Editor
 
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("全てリセット (Lv.0)"))
+            if (GUILayout.Button("全てリセット (Lv.1)"))
             {
                 oxygenLevel = 0;
                 depthLevel = 0;
@@ -205,7 +205,7 @@ namespace Blue.Editor
             saveData.upgrades.oxygenLevel = oxygenLevel;
             SaveManager.Save();
 
-            Debug.Log($"[UpgradeDebug] 酸素レベルを変更しました: {oldLevel} → {oxygenLevel}");
+            Debug.Log($"[UpgradeDebug] 酸素レベルを変更しました: Lv.{oldLevel + 1} → Lv.{oxygenLevel + 1}");
             RefreshUI();
         }
 
@@ -228,7 +228,7 @@ namespace Blue.Editor
             saveData.upgrades.depthLevel = depthLevel;
             SaveManager.Save();
 
-            Debug.Log($"[UpgradeDebug] 深度レベルを変更しました: {oldLevel} → {depthLevel}");
+            Debug.Log($"[UpgradeDebug] 深度レベルを変更しました: Lv.{oldLevel + 1} → Lv.{depthLevel + 1}");
             RefreshUI();
         }
 
@@ -255,7 +255,7 @@ namespace Blue.Editor
 
             SaveManager.Save();
 
-            Debug.Log($"[UpgradeDebug] レベルを変更しました - 酸素: {oldOxygen} → {oxygenLevel}, 深度: {oldDepth} → {depthLevel}");
+            Debug.Log($"[UpgradeDebug] レベルを変更しました - 酸素: Lv.{oldOxygen + 1} → Lv.{oxygenLevel + 1}, 深度: Lv.{oldDepth + 1} → Lv.{depthLevel + 1}");
 
             RefreshUI();
         }

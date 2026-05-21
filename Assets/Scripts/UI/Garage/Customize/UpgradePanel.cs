@@ -26,7 +26,7 @@ namespace Blue.UI.Garage.Customize
         {
             if (levelText != null)
             {
-                levelText.text = $"Lv.{level}";
+                levelText.text = $"Lv.{level + 1}";
             }
         }
 
