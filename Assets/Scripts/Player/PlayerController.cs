@@ -67,8 +67,11 @@ namespace Blue.Player
         private float depthExceededTimer = 0f;
         private bool isDepthExceeded = false;
 
+        private SubUpgradeEffectManager subUpgradeEffectManager;
+
         [Header("アップグレード設定")]
         [SerializeField] private UpgradeData[] upgradeDataList;
+        [SerializeField] private SubUpgradeData[] subUpgradeDataList;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotModel QuickSlot => model.QuickSlot;
@@ -585,33 +588,45 @@ namespace Blue.Player
 
         private void ApplyUpgradeEffects()
         {
-            if (upgradeDataList == null || upgradeDataList.Length == 0) return;
-
             UpgradeSaveData upgrades = SaveDataConverter.LoadUpgrades();
 
-            // アップグレード効果を適用
-            foreach (UpgradeData upgrade in upgradeDataList)
+            // メインアップグレード効果を適用
+            if (upgradeDataList != null && upgradeDataList.Length > 0)
             {
-                int level = upgrade.UpgradeType switch
+                foreach (UpgradeData upgrade in upgradeDataList)
                 {
-                    UpgradeType.Oxygen => upgrades.oxygenLevel,
-                    UpgradeType.Depth => upgrades.depthLevel,
-                    _ => 0
-                };
+                    int level = upgrade.UpgradeType switch
+                    {
+                        UpgradeType.Oxygen => upgrades.oxygenLevel,
+                        UpgradeType.Depth => upgrades.depthLevel,
+                        UpgradeType.SubCapacity => upgrades.subCapacityLevel,
+                        _ => 0
+                    };
 
-                int effectValue = upgrade.GetEffectValue(level);
-                switch (upgrade.UpgradeType)
-                {
-                    case UpgradeType.Oxygen:
-                        // effectValueは持続秒数として解釈
-                        // 減少量/秒 = 最大酸素量 / 持続秒数
-                        oxygenDecreasePerSecond = (float)model.MaxOxygen / effectValue;
-                        model.RefillOxygen(model.MaxOxygen);
-                        break;
-                    case UpgradeType.Depth:
-                        model.MaxDepth = effectValue;
-                        break;
+                    int effectValue = upgrade.GetEffectValue(level);
+                    switch (upgrade.UpgradeType)
+                    {
+                        case UpgradeType.Oxygen:
+                            // effectValueは持続秒数として解釈
+                            // 減少量/秒 = 最大酸素量 / 持続秒数
+                            oxygenDecreasePerSecond = (float)model.MaxOxygen / effectValue;
+                            model.RefillOxygen(model.MaxOxygen);
+                            break;
+                        case UpgradeType.Depth:
+                            model.MaxDepth = effectValue;
+                            break;
+                    }
                 }
+            }
+
+            // サブアップグレード効果を適用
+            if (subUpgradeDataList != null && subUpgradeDataList.Length > 0)
+            {
+                if (subUpgradeEffectManager == null)
+                {
+                    subUpgradeEffectManager = new SubUpgradeEffectManager();
+                }
+                subUpgradeEffectManager.ApplyEquippedEffects(this, upgrades, new System.Collections.Generic.List<SubUpgradeData>(subUpgradeDataList));
             }
         }
 

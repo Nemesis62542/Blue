@@ -12,6 +12,10 @@ namespace Blue.UI.Garage.Customize
         [SerializeField] private CustomizeScreenView view;
         [SerializeField] private List<UpgradeData> upgrades;
 
+        [Header("Sub Upgrade")]
+        [SerializeField] private List<SubUpgradeData> subUpgrades;
+        [SerializeField] private UpgradeData subCapacityUpgrade;
+
         private CustomizeScreenModel model;
         private InventoryModel storageInventoryModel;
         private InventoryModel playerInventoryModel;
@@ -34,6 +38,12 @@ namespace Blue.UI.Garage.Customize
             playerInventoryModel.OnValueChanged += OnPlayerInventoryChanged;
 
             view.Initialize(upgrades, model, ConfirmUpgrade);
+
+            // サブアップグレード初期化
+            if (subUpgrades != null && subUpgrades.Count > 0)
+            {
+                view.InitializeSubUpgrades(subUpgrades, subCapacityUpgrade, UnlockSubUpgrade, ToggleSubUpgradeEquip);
+            }
         }
 
         private void OnDestroy()
@@ -63,6 +73,21 @@ namespace Blue.UI.Garage.Customize
             model.ApplyUpgrade(upgrade);
             SaveDataConverter.SaveUpgrades(model.GetUpgradeSaveData());
             view.RefreshDisplay();
+            view.RefreshSubUpgradeDisplay();
+        }
+
+        private void UnlockSubUpgrade(SubUpgradeData subUpgrade)
+        {
+            model.UnlockSubUpgrade(subUpgrade);
+            SaveDataConverter.SaveUpgrades(model.GetUpgradeSaveData());
+            view.RefreshSubUpgradeDisplay();
+        }
+
+        private void ToggleSubUpgradeEquip(SubUpgradeData subUpgrade)
+        {
+            model.ToggleSubUpgradeEquip(subUpgrade, subCapacityUpgrade, subUpgrades);
+            SaveDataConverter.SaveUpgrades(model.GetUpgradeSaveData());
+            view.RefreshSubUpgradeDisplay();
         }
 
         public void OnScreenEnter()

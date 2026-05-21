@@ -127,7 +127,27 @@ namespace Blue.Save
     [Serializable]
     public class UpgradeSaveData
     {
-        public int oxygenLevel = 0;  // 酸素アップグレードレベル (0=未強化)
-        public int depthLevel = 0;   // 深度アップグレードレベル (0=未強化)
+        public int oxygenLevel = 0;      // 酸素アップグレードレベル (0=未強化)
+        public int depthLevel = 0;       // 深度アップグレードレベル (0=未強化)
+        public int subCapacityLevel = 0; // サブアップグレード容量レベル (0=未強化)
+        public List<SubUpgradeItemSaveData> subUpgrades = new List<SubUpgradeItemSaveData>();
+    }
+
+    /// <summary>
+    /// サブアップグレードアイテムのセーブデータ
+    /// </summary>
+    [Serializable]
+    public class SubUpgradeItemSaveData
+    {
+        public string subUpgradeId;  // SubUpgradeDataのアセットパス
+        public bool isUnlocked;      // 解放済みか
+        public bool isEquipped;      // 装備中か
+
+        public SubUpgradeItemSaveData(string id, bool unlocked, bool equipped)
+        {
+            subUpgradeId = id;
+            isUnlocked = unlocked;
+            isEquipped = equipped;
+        }
     }
 }
