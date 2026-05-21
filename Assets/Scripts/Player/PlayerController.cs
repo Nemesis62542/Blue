@@ -11,6 +11,7 @@ using Blue.Save;
 using Blue.UI;
 using Blue.UI.QuickSlot;
 using Blue.UI.Screen;
+using Blue.Upgrade;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -58,6 +59,11 @@ namespace Blue.Player
         private float fuelDepletedTimer = 0f;
         private IPlayerProgressPersistence persistence;
 
+        [Header("深度超過設定")]
+        [SerializeField] private float depthExceededDeathTime = 5f;
+        private float depthExceededTimer = 0f;
+        private bool isDepthExceeded = false;
+
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotModel QuickSlot => model.QuickSlot;
         public Status Status => model.Status;
@@ -94,6 +100,9 @@ namespace Blue.Player
             InventoryModel playerInventory = persistence.LoadPlayerInventory();
             QuickSlotModel quickSlot = persistence.LoadQuickSlot();
             model = new PlayerModel(data, playerInventory, quickSlot, persistence: persistence);
+
+            // アップグレード効果を適用
+            ApplyUpgradeEffects();
 
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
@@ -177,6 +186,7 @@ namespace Blue.Player
 
             if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
+            CheckDepthExceeded();
         }
 
         private void FixedUpdate()
@@ -546,6 +556,77 @@ namespace Blue.Player
         private void OnQuickSlotChanged()
         {
             persistence.SaveQuickSlot(QuickSlot);
+        }
+
+        private void ApplyUpgradeEffects()
+        {
+            UpgradeSaveData upgrades = SaveDataConverter.LoadUpgrades();
+
+            // 酸素アップグレードを探して適用
+            UpgradeData[] allUpgrades = Resources.LoadAll<UpgradeData>("Upgrade");
+            foreach (UpgradeData upgrade in allUpgrades)
+            {
+                int level = upgrade.UpgradeType switch
+                {
+                    UpgradeType.Oxygen => upgrades.oxygenLevel,
+                    UpgradeType.Depth => upgrades.depthLevel,
+                    _ => 0
+                };
+
+                if (level > 0)
+                {
+                    int effectValue = upgrade.GetEffectValue(level);
+                    switch (upgrade.UpgradeType)
+                    {
+                        case UpgradeType.Oxygen:
+                            model.MaxOxygen = effectValue;
+                            model.RefillOxygen(effectValue);
+                            break;
+                        case UpgradeType.Depth:
+                            model.MaxDepth = effectValue;
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void CheckDepthExceeded()
+        {
+            if (model.IsDepthExceeded)
+            {
+                if (!isDepthExceeded)
+                {
+                    isDepthExceeded = true;
+                    depthExceededTimer = 0f;
+                    view.AddMessage(new MessageData("警告：耐圧限界を超えています！"));
+                }
+
+                depthExceededTimer += Time.deltaTime;
+
+                // 残り時間の警告
+                float remainingTime = depthExceededDeathTime - depthExceededTimer;
+                if (remainingTime > 0 && remainingTime <= 3f)
+                {
+                    int seconds = Mathf.CeilToInt(remainingTime);
+                    playerStatusView.SetDepthWarning(true, seconds);
+                }
+
+                if (depthExceededTimer >= depthExceededDeathTime)
+                {
+                    // 圧壊による即死
+                    view.AddMessage(new MessageData("潜水服が圧壊しました"));
+                    OnDead();
+                }
+            }
+            else
+            {
+                if (isDepthExceeded)
+                {
+                    isDepthExceeded = false;
+                    depthExceededTimer = 0f;
+                    playerStatusView.SetDepthWarning(false, 0);
+                }
+            }
         }
     }
 }

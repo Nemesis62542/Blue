@@ -19,6 +19,7 @@ namespace Blue.Player
         private float maxFuel = 100f;
         private float fuel;
         private float depth;
+        private float maxDepth = 50f;  // 初期最大深度 (m)
 
         public PlayerModel(
             EntityData data,
@@ -60,6 +61,12 @@ namespace Blue.Player
             private set => SetFuel(value);
         }
         public float Depth => depth;
+        public float MaxDepth
+        {
+            get => maxDepth;
+            set => maxDepth = value;
+        }
+        public bool IsDepthExceeded => depth > maxDepth;
 
         public event Action<float, float> OnOxygenChanged;
         public event Action<float, float> OnFuelChanged;

@@ -13,6 +13,7 @@ namespace Blue.Save
         public InventorySaveData storageInventory;
         public QuickSlotSaveData quickSlot;
         public CapturedEntitySaveData capturedEntity;
+        public UpgradeSaveData upgrades;
         public long lastSaveTime; // Unix timestamp
 
         public SaveData()
@@ -21,6 +22,7 @@ namespace Blue.Save
             storageInventory = new InventorySaveData();
             quickSlot = new QuickSlotSaveData();
             capturedEntity = new CapturedEntitySaveData();
+            upgrades = new UpgradeSaveData();
             lastSaveTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
     }
@@ -117,5 +119,15 @@ namespace Blue.Save
             entityDataPath = entity_data_path;
             quantity = qty;
         }
+    }
+
+    /// <summary>
+    /// アップグレードのセーブデータ
+    /// </summary>
+    [Serializable]
+    public class UpgradeSaveData
+    {
+        public int oxygenLevel = 0;  // 酸素アップグレードレベル (0=未強化)
+        public int depthLevel = 0;   // 深度アップグレードレベル (0=未強化)
     }
 }

@@ -392,5 +392,24 @@ namespace Blue.Save
             Dictionary<EntityData, int> captured_entities = LoadCapturedEntities();
             return new List<EntityData>(captured_entities.Keys);
         }
+
+        /// <summary>
+        /// アップグレードデータを保存
+        /// </summary>
+        public static void SaveUpgrades(UpgradeSaveData upgradeSaveData)
+        {
+            SaveData save_data = SaveManager.CurrentSaveData;
+            save_data.upgrades = upgradeSaveData;
+            SaveManager.Save();
+        }
+
+        /// <summary>
+        /// アップグレードデータを読み込み
+        /// </summary>
+        public static UpgradeSaveData LoadUpgrades()
+        {
+            SaveData save_data = SaveManager.CurrentSaveData;
+            return save_data.upgrades ?? new UpgradeSaveData();
+        }
     }
 }

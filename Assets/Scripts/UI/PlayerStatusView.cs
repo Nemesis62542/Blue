@@ -14,6 +14,7 @@ namespace Blue.UI
         [SerializeField] private Slider oxygenSliderShadow;
         [SerializeField] private Slider fuelSliderShadow;
         [SerializeField] private TextMeshProUGUI depth;
+        [SerializeField] private TextMeshProUGUI depthWarning;
         [SerializeField] private float animationDuration = 0.5f;
         [SerializeField] private float shadowDelay = 0.5f;
 
@@ -81,6 +82,21 @@ namespace Blue.UI
         public void SetDepth(float depth)
         {
             this.depth.text = $"depth : {depth:F1}m";
+        }
+
+        public void SetDepthWarning(bool show, int remainingSeconds)
+        {
+            if (depthWarning == null) return;
+
+            if (show)
+            {
+                depthWarning.gameObject.SetActive(true);
+                depthWarning.text = $"圧壊まで {remainingSeconds} 秒";
+            }
+            else
+            {
+                depthWarning.gameObject.SetActive(false);
+            }
         }
     }
 }
