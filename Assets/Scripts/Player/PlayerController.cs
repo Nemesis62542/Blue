@@ -11,6 +11,7 @@ using Blue.Save;
 using Blue.UI;
 using Blue.UI.QuickSlot;
 using Blue.UI.Screen;
+using Blue.Upgrade;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -51,12 +52,23 @@ namespace Blue.Player
         private float waterLevel = 0;
         private float mouseLookSensitivity = 10f;
         private float controllerLookSensitivity = 10f;
-        private float oxygenDecreaseInterval = 3.0f;
-        private float oxygenDecreaseTimer = 0.0f;
-        private int oxygenDecreaseAmount = 1;
+        private const float BUBBLE_INTERVAL = 3.0f;
+        private const float OXYGEN_UPDATE_INTERVAL = 1.0f;
+        private float bubbleTimer = 0.0f;
+        private float oxygenTimer = 0.0f;
+        private float oxygenDecreasePerSecond = 1f;
+        private float oxygenDecreaseAccumulator = 0f;
         private bool fuelDepleted = false;
         private float fuelDepletedTimer = 0f;
         private IPlayerProgressPersistence persistence;
+
+        [Header("深度超過設定")]
+        [SerializeField] private float depthExceededDeathTime = 5f;
+        private float depthExceededTimer = 0f;
+        private bool isDepthExceeded = false;
+
+        [Header("アップグレード設定")]
+        [SerializeField] private UpgradeData[] upgradeDataList;
 
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotModel QuickSlot => model.QuickSlot;
@@ -87,6 +99,7 @@ namespace Blue.Player
                 return;
             }
             Instance = this;
+            if(PlayerInputHandler.Instance == null) new PlayerInputHandler();
             inputHandler = PlayerInputHandler.Instance;
             persistence = new SaveDataPlayerProgressPersistence();
 
@@ -94,6 +107,9 @@ namespace Blue.Player
             InventoryModel playerInventory = persistence.LoadPlayerInventory();
             QuickSlotModel quickSlot = persistence.LoadQuickSlot();
             model = new PlayerModel(data, playerInventory, quickSlot, persistence: persistence);
+
+            // アップグレード効果を適用
+            ApplyUpgradeEffects();
 
             model.Status.OnHPChanged += HandleHPChanged;
             model.OnOxygenChanged += HandleOxygenChanged;
@@ -177,6 +193,7 @@ namespace Blue.Player
 
             if(SceneLoader.CurrentSceneName != "Aquarium") DecreaseOxygen();
             model.SetDepth(waterLevel - transform.position.y);
+            CheckDepthExceeded();
         }
 
         private void FixedUpdate()
@@ -215,19 +232,37 @@ namespace Blue.Player
 
         private void DecreaseOxygen()
         {
-            oxygenDecreaseTimer += Time.deltaTime;
-            if (oxygenDecreaseTimer >= oxygenDecreaseInterval)
+            // 演出処理（3秒間隔）
+            bubbleTimer += Time.deltaTime;
+            if (bubbleTimer >= BUBBLE_INTERVAL)
             {
-                oxygenDecreaseTimer = 0f;
-                if (model.Oxygen == 0)
+                bubbleTimer = 0f;
+                if (model.Oxygen > 0)
                 {
-                    Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
+                    view.PlayBubble();
+                    SoundController.Instance.PlaySE(SEType.Respiratory);
                 }
                 else
                 {
-                    model.ConsumeOxygen(oxygenDecreaseAmount);
-                    view.PlayBubble();
-                    SoundController.Instance.PlaySE(SEType.Respiratory);
+                    // 酸素切れ時のダメージ
+                    Damage(new AttackData(null, this, 10, AttackType.Magic, transform.position));
+                }
+            }
+
+            // 酸素減少処理（1秒間隔で累積、整数単位で消費）
+            if (model.Oxygen > 0)
+            {
+                oxygenTimer += Time.deltaTime;
+                if (oxygenTimer >= OXYGEN_UPDATE_INTERVAL)
+                {
+                    oxygenTimer = 0f;
+                    oxygenDecreaseAccumulator += oxygenDecreasePerSecond;
+                    if (oxygenDecreaseAccumulator >= 1f)
+                    {
+                        int decrease = (int)oxygenDecreaseAccumulator;
+                        oxygenDecreaseAccumulator -= decrease;
+                        model.ConsumeOxygen(decrease);
+                    }
                 }
             }
         }
@@ -546,6 +581,68 @@ namespace Blue.Player
         private void OnQuickSlotChanged()
         {
             persistence.SaveQuickSlot(QuickSlot);
+        }
+
+        private void ApplyUpgradeEffects()
+        {
+            if (upgradeDataList == null || upgradeDataList.Length == 0) return;
+
+            UpgradeSaveData upgrades = SaveDataConverter.LoadUpgrades();
+
+            // アップグレード効果を適用
+            foreach (UpgradeData upgrade in upgradeDataList)
+            {
+                int level = upgrade.UpgradeType switch
+                {
+                    UpgradeType.Oxygen => upgrades.oxygenLevel,
+                    UpgradeType.Depth => upgrades.depthLevel,
+                    _ => 0
+                };
+
+                int effectValue = upgrade.GetEffectValue(level);
+                switch (upgrade.UpgradeType)
+                {
+                    case UpgradeType.Oxygen:
+                        // effectValueは持続秒数として解釈
+                        // 減少量/秒 = 最大酸素量 / 持続秒数
+                        oxygenDecreasePerSecond = (float)model.MaxOxygen / effectValue;
+                        model.RefillOxygen(model.MaxOxygen);
+                        break;
+                    case UpgradeType.Depth:
+                        model.MaxDepth = effectValue;
+                        break;
+                }
+            }
+        }
+
+        private void CheckDepthExceeded()
+        {
+            if (model.IsDepthExceeded)
+            {
+                if (!isDepthExceeded)
+                {
+                    isDepthExceeded = true;
+                    depthExceededTimer = 0f;
+                    view.AddMessage(new MessageData("警告：耐圧限界を超えています！"));
+                }
+
+                depthExceededTimer += Time.deltaTime;
+
+                if (depthExceededTimer >= depthExceededDeathTime)
+                {
+                    // 圧壊による即死
+                    view.AddMessage(new MessageData("潜水服が圧壊しました"));
+                    OnDead();
+                }
+            }
+            else
+            {
+                if (isDepthExceeded)
+                {
+                    isDepthExceeded = false;
+                    depthExceededTimer = 0f;
+                }
+            }
         }
     }
 }

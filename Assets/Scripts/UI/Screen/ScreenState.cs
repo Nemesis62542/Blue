@@ -12,5 +12,6 @@ namespace Blue.UI.Screen
         CraftTable, // アイテムクラフト画面
         Strage,     // アイテム倉庫画面
         Map,        // マップ画面
+        Customize,  // カスタマイズ画面
     }
 }

@@ -125,6 +125,7 @@ MonoBehaviour:
   - {fileID: 7268364580834681231}
   - {fileID: 1469636954926827139}
   - {fileID: 1300878762864618895}
+  - {fileID: 2678657628112604500}
 --- !u!114 &5727658130448117837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,6 +147,8 @@ MonoBehaviour:
   - screenState: 8
     virtualCamera: {fileID: 0}
   - screenState: 9
+    virtualCamera: {fileID: 0}
+  - screenState: 10
     virtualCamera: {fileID: 0}
   activePriority: 10
   inactivePriority: 0
@@ -277,6 +280,11 @@ PrefabInstance:
 --- !u!224 &419280398077531774 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2443951363018493996, guid: 725ee0b6d65abd3449d0c98ef592b4d0, type: 3}
+  m_PrefabInstance: {fileID: 2610748149714552402}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &2678657628112604500 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 78739840307579654, guid: 725ee0b6d65abd3449d0c98ef592b4d0, type: 3}
   m_PrefabInstance: {fileID: 2610748149714552402}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3140317306150863834
@@ -948,6 +956,34 @@ PrefabInstance:
     - target: {fileID: 3961659662633646202, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
       propertyPath: m_Spacing
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1688910375836492259}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TransitionCustomize
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Blue.UI.Garage.GarageSceneController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4668851936927289399, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4688097128054796528, guid: 5a4a400e2ff8c884bb017fc1553b08cf, type: 3}
       propertyPath: m_Pivot.x

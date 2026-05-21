@@ -110,5 +110,10 @@ namespace Blue.UI.Garage
         {
             ShowScreen(ScreenState.Map);
         }
+
+        public void TransitionCustomize()
+        {
+            ShowScreen(ScreenState.Customize);
+        }
     }
 }
