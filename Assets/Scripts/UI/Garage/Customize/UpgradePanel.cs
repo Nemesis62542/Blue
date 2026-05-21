@@ -1,6 +1,7 @@
 using System;
 using Blue.Upgrade;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,7 @@ namespace Blue.UI.Garage.Customize
     public class UpgradePanel : MonoBehaviour
     {
         [SerializeField] private Image icon;
+        [SerializeField] private TMP_Text levelText;
         [SerializeField] private float pressAnimationDuration = 0.3f;
 
         private UpgradeData upgradeData;
@@ -19,6 +21,14 @@ namespace Blue.UI.Garage.Customize
         public event Action<UpgradeData> OnPointerUp;
 
         public UpgradeData UpgradeData => upgradeData;
+
+        public void SetLevel(int level)
+        {
+            if (levelText != null)
+            {
+                levelText.text = $"Lv.{level}";
+            }
+        }
 
         public void Initialize(UpgradeData data)
         {

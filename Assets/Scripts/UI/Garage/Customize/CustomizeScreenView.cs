@@ -15,7 +15,6 @@ namespace Blue.UI.Garage.Customize
         [SerializeField] private List<UpgradePanel> upgradePanels;
         [SerializeField] private TMP_Text upgradeName;
         [SerializeField] private TMP_Text description;
-        [SerializeField] private TMP_Text currentLevel;
         [SerializeField] private TMP_Text currentEffect;
         [SerializeField] private TMP_Text nextEffect;
         [SerializeField] private TMP_Text requireItems;
@@ -58,6 +57,7 @@ namespace Blue.UI.Garage.Customize
             }
 
             ClearDisplay();
+            RefreshDisplay();
             PlayScreenOnAnimation();
         }
 
@@ -112,6 +112,15 @@ namespace Blue.UI.Garage.Customize
 
         public void RefreshDisplay()
         {
+            // 各パネルのレベル表示を更新
+            foreach (UpgradePanel panel in upgradePanels)
+            {
+                if (panel.UpgradeData != null)
+                {
+                    panel.SetLevel(model.GetCurrentLevel(panel.UpgradeData.UpgradeType));
+                }
+            }
+
             if (currentUpgrade != null)
             {
                 SetUpgradeInformation(currentUpgrade, forceRefresh: true);
@@ -124,7 +133,6 @@ namespace Blue.UI.Garage.Customize
 
             if (upgradeName != null) upgradeName.text = "";
             if (description != null) description.text = "";
-            if (currentLevel != null) currentLevel.text = "";
             if (currentEffect != null) currentEffect.text = "";
             if (nextEffect != null) nextEffect.text = "";
             if (requireItems != null) requireItems.text = "";
@@ -138,15 +146,15 @@ namespace Blue.UI.Garage.Customize
             currentUpgrade = upgrade;
             int level = model.GetCurrentLevel(upgrade.UpgradeType);
             bool isMaxLevel = model.IsMaxLevel(upgrade);
+            string unit = GetUnitString(upgrade.UpgradeType);
 
             if (upgradeName != null) upgradeName.text = upgrade.UpgradeName;
             if (description != null) description.text = upgrade.Description;
-            if (currentLevel != null) currentLevel.text = $"Lv.{level}";
 
             if (currentEffect != null)
             {
                 int effectValue = upgrade.GetEffectValue(level);
-                currentEffect.text = $"現在: {effectValue}";
+                currentEffect.text = $"現在: {effectValue}{unit}";
             }
 
             if (!isMaxLevel)
@@ -154,7 +162,7 @@ namespace Blue.UI.Garage.Customize
                 UpgradeLevelData nextLevelData = upgrade.GetLevelData(level);
                 if (nextEffect != null)
                 {
-                    nextEffect.text = $"次: {nextLevelData.EffectValue}";
+                    nextEffect.text = $"次: {nextLevelData.EffectValue}{unit}";
                 }
                 if (requireItems != null)
                 {
@@ -166,6 +174,16 @@ namespace Blue.UI.Garage.Customize
                 if (nextEffect != null) nextEffect.text = "最大レベル";
                 if (requireItems != null) requireItems.text = "";
             }
+        }
+
+        private string GetUnitString(UpgradeType type)
+        {
+            return type switch
+            {
+                UpgradeType.Oxygen => "秒",
+                UpgradeType.Depth => "m",
+                _ => ""
+            };
         }
 
         private string GenerateRequireItemText(List<RequireItemData> requires)
