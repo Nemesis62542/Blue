@@ -16,10 +16,8 @@ MonoBehaviour:
   description: "\u3088\u308A\u9577\u3044\u6642\u9593\u6F5C\u6C34\u53EF\u80FD\u306B\u306A\u308B\u3002"
   icon: {fileID: 0}
   upgradeType: 0
-  baseValue: 1
+  baseValue: 180
   levels:
-  - effectValue: 180
-    requiredResources: []
   - effectValue: 300
     requiredResources:
     - item: {fileID: 11400000, guid: 58deb438c208d6f48accb1991720846b, type: 2}
