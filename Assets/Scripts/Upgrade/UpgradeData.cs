@@ -6,8 +6,9 @@ namespace Blue.Upgrade
 {
     public enum UpgradeType
     {
-        Oxygen,     // 酸素容量
-        Depth       // 最大深度
+        Oxygen,         // 酸素容量
+        Depth,          // 最大深度
+        SubCapacity     // サブアップグレード容量
     }
 
     [CreateAssetMenu(fileName = "UpgradeData", menuName = "Blue/ScriptableObject/UpgradeData")]

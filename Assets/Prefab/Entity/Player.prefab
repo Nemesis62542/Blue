@@ -5382,6 +5382,9 @@ MonoBehaviour:
   upgradeDataList:
   - {fileID: 11400000, guid: ac080c72d1ac965459a3e6131748afe2, type: 2}
   - {fileID: 11400000, guid: 715b5d5af4ed844439cb65870f3d2ef5, type: 2}
+  - {fileID: 11400000, guid: e0d1e67e44048a1418039860b3d95120, type: 2}
+  subUpgradeDataList:
+  - {fileID: 11400000, guid: 54bcf1a041ec3f64fb22e4bc03ce2827, type: 2}
 --- !u!114 &6702476828333239595
 MonoBehaviour:
   m_ObjectHideFlags: 0
