@@ -319,6 +319,18 @@ public class SchoolChild : MonoBehaviour, ILivingEntity
 		return (targetPosition - _cacheTransform.position).normalized * _spawner._followWeight;
 	}
 
+	// Calculate force to flee from threats
+	private Vector3 CalculateFleeForce() {
+		if (!_spawner._dynamicDensity || !_spawner._hasThreat) return Vector3.zero;
+
+		// Calculate direction away from threat
+		Vector3 fleeDirection = _cacheTransform.position - _spawner._threatPosition;
+
+		if (fleeDirection.magnitude < 0.01f) return Vector3.zero;
+
+		return fleeDirection.normalized * _spawner._fleeWeight;
+	}
+
     private bool Avoidance() {
 		if(!_spawner._avoidance)
 			return false;
@@ -415,6 +427,12 @@ public class SchoolChild : MonoBehaviour, ILivingEntity
 		Vector3 leaderForce = CalculateLeaderFollowForce();
 		if (leaderForce.magnitude > 0.01f) {
 			targetDirection += leaderForce;
+		}
+
+		// Add flee force from threats (highest priority)
+		Vector3 fleeForce = CalculateFleeForce();
+		if (fleeForce.magnitude > 0.01f) {
+			targetDirection += fleeForce;
 		}
 
 		Quaternion rotation = Quaternion.LookRotation(targetDirection);

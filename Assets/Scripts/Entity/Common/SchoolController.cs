@@ -103,6 +103,10 @@ public class SchoolController : MonoBehaviour
 	public float _schoolThreatThreshold = 2.0f;		//Threats are entities larger than this (-1 = fear nothing)
 	public float _threatDetectionRadius = 10.0f;	//Detection range for threats
 	public float _transitionSpeed = 2.0f;			//Speed of parameter transitions
+	public float _fleeWeight = 3.0f;				//Strength of fleeing force from threats
+
+	public Vector3 _threatPosition;					//Position of the closest threat
+	public bool _hasThreat = false;					//Whether there is an active threat
 
 	[Header("Threat Level: None (Dispersed)")]
 	public float _noneSpeedMultiplier = 0.8f;
@@ -338,6 +342,7 @@ public class SchoolController : MonoBehaviour
 		// If fear nothing setting, skip detection
 		if (_schoolThreatThreshold < 0) {
 			SetThreatLevel(ThreatLevel.None);
+			_hasThreat = false;
 			return;
 		}
 
@@ -348,6 +353,7 @@ public class SchoolController : MonoBehaviour
 
 		float closestThreatDistance = float.MaxValue;
 		bool foundThreat = false;
+		Vector3 closestThreatPosition = Vector3.zero;
 
 		foreach (Collider collider in colliders) {
 			// Only check objects with ILivingEntity
@@ -359,11 +365,15 @@ public class SchoolController : MonoBehaviour
 			float distance = Vector3.Distance(_posBuffer, collider.transform.position);
 			if (distance < closestThreatDistance) {
 				closestThreatDistance = distance;
+				closestThreatPosition = collider.transform.position;
 				foundThreat = true;
 			}
 		}
 
 		if (foundThreat) {
+			_hasThreat = true;
+			_threatPosition = closestThreatPosition;
+
 			// Set threat level based on distance
 			if (closestThreatDistance < _threatDetectionRadius * 0.3f) {
 				SetThreatLevel(ThreatLevel.High);  // Very close
@@ -374,6 +384,7 @@ public class SchoolController : MonoBehaviour
 			}
 		} else {
 			SetThreatLevel(ThreatLevel.None);
+			_hasThreat = false;
 		}
 	}
 

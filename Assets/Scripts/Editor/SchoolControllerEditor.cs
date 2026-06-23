@@ -280,6 +280,7 @@ public class SchoolControllerEditor: Editor
 			if(target_cs._threatDetectionRadius <= 0.1f) target_cs._threatDetectionRadius = 0.1f;
 
 			target_cs._transitionSpeed = EditorGUILayout.Slider("Transition Speed", target_cs._transitionSpeed, 0.1f, 10.0f);
+			target_cs._fleeWeight = EditorGUILayout.Slider("Flee Weight", target_cs._fleeWeight, 0.0f, 10.0f);
 
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("Threat Level: None (Dispersed)", EditorStyles.miniBoldLabel);
