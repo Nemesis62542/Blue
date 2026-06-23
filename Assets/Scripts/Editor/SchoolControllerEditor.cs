@@ -283,6 +283,11 @@ public class SchoolControllerEditor: Editor
 			target_cs._fleeWeight = EditorGUILayout.Slider("Flee Weight", target_cs._fleeWeight, 0.0f, 10.0f);
 
 			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("Performance Settings", EditorStyles.miniBoldLabel);
+			target_cs._threatDetectionInterval = EditorGUILayout.IntSlider("Detection Interval (frames)", target_cs._threatDetectionInterval, 1, 30);
+			EditorGUILayout.LabelField("Higher values = better performance, less responsive", EditorStyles.miniLabel);
+
+			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("Threat Level: None (Dispersed)", EditorStyles.miniBoldLabel);
 			target_cs._noneSpeedMultiplier = EditorGUILayout.Slider("Speed Multiplier", target_cs._noneSpeedMultiplier, 0.1f, 2.0f);
 			target_cs._noneSeparationWeight = EditorGUILayout.Slider("Separation Weight", target_cs._noneSeparationWeight, 0.0f, 5.0f);

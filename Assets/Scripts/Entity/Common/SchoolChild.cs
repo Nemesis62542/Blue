@@ -236,6 +236,8 @@ public class SchoolChild : MonoBehaviour, ILivingEntity
 			_spawner._fishLayer
 		);
 
+		float separationDistanceSqr = _spawner._separationDistance * _spawner._separationDistance;
+
 		for (int i = 0; i < count; i++) {
 			if (_neighborBuffer[i].transform == _cacheTransform) continue;
 
@@ -243,11 +245,13 @@ public class SchoolChild : MonoBehaviour, ILivingEntity
 			if (fish == null || fish.Spawner != _spawner) continue;
 
 			Vector3 neighborPos = _neighborBuffer[i].transform.position;
-			float distance = Vector3.Distance(_cacheTransform.position, neighborPos);
+			Vector3 offset = _cacheTransform.position - neighborPos;
+			float distanceSqr = offset.sqrMagnitude;
 
-			// Separation: Move away from fish that are too close
-			if (distance < _spawner._separationDistance && distance > 0.01f) {
-				separation += (_cacheTransform.position - neighborPos) / distance;
+			// Separation: Move away from fish that are too close (optimized with sqrMagnitude)
+			if (distanceSqr < separationDistanceSqr && distanceSqr > 0.0001f) {
+				float distance = Mathf.Sqrt(distanceSqr); // Only calculate sqrt when needed
+				separation += offset / distance;
 			}
 
 			// Alignment: Match velocity with nearby fish
@@ -285,15 +289,16 @@ public class SchoolChild : MonoBehaviour, ILivingEntity
 		if (_spawner._leaders == null || _spawner._leaders.Count == 0) return null;
 
 		SchoolChild nearest = null;
-		float nearestDistance = _spawner._followDistance;
+		float nearestDistanceSqr = _spawner._followDistance * _spawner._followDistance;
 
 		foreach (SchoolChild leader in _spawner._leaders) {
 			if (leader == null || leader == this) continue;
 
-			float distance = Vector3.Distance(_cacheTransform.position, leader.transform.position);
+			// Use sqrMagnitude for performance
+			float distanceSqr = (_cacheTransform.position - leader.transform.position).sqrMagnitude;
 
-			if (distance < nearestDistance) {
-				nearestDistance = distance;
+			if (distanceSqr < nearestDistanceSqr) {
+				nearestDistanceSqr = distanceSqr;
 				nearest = leader;
 			}
 		}

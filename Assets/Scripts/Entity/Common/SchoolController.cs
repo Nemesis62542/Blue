@@ -104,9 +104,11 @@ public class SchoolController : MonoBehaviour
 	public float _threatDetectionRadius = 10.0f;	//Detection range for threats
 	public float _transitionSpeed = 2.0f;			//Speed of parameter transitions
 	public float _fleeWeight = 3.0f;				//Strength of fleeing force from threats
+	public int _threatDetectionInterval = 5;		//Frames between threat detection (performance optimization)
 
 	public Vector3 _threatPosition;					//Position of the closest threat
 	public bool _hasThreat = false;					//Whether there is an active threat
+	private int _threatDetectionCounter = 0;		//Counter for threat detection interval
 
 	[Header("Threat Level: None (Dispersed)")]
 	public float _noneSpeedMultiplier = 0.8f;
@@ -181,7 +183,12 @@ public class SchoolController : MonoBehaviour
 
 			// Update dynamic density system
 			if (_dynamicDensity) {
-				DetectThreats();
+				// Detect threats at intervals for performance
+				_threatDetectionCounter++;
+				if (_threatDetectionCounter >= _threatDetectionInterval) {
+					_threatDetectionCounter = 0;
+					DetectThreats();
+				}
 				UpdateDynamicParameters();
 			}
 		}
@@ -351,7 +358,7 @@ public class SchoolController : MonoBehaviour
 			_threatDetectionRadius
 		);
 
-		float closestThreatDistance = float.MaxValue;
+		float closestThreatDistanceSqr = float.MaxValue;
 		bool foundThreat = false;
 		Vector3 closestThreatPosition = Vector3.zero;
 
@@ -362,9 +369,10 @@ public class SchoolController : MonoBehaviour
 			// Only consider entities larger than threshold as threats
 			if (entity.Size <= _schoolThreatThreshold) continue;
 
-			float distance = Vector3.Distance(_posBuffer, collider.transform.position);
-			if (distance < closestThreatDistance) {
-				closestThreatDistance = distance;
+			// Use sqrMagnitude to avoid expensive Sqrt operation
+			float distanceSqr = (collider.transform.position - _posBuffer).sqrMagnitude;
+			if (distanceSqr < closestThreatDistanceSqr) {
+				closestThreatDistanceSqr = distanceSqr;
 				closestThreatPosition = collider.transform.position;
 				foundThreat = true;
 			}
@@ -374,10 +382,13 @@ public class SchoolController : MonoBehaviour
 			_hasThreat = true;
 			_threatPosition = closestThreatPosition;
 
-			// Set threat level based on distance
-			if (closestThreatDistance < _threatDetectionRadius * 0.3f) {
+			// Set threat level based on distance (using squared distances for performance)
+			float highThresholdSqr = (_threatDetectionRadius * 0.3f) * (_threatDetectionRadius * 0.3f);
+			float lowThresholdSqr = (_threatDetectionRadius * 0.7f) * (_threatDetectionRadius * 0.7f);
+
+			if (closestThreatDistanceSqr < highThresholdSqr) {
 				SetThreatLevel(ThreatLevel.High);  // Very close
-			} else if (closestThreatDistance < _threatDetectionRadius * 0.7f) {
+			} else if (closestThreatDistanceSqr < lowThresholdSqr) {
 				SetThreatLevel(ThreatLevel.Low);   // Somewhat close
 			} else {
 				SetThreatLevel(ThreatLevel.None);  // Far away
