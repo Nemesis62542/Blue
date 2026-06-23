@@ -67,8 +67,17 @@ public class SchoolController : MonoBehaviour
 	
 	///PUSH
 	public bool _push;					//Enable/disable push
-	public float _pushDistance;				//How far away obstacles can be before starting to push away	
+	public float _pushDistance;				//How far away obstacles can be before starting to push away
 	public float _pushForce = 5.0f;			//How fast/hard to push away
+
+	///BOIDS ALGORITHM
+	public bool _boids = false;				//Enable/disable boids algorithm
+	public float _neighborDistance = 5.0f;		//Distance to search for neighboring fish
+	public float _separationDistance = 2.0f;	//Distance at which fish separate from each other
+	public float _separationWeight = 1.5f;		//Strength of separation force
+	public float _alignmentWeight = 1.0f;		//Strength of alignment force (matching velocity)
+	public float _cohesionWeight = 1.0f;		//Strength of cohesion force (moving to group center)
+	public LayerMask _fishLayer = -1;			//Layer mask for fish detection
 	
 	//FRAME SKIP
 	public int _updateDivisor = 1;				//Skip update every N frames (Higher numbers might give choppy results, 3 - 4 on 60fps , 2 - 3 on 30 fps)

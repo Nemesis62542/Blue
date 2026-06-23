@@ -6,16 +6,18 @@ using UnityEditor;
  	www.chemicalbliss.com																															
 *****************************************/
 [CustomEditor(typeof(SchoolController))]
-[System.Serializable]
+[Serializable]
 public class SchoolControllerEditor: Editor
 {
 	public SerializedProperty myProperty;
 	public SerializedProperty avoidanceMask;
-	
+	public SerializedProperty fishLayer;
+
 	public void OnEnable()
 	{
         avoidanceMask= serializedObject.FindProperty("_avoidanceMask");
 		myProperty = serializedObject.FindProperty("_childPrefab");
+		fishLayer = serializedObject.FindProperty("_fishLayer");
 	}
 
 	public override void OnInspectorGUI()
@@ -199,6 +201,32 @@ public class SchoolControllerEditor: Editor
 			if(target_cs._pushDistance <= 0.1f) target_cs._pushDistance = 0.1f;
 			target_cs._pushForce = EditorGUILayout.FloatField("Push Force", target_cs._pushForce);
 			if(target_cs._pushForce <= 0.01f) target_cs._pushForce = 0.01f;
+		}
+		EditorGUILayout.EndVertical();
+		GUI.color = dColor;
+		EditorGUILayout.BeginVertical("Box");
+		GUI.color = Color.white;
+		EditorGUILayout.LabelField("Boids Algorithm (Flocking Behavior)", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("Fish interact with nearby fish for realistic schooling", EditorStyles.miniLabel);
+		target_cs._boids = EditorGUILayout.Toggle("Boids (enable/disable)", target_cs._boids);
+		if(target_cs._boids)
+		{
+			target_cs._neighborDistance = EditorGUILayout.FloatField("Neighbor Search Distance", target_cs._neighborDistance);
+			if(target_cs._neighborDistance <= 0.1f) target_cs._neighborDistance = 0.1f;
+
+			target_cs._separationDistance = EditorGUILayout.FloatField("Separation Distance", target_cs._separationDistance);
+			if(target_cs._separationDistance <= 0.1f) target_cs._separationDistance = 0.1f;
+
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("Weight Settings", EditorStyles.miniBoldLabel);
+			target_cs._separationWeight = EditorGUILayout.Slider("Separation Weight", target_cs._separationWeight, 0.0f, 5.0f);
+			target_cs._alignmentWeight = EditorGUILayout.Slider("Alignment Weight", target_cs._alignmentWeight, 0.0f, 5.0f);
+			target_cs._cohesionWeight = EditorGUILayout.Slider("Cohesion Weight", target_cs._cohesionWeight, 0.0f, 5.0f);
+
+			EditorGUILayout.Space();
+			serializedObject.Update();
+			EditorGUILayout.PropertyField(fishLayer, new GUIContent("Fish Layer"));
+			serializedObject.ApplyModifiedProperties();
 		}
 		EditorGUILayout.EndVertical();
 		if(GUI.changed) EditorUtility.SetDirty(target_cs);

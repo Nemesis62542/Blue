@@ -24,6 +24,7 @@ public class SchoolChild : MonoBehaviour
     private int _updateSeed = -1;
     private Transform _cacheTransform;
     private Rigidbody _rigidbody;
+    private Collider[] _neighborBuffer = new Collider[20]; // Buffer for neighbor search (reduces GC)
 
 #if UNITY_EDITOR
     private bool _sWarning;
@@ -201,6 +202,55 @@ public class SchoolChild : MonoBehaviour
 		return Mathf.Clamp (angle, min, max);
 	}
 
+	private Vector3 CalculateBoidsForce() {
+		if (!_spawner._boids) return Vector3.zero;
+
+		Vector3 separation = Vector3.zero;
+		Vector3 alignment = Vector3.zero;
+		Vector3 cohesion = Vector3.zero;
+		int neighborCount = 0;
+
+		// Use OverlapSphereNonAlloc to reduce GC allocation
+		int count = Physics.OverlapSphereNonAlloc(
+			_cacheTransform.position,
+			_spawner._neighborDistance,
+			_neighborBuffer,
+			_spawner._fishLayer
+		);
+
+		for (int i = 0; i < count; i++) {
+			if (_neighborBuffer[i].transform == _cacheTransform) continue;
+
+			SchoolChild fish = _neighborBuffer[i].GetComponent<SchoolChild>();
+			if (fish == null || fish.Spawner != _spawner) continue;
+
+			Vector3 neighborPos = _neighborBuffer[i].transform.position;
+			float distance = Vector3.Distance(_cacheTransform.position, neighborPos);
+
+			// Separation: Move away from fish that are too close
+			if (distance < _spawner._separationDistance && distance > 0.01f) {
+				separation += (_cacheTransform.position - neighborPos) / distance;
+			}
+
+			// Alignment: Match velocity with nearby fish
+			alignment += fish._rigidbody.linearVelocity;
+
+			// Cohesion: Move towards the center of nearby fish
+			cohesion += neighborPos;
+
+			neighborCount++;
+		}
+
+		if (neighborCount > 0) {
+			alignment /= neighborCount;
+			cohesion = (cohesion / neighborCount) - _cacheTransform.position;
+		}
+
+		return separation * _spawner._separationWeight +
+		       alignment.normalized * _spawner._alignmentWeight +
+		       cohesion.normalized * _spawner._cohesionWeight;
+	}
+
     private bool Avoidance() {
 		if(!_spawner._avoidance)
 			return false;
@@ -285,7 +335,15 @@ public class SchoolChild : MonoBehaviour
 	}
 	
 	private void RotationBasedOnWaypointOrAvoidance(){
-        Quaternion rotation = Quaternion.LookRotation(_wayPoint - _cacheTransform.position);
+		Vector3 targetDirection = _wayPoint - _cacheTransform.position;
+
+		// Add boids force to the target direction
+		Vector3 boidsForce = CalculateBoidsForce();
+		if (boidsForce.magnitude > 0.01f) {
+			targetDirection += boidsForce;
+		}
+
+		Quaternion rotation = Quaternion.LookRotation(targetDirection);
         if (!Avoidance()){
 			_rigidbody.rotation = Quaternion.Slerp(_rigidbody.rotation, rotation, _spawner._newDelta * _damping);
 		}
