@@ -255,6 +255,69 @@ public class SchoolControllerEditor: Editor
 			}
 		}
 		EditorGUILayout.EndVertical();
+		GUI.color = dColor;
+		EditorGUILayout.BeginVertical("Box");
+		GUI.color = Color.white;
+		EditorGUILayout.LabelField("Dynamic Density System", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("Fish behavior changes based on threat level (size-based)", EditorStyles.miniLabel);
+		target_cs._dynamicDensity = EditorGUILayout.Toggle("Dynamic Density (enable/disable)", target_cs._dynamicDensity);
+		if(target_cs._dynamicDensity)
+		{
+			// Display current threat level in play mode
+			if (Application.isPlaying) {
+				EditorGUILayout.Space();
+				EditorGUILayout.LabelField($"Current Threat Level: {target_cs._currentThreatLevel}", EditorStyles.boldLabel);
+				EditorGUILayout.Space();
+			}
+
+			EditorGUILayout.LabelField("Size Settings", EditorStyles.miniBoldLabel);
+			target_cs._schoolThreatSize = EditorGUILayout.FloatField("School Threat Size", target_cs._schoolThreatSize);
+			target_cs._schoolThreatThreshold = EditorGUILayout.FloatField("Threat Size Threshold", target_cs._schoolThreatThreshold);
+			EditorGUILayout.LabelField("(-1 = fear nothing, 0+ = fear anything larger)", EditorStyles.miniLabel);
+
+			EditorGUILayout.Space();
+			target_cs._threatDetectionRadius = EditorGUILayout.FloatField("Threat Detection Radius", target_cs._threatDetectionRadius);
+			if(target_cs._threatDetectionRadius <= 0.1f) target_cs._threatDetectionRadius = 0.1f;
+
+			target_cs._transitionSpeed = EditorGUILayout.Slider("Transition Speed", target_cs._transitionSpeed, 0.1f, 10.0f);
+
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("Threat Level: None (Dispersed)", EditorStyles.miniBoldLabel);
+			target_cs._noneSpeedMultiplier = EditorGUILayout.Slider("Speed Multiplier", target_cs._noneSpeedMultiplier, 0.1f, 2.0f);
+			target_cs._noneSeparationWeight = EditorGUILayout.Slider("Separation Weight", target_cs._noneSeparationWeight, 0.0f, 5.0f);
+			target_cs._noneCohesionWeight = EditorGUILayout.Slider("Cohesion Weight", target_cs._noneCohesionWeight, 0.0f, 5.0f);
+			target_cs._noneSpawnSphereMultiplier = EditorGUILayout.Slider("Range Multiplier", target_cs._noneSpawnSphereMultiplier, 0.5f, 3.0f);
+
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("Threat Level: Low (Normal)", EditorStyles.miniBoldLabel);
+			target_cs._lowSpeedMultiplier = EditorGUILayout.Slider("Speed Multiplier", target_cs._lowSpeedMultiplier, 0.1f, 2.0f);
+			target_cs._lowSeparationWeight = EditorGUILayout.Slider("Separation Weight", target_cs._lowSeparationWeight, 0.0f, 5.0f);
+			target_cs._lowCohesionWeight = EditorGUILayout.Slider("Cohesion Weight", target_cs._lowCohesionWeight, 0.0f, 5.0f);
+			target_cs._lowSpawnSphereMultiplier = EditorGUILayout.Slider("Range Multiplier", target_cs._lowSpawnSphereMultiplier, 0.5f, 3.0f);
+
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField("Threat Level: High (Dense & Fast)", EditorStyles.miniBoldLabel);
+			target_cs._highSpeedMultiplier = EditorGUILayout.Slider("Speed Multiplier", target_cs._highSpeedMultiplier, 0.1f, 3.0f);
+			target_cs._highSeparationWeight = EditorGUILayout.Slider("Separation Weight", target_cs._highSeparationWeight, 0.0f, 5.0f);
+			target_cs._highCohesionWeight = EditorGUILayout.Slider("Cohesion Weight", target_cs._highCohesionWeight, 0.0f, 5.0f);
+			target_cs._highSpawnSphereMultiplier = EditorGUILayout.Slider("Range Multiplier", target_cs._highSpawnSphereMultiplier, 0.1f, 2.0f);
+
+			// Manual control buttons for testing (only in play mode)
+			if (Application.isPlaying) {
+				EditorGUILayout.Space();
+				EditorGUILayout.LabelField("Manual Control (for testing)", EditorStyles.miniBoldLabel);
+				if (GUILayout.Button("Set Threat: None")) {
+					target_cs.SetThreatLevel(SchoolController.ThreatLevel.None);
+				}
+				if (GUILayout.Button("Set Threat: Low")) {
+					target_cs.SetThreatLevel(SchoolController.ThreatLevel.Low);
+				}
+				if (GUILayout.Button("Set Threat: High")) {
+					target_cs.SetThreatLevel(SchoolController.ThreatLevel.High);
+				}
+			}
+		}
+		EditorGUILayout.EndVertical();
 		if(GUI.changed) EditorUtility.SetDirty(target_cs);
 	}
 }

@@ -67,6 +67,9 @@ namespace Blue.Player
         private float depthExceededTimer = 0f;
         private bool isDepthExceeded = false;
 
+        [Header("Threat Size Settings")]
+        [SerializeField] private float playerThreatSize = 3.0f;
+
         private SubUpgradeEffectManager subUpgradeEffectManager;
 
         [Header("アップグレード設定")]
@@ -76,6 +79,10 @@ namespace Blue.Player
         public InventoryModel Inventory => model.Inventory;
         public QuickSlotModel QuickSlot => model.QuickSlot;
         public Status Status => model.Status;
+
+        // ILivingEntity threat size implementation
+        public float Size => playerThreatSize;
+        public float ThreatSizeThreshold => -1f; // Player fears nothing
 
         public static PlayerController Instance;
 

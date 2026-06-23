@@ -1,12 +1,15 @@
-/**************************************									
-	Copyright 2015 Unluck Software	
- 	www.chemicalbliss.com								
+/**************************************
+	Copyright 2015 Unluck Software
+ 	www.chemicalbliss.com
 ***************************************/
 
+using Blue.Attack;
+using Blue.Entity;
+using Blue.Interface;
 using UnityEngine;
 
 
-public class SchoolChild : MonoBehaviour
+public class SchoolChild : MonoBehaviour, ILivingEntity
 {
 	[SerializeField] private Transform _scanner;
 
@@ -33,6 +36,19 @@ public class SchoolChild : MonoBehaviour
 #endif
 
 	public SchoolController Spawner => _spawner;
+
+	// ILivingEntity implementation
+	public Status Status => null; // School fish don't have individual Status
+	public float Size => _spawner._schoolThreatSize;
+	public float ThreatSizeThreshold => _spawner._schoolThreatThreshold;
+
+	public void Damage(AttackData attackData) {
+		// School fish don't take individual damage
+	}
+
+	public void OnDead() {
+		// School fish death handling (if needed)
+	}
 
 	public void Start()
 	{

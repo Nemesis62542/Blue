@@ -88,7 +88,49 @@ public class SchoolController : MonoBehaviour
 	public float _leaderChangeInterval = 10.0f;	//Interval for changing leaders (seconds)
 	private float _leaderChangeTimer = 0.0f;	//Timer for leader rotation
 	public List<SchoolChild> _leaders;			//List of current leaders
-	
+
+	///DYNAMIC DENSITY SYSTEM
+	public enum ThreatLevel
+	{
+		None,		// Peaceful: dispersed
+		Low,		// Minor threat: normal
+		High		// Major threat: dense & fast
+	}
+
+	public bool _dynamicDensity = false;			//Enable/disable dynamic density management
+	public ThreatLevel _currentThreatLevel = ThreatLevel.None;
+	public float _schoolThreatSize = 1.0f;			//Threat size of this school
+	public float _schoolThreatThreshold = 2.0f;		//Threats are entities larger than this (-1 = fear nothing)
+	public float _threatDetectionRadius = 10.0f;	//Detection range for threats
+	public float _transitionSpeed = 2.0f;			//Speed of parameter transitions
+
+	[Header("Threat Level: None (Dispersed)")]
+	public float _noneSpeedMultiplier = 0.8f;
+	public float _noneSeparationWeight = 2.0f;
+	public float _noneCohesionWeight = 0.5f;
+	public float _noneSpawnSphereMultiplier = 1.5f;
+
+	[Header("Threat Level: Low (Normal)")]
+	public float _lowSpeedMultiplier = 1.0f;
+	public float _lowSeparationWeight = 1.5f;
+	public float _lowCohesionWeight = 1.0f;
+	public float _lowSpawnSphereMultiplier = 1.0f;
+
+	[Header("Threat Level: High (Dense & Fast)")]
+	public float _highSpeedMultiplier = 1.5f;
+	public float _highSeparationWeight = 0.5f;
+	public float _highCohesionWeight = 3.0f;
+	public float _highSpawnSphereMultiplier = 0.5f;
+
+	private float _targetSpeedMultiplier;
+	private float _targetSeparationWeight;
+	private float _targetCohesionWeight;
+	private float _targetSpawnSphereMultiplier;
+
+	private float _baseSpawnSphere;
+	private float _baseSeparationWeight;
+	private float _baseCohesionWeight;
+
 	//FRAME SKIP
 	public int _updateDivisor = 1;				//Skip update every N frames (Higher numbers might give choppy results, 3 - 4 on 60fps , 2 - 3 on 30 fps)
 	public float _newDelta;
@@ -99,6 +141,17 @@ public class SchoolController : MonoBehaviour
 		_posBuffer = transform.position + _posOffset;
 		_schoolSpeed = Random.Range(1.0f , _childSpeedMultipler);
 		_leaders = new List<SchoolChild>();
+
+		// Save base values for dynamic density system
+		_baseSpawnSphere = _spawnSphere;
+		_baseSeparationWeight = _separationWeight;
+		_baseCohesionWeight = _cohesionWeight;
+
+		// Initialize dynamic density system
+		if (_dynamicDensity) {
+			SetThreatLevel(ThreatLevel.Low); // Start with normal state
+		}
+
 		AddFish(_childAmount);
 
 		// Initialize leaders if leader follow system is enabled
@@ -121,6 +174,12 @@ public class SchoolController : MonoBehaviour
 
 			// Update leader rotation
 			UpdateLeaderRotation();
+
+			// Update dynamic density system
+			if (_dynamicDensity) {
+				DetectThreats();
+				UpdateDynamicParameters();
+			}
 		}
 	}
 	
@@ -242,7 +301,98 @@ public class SchoolController : MonoBehaviour
 			AssignLeaders();
 		}
 	}
-	
+
+	// Set threat level and target parameters
+	public void SetThreatLevel(ThreatLevel level) {
+		if (_currentThreatLevel == level) return;
+
+		_currentThreatLevel = level;
+
+		// Set target values based on threat level
+		switch (level) {
+			case ThreatLevel.None:
+				_targetSpeedMultiplier = _noneSpeedMultiplier;
+				_targetSeparationWeight = _noneSeparationWeight;
+				_targetCohesionWeight = _noneCohesionWeight;
+				_targetSpawnSphereMultiplier = _noneSpawnSphereMultiplier;
+				break;
+			case ThreatLevel.Low:
+				_targetSpeedMultiplier = _lowSpeedMultiplier;
+				_targetSeparationWeight = _lowSeparationWeight;
+				_targetCohesionWeight = _lowCohesionWeight;
+				_targetSpawnSphereMultiplier = _lowSpawnSphereMultiplier;
+				break;
+			case ThreatLevel.High:
+				_targetSpeedMultiplier = _highSpeedMultiplier;
+				_targetSeparationWeight = _highSeparationWeight;
+				_targetCohesionWeight = _highCohesionWeight;
+				_targetSpawnSphereMultiplier = _highSpawnSphereMultiplier;
+				break;
+		}
+	}
+
+	// Detect threats using size-based comparison
+	private void DetectThreats() {
+		if (!_dynamicDensity) return;
+
+		// If fear nothing setting, skip detection
+		if (_schoolThreatThreshold < 0) {
+			SetThreatLevel(ThreatLevel.None);
+			return;
+		}
+
+		Collider[] colliders = Physics.OverlapSphere(
+			_posBuffer,
+			_threatDetectionRadius
+		);
+
+		float closestThreatDistance = float.MaxValue;
+		bool foundThreat = false;
+
+		foreach (Collider collider in colliders) {
+			// Only check objects with ILivingEntity
+			if (!collider.TryGetComponent<Blue.Interface.ILivingEntity>(out Blue.Interface.ILivingEntity entity)) continue;
+
+			// Only consider entities larger than threshold as threats
+			if (entity.Size <= _schoolThreatThreshold) continue;
+
+			float distance = Vector3.Distance(_posBuffer, collider.transform.position);
+			if (distance < closestThreatDistance) {
+				closestThreatDistance = distance;
+				foundThreat = true;
+			}
+		}
+
+		if (foundThreat) {
+			// Set threat level based on distance
+			if (closestThreatDistance < _threatDetectionRadius * 0.3f) {
+				SetThreatLevel(ThreatLevel.High);  // Very close
+			} else if (closestThreatDistance < _threatDetectionRadius * 0.7f) {
+				SetThreatLevel(ThreatLevel.Low);   // Somewhat close
+			} else {
+				SetThreatLevel(ThreatLevel.None);  // Far away
+			}
+		} else {
+			SetThreatLevel(ThreatLevel.None);
+		}
+	}
+
+	// Smoothly transition parameters to target values
+	private void UpdateDynamicParameters() {
+		if (!_dynamicDensity) return;
+
+		float t = _transitionSpeed * Time.deltaTime;
+
+		// Lerp to target values
+		_childSpeedMultipler = Mathf.Lerp(_childSpeedMultipler, _targetSpeedMultiplier, t);
+		_separationWeight = Mathf.Lerp(_separationWeight, _targetSeparationWeight, t);
+		_cohesionWeight = Mathf.Lerp(_cohesionWeight, _targetCohesionWeight, t);
+
+		// Dynamically adjust spawn sphere range
+		float targetSpawnSphere = _baseSpawnSphere * _targetSpawnSphereMultiplier;
+		_spawnSphere = Mathf.Lerp(_spawnSphere, targetSpawnSphere, t);
+	}
+
 	public void OnDrawGizmos() {
 		if(!Application.isPlaying && _posBuffer != transform.position+ _posOffset) _posBuffer = transform.position + _posOffset;
 	   	Gizmos.color = Color.blue;
