@@ -25,6 +25,8 @@ public class SchoolChild : MonoBehaviour
     private Transform _cacheTransform;
     private Rigidbody _rigidbody;
     private Collider[] _neighborBuffer = new Collider[20]; // Buffer for neighbor search (reduces GC)
+    private bool _isLeader = false;              // Whether this fish is a leader
+    private SchoolChild _targetLeader = null;    // The leader this fish is following
 
 #if UNITY_EDITOR
     private bool _sWarning;
@@ -251,6 +253,56 @@ public class SchoolChild : MonoBehaviour
 		       cohesion.normalized * _spawner._cohesionWeight;
 	}
 
+	public void SetAsLeader(bool isLeader) {
+		_isLeader = isLeader;
+		if (_isLeader) {
+			_targetLeader = null; // Leaders don't follow anyone
+		}
+	}
+
+	public bool IsLeader() {
+		return _isLeader;
+	}
+
+	// Find the nearest leader within follow distance
+	private SchoolChild FindNearestLeader() {
+		if (_spawner._leaders == null || _spawner._leaders.Count == 0) return null;
+
+		SchoolChild nearest = null;
+		float nearestDistance = _spawner._followDistance;
+
+		foreach (SchoolChild leader in _spawner._leaders) {
+			if (leader == null || leader == this) continue;
+
+			float distance = Vector3.Distance(_cacheTransform.position, leader.transform.position);
+
+			if (distance < nearestDistance) {
+				nearestDistance = distance;
+				nearest = leader;
+			}
+		}
+
+		return nearest;
+	}
+
+	// Calculate force to follow the leader
+	private Vector3 CalculateLeaderFollowForce() {
+		if (!_spawner._leaderFollow || _isLeader) return Vector3.zero;
+
+		// Update target leader periodically (not every frame for performance)
+		if (Random.value < 0.05f) { // ~5% chance per frame (~3 frames at 60fps)
+			_targetLeader = FindNearestLeader();
+		}
+
+		if (_targetLeader == null) return Vector3.zero;
+
+		// Follow behind the leader
+		Vector3 leaderBack = _targetLeader.transform.position - _targetLeader.transform.forward * 2.0f;
+		Vector3 targetPosition = leaderBack;
+
+		return (targetPosition - _cacheTransform.position).normalized * _spawner._followWeight;
+	}
+
     private bool Avoidance() {
 		if(!_spawner._avoidance)
 			return false;
@@ -341,6 +393,12 @@ public class SchoolChild : MonoBehaviour
 		Vector3 boidsForce = CalculateBoidsForce();
 		if (boidsForce.magnitude > 0.01f) {
 			targetDirection += boidsForce;
+		}
+
+		// Add leader follow force
+		Vector3 leaderForce = CalculateLeaderFollowForce();
+		if (leaderForce.magnitude > 0.01f) {
+			targetDirection += leaderForce;
 		}
 
 		Quaternion rotation = Quaternion.LookRotation(targetDirection);

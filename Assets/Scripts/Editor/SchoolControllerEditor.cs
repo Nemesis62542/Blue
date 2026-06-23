@@ -229,6 +229,32 @@ public class SchoolControllerEditor: Editor
 			serializedObject.ApplyModifiedProperties();
 		}
 		EditorGUILayout.EndVertical();
+		GUI.color = dColor;
+		EditorGUILayout.BeginVertical("Box");
+		GUI.color = Color.white;
+		EditorGUILayout.LabelField("Leader Follow System", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("Some fish become leaders, others follow them", EditorStyles.miniLabel);
+		target_cs._leaderFollow = EditorGUILayout.Toggle("Leader Follow (enable/disable)", target_cs._leaderFollow);
+		if(target_cs._leaderFollow)
+		{
+			target_cs._leaderRatio = EditorGUILayout.Slider("Leader Ratio", target_cs._leaderRatio, 0.05f, 0.5f);
+			EditorGUILayout.LabelField($"Leaders: {Mathf.RoundToInt(target_cs._childAmount * target_cs._leaderRatio)}/{target_cs._childAmount}", EditorStyles.miniLabel);
+
+			target_cs._followDistance = EditorGUILayout.FloatField("Follow Search Distance", target_cs._followDistance);
+			if(target_cs._followDistance <= 0.1f) target_cs._followDistance = 0.1f;
+
+			target_cs._followWeight = EditorGUILayout.Slider("Follow Weight", target_cs._followWeight, 0.0f, 5.0f);
+			target_cs._leaderChangeInterval = EditorGUILayout.FloatField("Leader Change Interval (sec)", target_cs._leaderChangeInterval);
+			if(target_cs._leaderChangeInterval < 1.0f) target_cs._leaderChangeInterval = 1.0f;
+
+			// Manual leader reassignment button (only in play mode)
+			if (Application.isPlaying) {
+				if (GUILayout.Button("Reassign Leaders Now")) {
+					target_cs.AssignLeaders();
+				}
+			}
+		}
+		EditorGUILayout.EndVertical();
 		if(GUI.changed) EditorUtility.SetDirty(target_cs);
 	}
 }
