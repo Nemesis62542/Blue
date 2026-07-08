@@ -11,6 +11,11 @@ namespace Blue.Entity
         public EntityData Data => data;
         public bool IsDead => Status.IsDead;
 
+        // ILivingEntity threat size properties with default implementation
+        // Derived classes can override these if needed
+        public virtual float Size => data.DisplaySize;  // Default: use DisplaySize from EntityData
+        public virtual float ThreatSizeThreshold => -1f;  // Default: fear nothing
+
         public BaseEntityModel(EntityData data)
         {
             this.data = data;
