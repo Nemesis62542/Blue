@@ -62,12 +62,20 @@ public class VolumetricGodRaysRendererFeature : ScriptableRendererFeature
         [Range(0f, 1f)]
         public float noiseInfluence = 0.8f;
 
-        [Tooltip("光筋ノイズのアニメーション速度")]
-        public Vector2 noiseSpeed = new Vector2(0.5f, 0.3f);
+        [Tooltip("第1層のアニメーション速度")]
+        public Vector2 noiseSpeed1 = new Vector2(0.5f, 0.3f);
+
+        [Tooltip("第2層のアニメーション速度")]
+        public Vector2 noiseSpeed2 = new Vector2(-0.4f, 0.5f);
 
         [Tooltip("光筋ノイズのコントラスト（値が大きいほど鋭い光筋）")]
         [Range(0.5f, 5f)]
         public float noisePower = 2f;
+
+        [Header("Pixelate")]
+        [Tooltip("光のラインのピクセル化（0=無効、画面縦方向のブロック数。値が小さいほど粗いドット）")]
+        [Range(0f, 480f)]
+        public float pixelCount = 0f;
 
         [Header("Water")]
         [Tooltip("水面のY座標")]

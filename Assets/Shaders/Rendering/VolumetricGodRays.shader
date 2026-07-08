@@ -11,8 +11,10 @@ Shader "Hidden/VolumetricGodRays"
         _Tint ("Tint", Color) = (1, 1, 1, 1)
         _NoiseCellSize ("Noise Cell Size", Float) = 4
         _NoiseInfluence ("Noise Influence", Float) = 0.8
-        _NoiseSpeed ("Noise Speed", Vector) = (0.5, 0.3, 0, 0)
+        _NoiseSpeed1 ("Noise Speed 1", Vector) = (0.5, 0.3, 0, 0)
+        _NoiseSpeed2 ("Noise Speed 2", Vector) = (-0.4, 0.5, 0, 0)
         _NoisePower ("Noise Power", Float) = 2.0
+        _PixelCount ("Pixel Count", Float) = 0
         _WaterSurfaceY ("Water Surface Y", Float) = 0
         _TexelSize ("Texel Size", Vector) = (0, 0, 0, 0)
         _GodRaysTexture ("God Rays Texture", 2D) = "black" {}
@@ -47,8 +49,10 @@ Shader "Hidden/VolumetricGodRays"
             float4 _Tint;
             float _NoiseCellSize;
             float _NoiseInfluence;
-            float4 _NoiseSpeed;
+            float4 _NoiseSpeed1;
+            float4 _NoiseSpeed2;
             float _NoisePower;
+            float _PixelCount;
             float _WaterSurfaceY;
             float4 _TexelSize;
         CBUFFER_END
@@ -104,6 +108,25 @@ Shader "Hidden/VolumetricGodRays"
             }
 
             return minDist;
+        }
+
+        // Generate shaft noise using two layers of Voronoi (Causticsと同じ2層構成・同じ動き)
+        float GenerateShaftNoise(float2 uv, float time)
+        {
+            // Layer 1
+            float2 layerUV1 = uv + time * _NoiseSpeed1.xy;
+            float v1 = Voronoi(layerUV1, _NoiseCellSize, 0.9);
+
+            // Layer 2
+            float2 layerUV2 = uv * 1.27 + time * _NoiseSpeed2.xy * 0.85 + float2(1.7, 2.3);
+            float v2 = Voronoi(layerUV2, _NoiseCellSize, 0.9);
+
+            // Min blending
+            float noise = min(v1, v2);
+
+            // Apply power and saturate
+            noise = pow(noise, _NoisePower);
+            return saturate(noise);
         }
 
         // Henyey-Greenstein phase function
@@ -202,9 +225,7 @@ Shader "Hidden/VolumetricGodRays"
 
                     // サンプル点をライト方向に水面へ投影し、Voronoiノイズで光筋を作る
                     float2 projUV = p.xz + lightDir.xz * (_WaterSurfaceY - p.y) * invLightY;
-                    projUV += _Time.y * _NoiseSpeed.xy;
-                    float noise = Voronoi(projUV, _NoiseCellSize, 0.9);
-                    noise = saturate(pow(noise, _NoisePower));
+                    float noise = GenerateShaftNoise(projUV, _Time.y);
                     float shaft = lerp(1.0, noise, _NoiseInfluence);
 
                     // 深度減衰（水面から深いほど暗く）
@@ -308,8 +329,21 @@ Shader "Hidden/VolumetricGodRays"
             {
                 half4 sceneColor = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, input.uv);
 
-                // 低解像度のゴッドレイをバイリニアでアップサンプル
-                half rays = SAMPLE_TEXTURE2D(_GodRaysTexture, sampler_LinearClamp, input.uv).r;
+                half rays;
+                if (_PixelCount > 0)
+                {
+                    // ピクセル化：スクリーンUVをブロック単位に量子化し、光のラインをドット状にする
+                    // ブロックが正方形になるようアスペクト比を考慮（_PixelCount = 画面縦方向のブロック数）
+                    float aspect = _TexelSize.z / _TexelSize.w;
+                    float2 grid = float2(_PixelCount * aspect, _PixelCount);
+                    float2 raysUV = (floor(input.uv * grid) + 0.5) / grid;
+                    rays = SAMPLE_TEXTURE2D(_GodRaysTexture, sampler_PointClamp, raysUV).r;
+                }
+                else
+                {
+                    // 低解像度のゴッドレイをバイリニアでアップサンプル
+                    rays = SAMPLE_TEXTURE2D(_GodRaysTexture, sampler_LinearClamp, input.uv).r;
+                }
 
                 Light mainLight = GetMainLight();
                 half3 raysColor = rays * mainLight.color * _Tint.rgb;

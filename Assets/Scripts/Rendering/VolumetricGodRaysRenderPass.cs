@@ -27,8 +27,10 @@ public class VolumetricGodRaysRenderPass : ScriptableRenderPass
     private static readonly int TintID = Shader.PropertyToID("_Tint");
     private static readonly int NoiseCellSizeID = Shader.PropertyToID("_NoiseCellSize");
     private static readonly int NoiseInfluenceID = Shader.PropertyToID("_NoiseInfluence");
-    private static readonly int NoiseSpeedID = Shader.PropertyToID("_NoiseSpeed");
+    private static readonly int NoiseSpeed1ID = Shader.PropertyToID("_NoiseSpeed1");
+    private static readonly int NoiseSpeed2ID = Shader.PropertyToID("_NoiseSpeed2");
     private static readonly int NoisePowerID = Shader.PropertyToID("_NoisePower");
+    private static readonly int PixelCountID = Shader.PropertyToID("_PixelCount");
     private static readonly int WaterSurfaceYID = Shader.PropertyToID("_WaterSurfaceY");
     private static readonly int TexelSizeID = Shader.PropertyToID("_TexelSize");
     private static readonly int GodRaysTextureID = Shader.PropertyToID("_GodRaysTexture");
@@ -82,8 +84,10 @@ public class VolumetricGodRaysRenderPass : ScriptableRenderPass
         m_Material.SetColor(TintID, m_Settings.tint);
         m_Material.SetFloat(NoiseCellSizeID, m_Settings.noiseCellSize);
         m_Material.SetFloat(NoiseInfluenceID, m_Settings.noiseInfluence);
-        m_Material.SetVector(NoiseSpeedID, new Vector4(m_Settings.noiseSpeed.x, m_Settings.noiseSpeed.y, 0, 0));
+        m_Material.SetVector(NoiseSpeed1ID, new Vector4(m_Settings.noiseSpeed1.x, m_Settings.noiseSpeed1.y, 0, 0));
+        m_Material.SetVector(NoiseSpeed2ID, new Vector4(m_Settings.noiseSpeed2.x, m_Settings.noiseSpeed2.y, 0, 0));
         m_Material.SetFloat(NoisePowerID, m_Settings.noisePower);
+        m_Material.SetFloat(PixelCountID, m_Settings.pixelCount);
         m_Material.SetFloat(WaterSurfaceYID, m_WaterSurfaceY);
     }
 
