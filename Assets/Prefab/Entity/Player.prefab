@@ -62,7 +62,6 @@ Transform:
   m_Children:
   - {fileID: 4068144545371978197}
   - {fileID: 8536870689165974549}
-  - {fileID: 8597764155112867021}
   - {fileID: 7728683032446415655}
   m_Father: {fileID: 9055999052163246057}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -168,7 +167,7 @@ MonoBehaviour:
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 1
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 1
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 32
@@ -5379,6 +5378,7 @@ MonoBehaviour:
   groundCheckOffset: {x: 0, y: -0.8, z: 0}
   groundCheckRadius: 0.1
   depthExceededDeathTime: 5
+  playerThreatSize: 3
   upgradeDataList:
   - {fileID: 11400000, guid: ac080c72d1ac965459a3e6131748afe2, type: 2}
   - {fileID: 11400000, guid: 715b5d5af4ed844439cb65870f3d2ef5, type: 2}
@@ -5440,68 +5440,6 @@ MonoBehaviour:
   terminalVelocity: 50
   dragCoefficient: 5
   buoyancy: 0
---- !u!1001 &612928373320117747
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 2260419808842408714}
-    m_Modifications:
-    - target: {fileID: 471965123946722330, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_Name
-      value: GodRays
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
---- !u!4 &8597764155112867021 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9210120626425440574, guid: 65588d9ab19cd5e41bb42f82893ce89b, type: 3}
-  m_PrefabInstance: {fileID: 612928373320117747}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2650954619834449554
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5879,7 +5817,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5296547887548432377, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0056620277
+      value: 0.004974374
       objectReference: {fileID: 0}
     - target: {fileID: 5349675700954290547, guid: 0bcdd3768fd723f4d88a09c5251dabf3, type: 3}
       propertyPath: m_AnchoredPosition.x

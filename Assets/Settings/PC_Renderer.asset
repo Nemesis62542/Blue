@@ -27,6 +27,38 @@ MonoBehaviour:
     fadeDistance: 50
     fadePower: 0.5
     renderPassEvent: 300
+--- !u!114 &-2758601100322313146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1244a2df2b45f438c4d040cde07bea, type: 3}
+  m_Name: VolumetricGodRaysRendererFeature
+  m_EditorClassIdentifier: Assembly-CSharp::VolumetricGodRaysRendererFeature
+  m_Active: 1
+  settings:
+    stepCount: 24
+    maxRayDistance: 50
+    downsample: 2
+    intensity: 0.4
+    density: 1
+    anisotropy: 0.6
+    depthFalloff: 0.3
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    noiseCellSize: 4
+    noiseInfluence: 1
+    noiseSpeed1: {x: 0.5, y: 0.3}
+    noiseSpeed2: {x: -0.4, y: 0.5}
+    noisePower: 2
+    pixelCount: 128
+    waterSurfaceY: 306
+    waterSurfaceTransform: {fileID: 0}
+    blurEnabled: 1
+    renderPassEvent: 500
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55,7 +87,8 @@ MonoBehaviour:
   - {fileID: 7833122117494664109}
   - {fileID: 3941502270930715840}
   - {fileID: -4422492003315390747}
-  m_RendererFeatureMap: ad6b866f10d7b46cc08438b46e07b336e5666150f426a0c2
+  - {fileID: -2758601100322313146}
+  m_RendererFeatureMap: ad6b866f10d7b46cc08438b46e07b336e5666150f426a0c2466c493aea7ab7d9
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
