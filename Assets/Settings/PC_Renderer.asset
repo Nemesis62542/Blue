@@ -16,9 +16,9 @@ MonoBehaviour:
   settings:
     cellSize: 3
     jitter: 1
-    intensity: 2
-    power: 2
-    pixelCount: 4
+    intensity: 5
+    power: 3
+    pixelCount: 3.2
     speed1: {x: 0.5, y: 0.3}
     speed2: {x: -0.4, y: 0.5}
     maxDepth: 30
