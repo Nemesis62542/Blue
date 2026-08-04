@@ -1,15 +1,19 @@
 #ifndef OCEAN_TESSELLATION_HLSL
 #define OCEAN_TESSELLATION_HLSL
 
+// Shared by every pass: the vertex stage, the patch constant function and the
+// hull shader are identical regardless of what the pass ends up writing, so only
+// the domain shader is specialised. Keeping one copy stops the three passes from
+// drifting out of sync.
+
 // ============================================================================
 // Tessellation Control Point (Output from Vertex Shader, Input to Hull Shader)
 // ============================================================================
+// Position is all the domain shaders need: the wave, its normal and the tangent
+// frame are all rebuilt analytically in the fragment shader.
 struct TessellationControlPoint
 {
     float4 positionOS : INTERNALTESSPOS;
-    float3 normalOS : NORMAL;
-    float4 tangentOS : TANGENT;
-    float2 uv : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -23,26 +27,29 @@ struct TessellationFactors
 };
 
 // ============================================================================
-// Calculate Distance-Based Tessellation Factor
+// Position-only varyings for the depth / shadow passes
+// ============================================================================
+struct PositionOnlyVaryings
+{
+    float4 positionCS : SV_POSITION;
+    UNITY_VERTEX_INPUT_INSTANCE_ID
+    UNITY_VERTEX_OUTPUT_STEREO
+};
+
+// ============================================================================
+// Distance-Based Tessellation Factors
 // ============================================================================
 float CalcDistanceTessFactor(float3 positionWS, float minDist, float maxDist, float maxTess)
 {
-    float3 cameraPos = GetCameraPositionWS();
-    float dist = distance(positionWS, cameraPos);
-
-    // Fade tessellation based on distance
-    float f = saturate((maxDist - dist) / (maxDist - minDist));
-
+    float dist = distance(positionWS, GetCameraPositionWS());
+    float f = saturate((maxDist - dist) / max(maxDist - minDist, 0.001));
     return lerp(1.0, maxTess, f);
 }
 
-// ============================================================================
-// Calculate Edge Tessellation Factor (average of two vertices)
-// ============================================================================
-float CalcEdgeTessFactor(float3 pos0WS, float3 pos1WS, float minDist, float maxDist, float maxTess)
+float CalcEdgeTessFactor(float3 pos0WS, float3 pos1WS)
 {
     float3 edgeCenter = (pos0WS + pos1WS) * 0.5;
-    return CalcDistanceTessFactor(edgeCenter, minDist, maxDist, maxTess);
+    return CalcDistanceTessFactor(edgeCenter, _TessellationMinDistance, _TessellationMaxDistance, _TessellationFactor);
 }
 
 // ============================================================================
@@ -56,9 +63,6 @@ TessellationControlPoint TessellationVert(Attributes input)
     UNITY_TRANSFER_INSTANCE_ID(input, output);
 
     output.positionOS = input.positionOS;
-    output.normalOS = input.normalOS;
-    output.tangentOS = input.tangentOS;
-    output.uv = input.uv;
 
     return output;
 }
@@ -66,25 +70,19 @@ TessellationControlPoint TessellationVert(Attributes input)
 // ============================================================================
 // Patch Constant Function - Calculate tessellation factors for each patch
 // ============================================================================
-TessellationFactors PatchConstantFunction(
-    InputPatch<TessellationControlPoint, 3> patch,
-    uint patchID : SV_PrimitiveID)
+TessellationFactors PatchConstantFunction(InputPatch<TessellationControlPoint, 3> patch)
 {
     UNITY_SETUP_INSTANCE_ID(patch[0]);
 
     TessellationFactors f;
 
-    // Convert to world space for distance calculation
     float3 pos0WS = TransformObjectToWorld(patch[0].positionOS.xyz);
     float3 pos1WS = TransformObjectToWorld(patch[1].positionOS.xyz);
     float3 pos2WS = TransformObjectToWorld(patch[2].positionOS.xyz);
 
-    // Calculate edge tessellation factors based on distance
-    f.edge[0] = CalcEdgeTessFactor(pos1WS, pos2WS, _TessellationMinDistance, _TessellationMaxDistance, _TessellationFactor);
-    f.edge[1] = CalcEdgeTessFactor(pos2WS, pos0WS, _TessellationMinDistance, _TessellationMaxDistance, _TessellationFactor);
-    f.edge[2] = CalcEdgeTessFactor(pos0WS, pos1WS, _TessellationMinDistance, _TessellationMaxDistance, _TessellationFactor);
-
-    // Inside factor is average of edges
+    f.edge[0] = CalcEdgeTessFactor(pos1WS, pos2WS);
+    f.edge[1] = CalcEdgeTessFactor(pos2WS, pos0WS);
+    f.edge[2] = CalcEdgeTessFactor(pos0WS, pos1WS);
     f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0;
 
     return f;
@@ -107,13 +105,18 @@ TessellationControlPoint OceanHullShader(
 }
 
 // ============================================================================
-// Domain Shader - Generate final vertices after tessellation
+// Barycentric interpolation helper
+// ============================================================================
+#define OCEAN_BARY_LERP(a, b, c, bary) ((a) * (bary).x + (b) * (bary).y + (c) * (bary).z)
+
+// ============================================================================
+// Domain Shader - Forward pass
 // ============================================================================
 [domain("tri")]
 Varyings OceanDomainShader(
     TessellationFactors factors,
     OutputPatch<TessellationControlPoint, 3> patch,
-    float3 barycentricCoords : SV_DomainLocation)
+    float3 bary : SV_DomainLocation)
 {
     Varyings output;
 
@@ -121,56 +124,51 @@ Varyings OceanDomainShader(
     UNITY_TRANSFER_INSTANCE_ID(patch[0], output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    // Interpolate attributes using barycentric coordinates
-    float3 positionOS = patch[0].positionOS.xyz * barycentricCoords.x +
-                        patch[1].positionOS.xyz * barycentricCoords.y +
-                        patch[2].positionOS.xyz * barycentricCoords.z;
+    float3 positionOS = OCEAN_BARY_LERP(patch[0].positionOS.xyz, patch[1].positionOS.xyz, patch[2].positionOS.xyz, bary);
 
-    float3 normalOS = patch[0].normalOS * barycentricCoords.x +
-                      patch[1].normalOS * barycentricCoords.y +
-                      patch[2].normalOS * barycentricCoords.z;
-    normalOS = normalize(normalOS);
-
-    float4 tangentOS = patch[0].tangentOS * barycentricCoords.x +
-                       patch[1].tangentOS * barycentricCoords.y +
-                       patch[2].tangentOS * barycentricCoords.z;
-    tangentOS.xyz = normalize(tangentOS.xyz);
-
-    float2 uv = patch[0].uv * barycentricCoords.x +
-                patch[1].uv * barycentricCoords.y +
-                patch[2].uv * barycentricCoords.z;
-
-    // Get world position (before wave displacement)
+    // Undisplaced world position drives the wave phase and the normal map UVs, so
+    // the detail stays put instead of sliding around with the displacement. It is
+    // also exact under interpolation, which is why the fragment shader works from
+    // it rather than from the displaced position.
     float3 positionWS = TransformObjectToWorld(positionOS);
+    output.flatPositionWS = positionWS;
 
-    // Store world position for fragment shader (normal map sampling)
-    output.positionOS = positionWS;
+    GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
 
-    // Apply Gerstner waves using world position
-    float time = _Time.y;
-    GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, time);
-
-    // Apply displacement in world space
-    float3 displacedPositionWS = positionWS + waveOutput.displacement;
-
-    // Transform to clip space
-    output.positionCS = TransformWorldToHClip(displacedPositionWS);
-    output.positionWS = displacedPositionWS;
-
-    // Wave normal is already in world space orientation
-    output.normalWS = waveOutput.normal;
-
-    // Calculate tangent in world space
-    float3 tangentWS = TransformObjectToWorldDir(tangentOS.xyz);
-    output.tangentWS = float4(tangentWS, tangentOS.w);
-
-    // Other outputs
-    output.uv = uv;
+    output.positionCS = TransformWorldToHClip(positionWS + waveOutput.displacement);
     output.screenPos = ComputeScreenPos(output.positionCS);
-    output.viewDirWS = GetWorldSpaceViewDir(output.positionWS);
     output.fogFactor = ComputeFogFactor(output.positionCS.z);
 
     return output;
+}
+
+// ============================================================================
+// Domain Shader - Depth only pass
+// ============================================================================
+[domain("tri")]
+PositionOnlyVaryings DepthDomainShader(
+    TessellationFactors factors,
+    OutputPatch<TessellationControlPoint, 3> patch,
+    float3 bary : SV_DomainLocation)
+{
+    PositionOnlyVaryings output;
+
+    UNITY_SETUP_INSTANCE_ID(patch[0]);
+    UNITY_TRANSFER_INSTANCE_ID(patch[0], output);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+    float3 positionOS = OCEAN_BARY_LERP(patch[0].positionOS.xyz, patch[1].positionOS.xyz, patch[2].positionOS.xyz, bary);
+    float3 positionWS = TransformObjectToWorld(positionOS);
+
+    GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
+    output.positionCS = TransformWorldToHClip(positionWS + waveOutput.displacement);
+
+    return output;
+}
+
+half4 DepthOnlyFrag(PositionOnlyVaryings input) : SV_Target
+{
+    return 0;
 }
 
 #endif // OCEAN_TESSELLATION_HLSL

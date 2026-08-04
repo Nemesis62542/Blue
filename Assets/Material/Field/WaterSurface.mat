@@ -24,7 +24,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: 0d83bb7529f3c8546a4e6918ad595827, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _VIEWMODE_ABOVE
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -70,11 +71,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap1:
-        m_Texture: {fileID: 2800000, guid: 3703dd8f4a2c730408ea5261a76bed7c, type: 3}
+        m_Texture: {fileID: 2800000, guid: a7d3b4f5c50f45b08fa754a7819df3ef, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap2:
-        m_Texture: {fileID: 2800000, guid: 8b4db4d07375d544eb418ac4591828d0, type: 3}
+        m_Texture: {fileID: 2800000, guid: d222c78e41b54f28993c9306579c1bb0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -115,6 +116,7 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ColorSteps: 0
     - _Cull: 2
     - _CullMode: 2
     - _Cutoff: 0.5
@@ -123,7 +125,6 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EnableSnellsWindow: 0
     - _EnvironmentReflections: 1
     - _FresnelBias: 0.02
     - _FresnelPower: 5
@@ -132,22 +133,27 @@ Material:
     - _GlossyReflections: 0
     - _IOR: 1.333
     - _Metallic: 0
+    - _NormalFadeDistance: 80
     - _NormalScale: 1
     - _NormalTiling: 0.3
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _PixelSize: 0.625
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _ReflectionStrength: 0.5
+    - _ReflectionStrength: 0
     - _RefractionStrength: 0.3
     - _Smoothness: 0.5
+    - _SkyProbeStrength: 1
     - _SmoothnessTextureChannel: 0
-    - _SnellEdgeSoftness: 0.1
+    - _SnellEdgeSoftness: 0.06
     - _SpecularHighlights: 1
     - _SpecularIntensity: 0.5
     - _SpecularPower: 128
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _SunIntensity: 3
+    - _SunSharpness: 512
     - _Surface: 0
     - _TessellationFactor: 8
     - _TessellationMaxDistance: 100
@@ -162,15 +168,23 @@ Material:
     - _WaveFrequency: 1
     - _WaveSpeed: 1
     - _WaveSteepness: 0.5
+    - _UnderwaterDensity: 0.015
+    - _ViewMode: 1
+    - _WindowNormalInfluence: 0.45
+    - _WindowSteps: 0
     - _WorkflowMode: 1
     - _WorldScale: 0.1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
+    - _AboveWaterColor: {r: 0.55, g: 0.75, b: 0.95, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DeepColor: {r: 0.21306513, g: 0.44298083, b: 0.7924528, a: 0.95}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MirrorColor: {r: 0.14, g: 0.42, b: 0.68, a: 1}
+    - _MirrorDeepColor: {r: 0.04, g: 0.17, b: 0.34, a: 1}
+    - _UnderwaterFogColor: {r: 0.13, g: 0.42, b: 0.72, a: 1}
     - _NormalSpeed1: {r: 0.001, g: 0.001, b: 0, a: 0}
     - _NormalSpeed2: {r: -0.001, g: 0.001, b: 0, a: 0}
     - _ShallowColor: {r: 0.19999996, g: 0.5, b: 0.7, a: 0.8}
