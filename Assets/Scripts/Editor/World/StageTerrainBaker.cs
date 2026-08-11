@@ -165,10 +165,13 @@ namespace Blue.Editor.World
             }
 
             string manifestPath = $"{generatedDir}/{recipe.StageId}_TileManifest.asset";
-            WriteManifest(recipe, entries.ToArray(), manifestPath);
+            StageTileManifest manifest = WriteManifest(recipe, entries.ToArray(), manifestPath);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+
+            // SceneManager.LoadSceneAsync はパス指定でも Build Settings 登録が必要
+            int registered = StageSceneTools.Register(manifest);
 
             stopwatch.Stop();
             Debug.Log(
@@ -176,8 +179,9 @@ namespace Blue.Editor.World
                 $"  タイル: {entries.Count} 枚 ({layout.TilesPerAxis}x{layout.TilesPerAxis}, 1枚 {layout.TileSize:F0}m)\n" +
                 $"  ワールド: {layout.WorldSize:F0}m 四方 / 高さ {layout.MinHeight:F0}〜{layout.MaxHeight:F0}m\n" +
                 $"  出力: {generatedDir}\n" +
+                $"  Build Settings 登録: 新規 {registered} 件\n" +
                 $"  所要時間: {stopwatch.ElapsedMilliseconds} ms",
-                AssetDatabase.LoadAssetAtPath<StageTileManifest>(manifestPath));
+                manifest);
 
             return true;
         }
@@ -434,7 +438,7 @@ namespace Blue.Editor.World
 
         #region Manifest
 
-        private static void WriteManifest(StageRecipe recipe, StageTileEntry[] entries, string manifestPath)
+        private static StageTileManifest WriteManifest(StageRecipe recipe, StageTileEntry[] entries, string manifestPath)
         {
             StageTileManifest manifest = AssetDatabase.LoadAssetAtPath<StageTileManifest>(manifestPath);
             if (manifest == null)
@@ -445,6 +449,7 @@ namespace Blue.Editor.World
 
             manifest.SetContents(recipe.StageId, recipe.Layout, entries);
             EditorUtility.SetDirty(manifest);
+            return manifest;
         }
 
         #endregion
