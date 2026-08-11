@@ -72,3 +72,20 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# ---------------------------------------------------------------------------
+# Digger の編集アンドゥ履歴
+# ---------------------------------------------------------------------------
+# DiggerSystem.UndoStackSize = 15 で個数は頭打ちだが、編集のたびに中身が入れ替わるため
+# git 履歴が膨れ続ける。現行の voxel データはサフィックス無しの *.vox3 で、そちらは残す。
+# ※ .internal は先頭がドットなので Unity は .meta を作らない（追跡対象は実体ファイルのみ）
+/[Aa]ssets/DiggerData/**/*.vox3_v*
+/[Aa]ssets/DiggerData/**/version_*.ver
+
+# ---------------------------------------------------------------------------
+# 負荷計測用のテストステージ
+# ---------------------------------------------------------------------------
+# Blue > World > Create 2km Test Stage でいつでも再生成できるため、コミットしない。
+# 本番ステージの Generated/ は Digger が TerrainData の GUID を参照する都合でコミットする。
+/[Aa]ssets/Stages/TestStage/
+/[Aa]ssets/Stages/TestStage.meta
