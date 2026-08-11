@@ -41,6 +41,11 @@ namespace Blue.World
         [Tooltip("到達時に CSV を書き出す")]
         [SerializeField] private bool writeReportOnFinish = true;
 
+        [Tooltip("横断中のフレームレートを固定する(0で変更しない)。\n" +
+                 "Profiler は直近2000フレームしか保持しないため、fps が高いほど録画時間が短くなる。" +
+                 "空シーンで600fps出ると3.5秒しか残らず、横断が丸ごと録画範囲の外になる")]
+        [SerializeField] private int captureFrameRate = 60;
+
         #endregion
 
         #region Fields
@@ -50,6 +55,9 @@ namespace Blue.World
         private bool running;
         private float startTime;
         private int startFrame;
+        private int previousTargetFrameRate;
+        private int previousVSyncCount;
+        private bool frameRateOverridden;
 
         #endregion
 
@@ -111,6 +119,17 @@ namespace Blue.World
             startPosition = new Vector3(-half, altitude, diagonal ? -half : 0f);
             endPosition = new Vector3(half, altitude, diagonal ? half : 0f);
 
+            // fps を固定しないと録画時間が読めない。Profiler のリングバッファは
+            // フレーム数固定なので、fps が高いほど録画できる実時間が短くなる
+            if (captureFrameRate > 0)
+            {
+                previousTargetFrameRate = Application.targetFrameRate;
+                previousVSyncCount = QualitySettings.vSyncCount;
+                QualitySettings.vSyncCount = 0; // これが0でないと targetFrameRate が効かない
+                Application.targetFrameRate = captureFrameRate;
+                frameRateOverridden = true;
+            }
+
             transform.position = startPosition;
             startTime = Time.time;
             startFrame = Time.frameCount;
@@ -119,15 +138,37 @@ namespace Blue.World
             loader.ClearRecords();
 
             float distance = Vector3.Distance(startPosition, endPosition);
+            float seconds = distance / speed;
             Debug.Log(
                 $"[StageFlyoverProbe] 横断を開始します。\n" +
-                $"  距離: {distance:F0}m / 速度: {speed:F0}m/s → 所要 約{distance / speed:F1}秒",
+                $"  距離: {distance:F0}m / 速度: {speed:F0}m/s → 所要 約{seconds:F1}秒\n" +
+                $"  フレームレート: {(captureFrameRate > 0 ? captureFrameRate + " に固定" : "固定しない")}",
                 this);
+
+            if (captureFrameRate > 0)
+            {
+                int estimatedFrames = Mathf.CeilToInt(seconds * captureFrameRate);
+                if (estimatedFrames > 2000)
+                {
+                    Debug.LogWarning(
+                        $"[StageFlyoverProbe] 推定 {estimatedFrames} フレームで、Profiler の上限2000を超えます。" +
+                        $"speed を {Mathf.CeilToInt(distance / (2000f / captureFrameRate))} 以上にするか、" +
+                        "captureFrameRate を下げてください。",
+                        this);
+                }
+            }
         }
 
         private void Finish()
         {
             running = false;
+
+            if (frameRateOverridden)
+            {
+                Application.targetFrameRate = previousTargetFrameRate;
+                QualitySettings.vSyncCount = previousVSyncCount;
+                frameRateOverridden = false;
+            }
 
             float elapsed = Time.time - startTime;
             int frames = Time.frameCount - startFrame;
@@ -138,11 +179,23 @@ namespace Blue.World
                 $"  ロード記録: {loader.Records.Count} 件 / 現在ロード中のタイル: {loader.LoadedTileCount} 枚",
                 this);
 
+            // 「走ったが何も起きていない」計測が黙って成立しないようにする。
+            // Build Settings 未登録などでロードが全て失敗しても、横断自体は完走してしまうため
+            if (loader.Records.Count == 0)
+            {
+                Debug.LogError(
+                    "[StageFlyoverProbe] ロード記録が0件です。この計測結果は無効です。\n" +
+                    "  ・タイルが1枚もロードされていない場合: タイルシーンが Build Settings に未登録の可能性が高い\n" +
+                    "    （StageLoader の Inspector で確認・登録できます）\n" +
+                    "  ・タイルはロードされている場合: StageLoader の recordDiagnostics が OFF です",
+                    this);
+            }
+
             if (frames > 2000)
             {
                 Debug.LogWarning(
                     $"[StageFlyoverProbe] {frames} フレームかかっており、Profiler のリングバッファ上限(2000)を超えています。" +
-                    "キャプチャには後半しか残りません。speed を上げるか区間を分けてください。",
+                    "キャプチャには後半しか残りません。speed を上げるか captureFrameRate を下げてください。",
                     this);
             }
 

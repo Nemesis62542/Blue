@@ -29,9 +29,12 @@ namespace Blue.World
         public int tileIndex;
         public int requestedFrame;
         public int completedFrame;
-        public float queuedMs;
+
+        /// <summary>要求から完了までの実時間(ms)。大半は非同期側なので、これ自体はヒッチ量ではない</summary>
         public float loadMs;
-        public float activateMs;
+
+        /// <summary>要求から完了までにかかったフレーム数</summary>
+        public int frameSpan;
     }
 
     /// <summary>
@@ -39,9 +42,13 @@ namespace Blue.World
     ///
     /// 水中はフォグで視界が短いため、2km ステージでも常時ロードは数枚で足りる。
     ///
-    /// 【シーンのアクティベーションを直列化している理由】
-    /// 複数タイルが同一フレームで統合されるとヒッチが重なる。allowSceneActivation を
-    /// 落として順番待ちさせ、常に1枚ずつ統合させることで山を平す。
+    /// 【allowSceneActivation を使わない理由】
+    /// 当初はアクティベーションを1枚ずつに直列化してヒッチを平すつもりで
+    /// allowSceneActivation = false による順番待ちを使っていたが、これは機能しない。
+    /// Unity の非同期オペレーションはキューで処理され、activation を保留した
+    /// オペレーションは後続をブロックするため、2枚目以降が 0.9 にすら到達せず
+    /// ロードが永久に止まる（Hierarchy に "(now loading)" が残り続ける）。
+    /// 同時実行数を絞ることで直列化する方式に変更している。
     /// </summary>
     public class StageLoader : MonoBehaviour
     {
@@ -61,8 +68,9 @@ namespace Blue.World
         [SerializeField] private float unloadPadding = 160f;
 
         [Header("Budget")]
-        [Tooltip("同時に走らせるロード数。1にすると最も滑らかだが追従が遅れる")]
-        [SerializeField] private int maxConcurrentLoads = 2;
+        [Tooltip("同時に走らせるロード数。1なら常に1枚ずつ統合されるのでヒッチが重ならない。\n" +
+                 "増やすと追従は速くなるが、同一フレームで複数タイルが統合されて山が重なる")]
+        [SerializeField] private int maxConcurrentLoads = 1;
 
         [Tooltip("評価の間隔(秒)。毎フレーム距離計算する必要はない")]
         [SerializeField] private float evaluateInterval = 0.25f;
@@ -84,7 +92,6 @@ namespace Blue.World
         private readonly List<StageTileEntry> loadCandidates = new List<StageTileEntry>();
 
         private float nextEvaluateTime;
-        private bool activationInFlight;
         private bool hasPendingUnloadCleanup;
         private bool warnedMissingTarget;
 
@@ -94,9 +101,6 @@ namespace Blue.World
             public AsyncOperation operation;
             public int requestedFrame;
             public float requestedTime;
-            public float readyTime;
-            public float activationStartTime;
-            public bool activationStarted;
         }
 
         #endregion
@@ -246,9 +250,6 @@ namespace Blue.World
                 return;
             }
 
-            // 統合は1枚ずつ行う。順番が来るまで待たせる
-            operation.allowSceneActivation = false;
-
             pendingLoads.Add(new PendingLoad
             {
                 tileIndex = entry.tileIndex,
@@ -261,34 +262,13 @@ namespace Blue.World
         }
 
         /// <summary>
-        /// 進行中のロードを進める。アクティベーションは常に1枚だけ許可する。
+        /// 進行中のロードの完了を拾う。
         /// </summary>
         private void PumpLoads()
         {
             for (int i = pendingLoads.Count - 1; i >= 0; i--)
             {
                 PendingLoad pending = pendingLoads[i];
-
-                // allowSceneActivation = false のとき progress は 0.9 で頭打ちになる
-                bool isReady = pending.operation.progress >= 0.9f;
-
-                if (isReady && pending.readyTime <= 0f)
-                {
-                    pending.readyTime = Time.realtimeSinceStartup;
-                }
-
-                if (!pending.activationStarted)
-                {
-                    if (isReady && !activationInFlight)
-                    {
-                        pending.activationStarted = true;
-                        pending.activationStartTime = Time.realtimeSinceStartup;
-                        pending.operation.allowSceneActivation = true;
-                        activationInFlight = true;
-                    }
-
-                    continue;
-                }
 
                 if (!pending.operation.isDone)
                 {
@@ -297,19 +277,20 @@ namespace Blue.World
 
                 states[pending.tileIndex] = StageTileState.Loaded;
                 pendingLoads.RemoveAt(i);
-                activationInFlight = false;
+
+                // 枠が空いたらすぐ次を積む。評価間隔を待つと初期充填が
+                // maxConcurrentLoads / evaluateInterval 枚/秒に律速されてしまう
+                nextEvaluateTime = 0f;
 
                 if (recordDiagnostics)
                 {
-                    float now = Time.realtimeSinceStartup;
                     records.Add(new StageTileLoadRecord
                     {
                         tileIndex = pending.tileIndex,
                         requestedFrame = pending.requestedFrame,
                         completedFrame = Time.frameCount,
-                        queuedMs = (pending.activationStartTime - pending.readyTime) * 1000f,
-                        loadMs = (pending.readyTime - pending.requestedTime) * 1000f,
-                        activateMs = (now - pending.activationStartTime) * 1000f,
+                        loadMs = (Time.realtimeSinceStartup - pending.requestedTime) * 1000f,
+                        frameSpan = Time.frameCount - pending.requestedFrame,
                     });
                 }
             }
@@ -387,13 +368,13 @@ namespace Blue.World
         public string BuildReportCsv()
         {
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("tileIndex,requestedFrame,completedFrame,loadMs,queuedMs,activateMs");
+            builder.AppendLine("tileIndex,requestedFrame,completedFrame,frameSpan,loadMs");
 
             foreach (StageTileLoadRecord record in records)
             {
                 builder.AppendLine(
                     $"{record.tileIndex},{record.requestedFrame},{record.completedFrame}," +
-                    $"{record.loadMs:F2},{record.queuedMs:F2},{record.activateMs:F2}");
+                    $"{record.frameSpan},{record.loadMs:F2}");
             }
 
             return builder.ToString();
