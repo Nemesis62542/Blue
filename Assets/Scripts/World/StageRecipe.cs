@@ -43,10 +43,13 @@ namespace Blue.World
     // ベイカーがそこから TerrainData・タイルシーン・（後のフェーズで）散布物とスポーン情報を
     // 生成する。レシピと元画像だけがコミット対象の正本になる。
     //
-    // Digger は編集データを TerrainData アセットの GUID で紐付けている
-    // （Assets/DiggerData/Scenes/(シーン名)/(TerrainDataのGUID)/）。
-    // このためベイカーは TerrainData を作り直さず、既存アセットを上書き更新して GUID を維持する。
-    // GUID が変わると掘削済みの洞窟が全て迷子になる。
+    // ベイカーは TerrainData を作り直さず、既存アセットを上書き更新して GUID を維持する。
+    // タイルシーンが TerrainData を参照しているため、作り直すと参照が切れる。
+    //
+    // Digger の掘削データは Assets/DiggerData/Scenes/(DiggerMaster.sceneDataFolder)/(DiggerSystem.guid)/
+    // に置かれる。どちらもタイルシーン側のコンポーネントに保存された値なので、
+    // 洞窟を守るうえで本当に重要なのはタイルシーンを作り直さないこと。
+    // ベイカーは既存シーンを開き直して更新するため、この条件を満たしている。
     [CreateAssetMenu(fileName = "StageRecipe", menuName = "Blue/ScriptableObject/StageRecipe")]
     public class StageRecipe : ScriptableObject
     {

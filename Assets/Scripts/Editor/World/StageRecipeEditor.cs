@@ -45,7 +45,7 @@ namespace Blue.Editor.World
             }
 
             EditorGUILayout.HelpBox(
-                "再ベイクしても TerrainData の GUID は維持されるため、Digger で掘った洞窟は保持されます。" +
+                "再ベイクしても TerrainData とタイルシーンは作り直さず更新するため、Digger で掘った洞窟は保持されます。" +
                 "ただしハイトマップ自体を変更した場合、地形が動いた箇所の掘削結果はずれます。",
                 MessageType.Info);
 

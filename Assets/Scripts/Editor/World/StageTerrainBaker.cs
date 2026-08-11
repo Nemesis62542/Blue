@@ -20,9 +20,11 @@ namespace Blue.Editor.World
     // 散布、スポーンフィールド、タイルシーン）が支配的なので、全工程をスクリプトから
     // 再実行できる形にしている。
     //
-    // 再ベイクでは TerrainData を作り直さず、既存アセットを上書き更新して GUID を維持する。
-    // Digger は編集データを TerrainData の GUID でフォルダ分けしているため、
-    // GUID が変わると掘削済みの洞窟が全て参照を失う。
+    // 再ベイクでは TerrainData もタイルシーンも作り直さず、既存を開き直して更新する。
+    // TerrainData はタイルシーンから参照されているので GUID を維持する必要がある。
+    // Digger の掘削データは DiggerMaster.sceneDataFolder と DiggerSystem.guid で
+    // フォルダ分けされ、どちらもタイルシーン側に保存されているため、
+    // タイルシーンを作り直すと掘削済みの洞窟が全て参照を失う。
     public static class StageTerrainBaker
     {
         private const string GENERATED_FOLDER = "Generated";
