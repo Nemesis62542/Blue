@@ -45,6 +45,11 @@ namespace Blue.World
                  "空シーンで600fps出ると3.5秒しか残らず、横断が丸ごと録画範囲の外になる")]
         [SerializeField] private int captureFrameRate = 60;
 
+        [Tooltip("横断終了時にフレームレート固定を解除する。\n" +
+                 "解除すると上限なしで回り、リングバッファが数秒で一周して横断の記録が消える。" +
+                 "キャプチャを保存するまで固定を維持したいので既定は false")]
+        [SerializeField] private bool restoreFrameRateOnFinish;
+
         #endregion
 
         #region Fields
@@ -162,7 +167,9 @@ namespace Blue.World
         {
             running = false;
 
-            if (frameRateOverridden)
+            // 既定では解除しない。解除すると上限なしで回り、Profiler のリングバッファが
+            // 数秒で一周して、保存する頃には横断の記録が残っていない
+            if (frameRateOverridden && restoreFrameRateOnFinish)
             {
                 Application.targetFrameRate = previousTargetFrameRate;
                 QualitySettings.vSyncCount = previousVSyncCount;

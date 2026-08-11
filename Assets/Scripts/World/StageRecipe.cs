@@ -74,8 +74,14 @@ namespace Blue.World
         [SerializeField] private BiomeLayerBinding[] biomes = Array.Empty<BiomeLayerBinding>();
 
         [Header("Scatter / Spawn")]
-        [Tooltip("散布物プロトタイプの一覧。散布ベイク(フェーズ4)で使用する")]
+        [Tooltip("散布物プロトタイプの一覧")]
         [SerializeField] private Scatter.ScatterPrototypeRegistry scatterRegistry;
+
+        [Tooltip("散布の配置ルール。上から順にベイクされる")]
+        [SerializeField] private Scatter.ScatterLayer[] scatterLayers = Array.Empty<Scatter.ScatterLayer>();
+
+        [Tooltip("水面のY座標(m)。散布の水深フィルタで使う")]
+        [SerializeField] private float waterLevel;
 
         [Tooltip("散布・洞窟生成の乱数シード。固定である限りベイクは決定的で、永続IDも不変")]
         [SerializeField] private int seed = 1234;
@@ -91,6 +97,8 @@ namespace Blue.World
         public AnimationCurve HeightCurve => heightCurve;
         public BiomeLayerBinding[] Biomes => biomes;
         public Scatter.ScatterPrototypeRegistry ScatterRegistry => scatterRegistry;
+        public Scatter.ScatterLayer[] ScatterLayers => scatterLayers;
+        public float WaterLevel => waterLevel;
         public int Seed => seed;
 
         /// <summary>アルファマップをベイクする対象があるか</summary>
@@ -211,6 +219,97 @@ namespace Blue.World
             }
 
             return warnings;
+        }
+
+        /// <summary>
+        /// 散布設定の問題を列挙する。
+        /// </summary>
+        // Unity は配列要素を Inspector の + で追加するとき C# のフィールド初期化子を無視して
+        // ゼロ初期化する。既定値が効かず density = 0 のまま「1個も置かれない」事故になるため、
+        // 退化した値を明示的に検出する。
+        public List<string> CollectScatterIssues()
+        {
+            List<string> issues = new List<string>();
+
+            if (scatterLayers == null || scatterLayers.Length == 0)
+            {
+                return issues;
+            }
+
+            if (scatterRegistry == null)
+            {
+                issues.Add("scatterRegistry が未設定です。");
+                return issues;
+            }
+
+            for (int i = 0; i < scatterLayers.Length; i++)
+            {
+                Scatter.ScatterLayer layer = scatterLayers[i];
+                if (layer == null)
+                {
+                    continue;
+                }
+
+                string label = string.IsNullOrEmpty(layer.name) ? $"scatterLayers[{i}]" : layer.name;
+
+                if (layer.spacing <= 0f)
+                {
+                    issues.Add($"{label}: spacing が 0 です。候補点が生成されません。");
+                }
+
+                if (layer.density <= 0f)
+                {
+                    issues.Add($"{label}: density が 0 です。density は候補点の採用確率なので、0だと1個も置かれません。");
+                }
+
+                if (layer.scaleRange.y <= 0f)
+                {
+                    issues.Add($"{label}: scaleRange の上限が 0 です。配置されてもスケール0で見えません。");
+                }
+
+                if (layer.slopeRange.y <= layer.slopeRange.x)
+                {
+                    issues.Add($"{label}: slopeRange が空の範囲です（{layer.slopeRange.x}〜{layer.slopeRange.y}）。");
+                }
+
+                if (layer.depthRange.y <= layer.depthRange.x)
+                {
+                    issues.Add($"{label}: depthRange が空の範囲です（{layer.depthRange.x}〜{layer.depthRange.y}）。");
+                }
+
+                Scatter.ScatterPrototype prototype = scatterRegistry.Find(layer.prototypeId);
+                if (prototype == null)
+                {
+                    issues.Add($"{label}: prototypeId {layer.prototypeId} がレジストリに存在しません。");
+                    continue;
+                }
+
+                if (layer.instantiate)
+                {
+                    if (prototype.prefab == null)
+                    {
+                        issues.Add($"{label}: instantiate が有効ですが、プロトタイプ '{prototype.displayName}' に prefab がありません。");
+                    }
+
+                    continue;
+                }
+
+                if (prototype.lodMeshes == null || prototype.lodMeshes.Length == 0 || prototype.lodMeshes[0] == null)
+                {
+                    issues.Add($"{label}: プロトタイプ '{prototype.displayName}' に lodMeshes がありません。インスタンシング描画にはメッシュが必要です。");
+                }
+
+                if (prototype.material == null)
+                {
+                    issues.Add($"{label}: プロトタイプ '{prototype.displayName}' に material がありません。");
+                }
+                else if (!prototype.material.enableInstancing)
+                {
+                    issues.Add($"{label}: マテリアル '{prototype.material.name}' の Enable GPU Instancing が無効です。インスタンシング描画されません。");
+                }
+            }
+
+            return issues;
         }
 
         private static bool IsLowPrecision(TextureFormat format)

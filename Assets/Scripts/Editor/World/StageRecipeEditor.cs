@@ -56,6 +56,71 @@ namespace Blue.Editor.World
                     StageTerrainBaker.Bake(recipe);
                 }
             }
+
+            DrawScatterSection(recipe);
+        }
+
+        private void DrawScatterSection(StageRecipe recipe)
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Scatter", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("Add Scatter Layer (初期値つき)"))
+            {
+                AddScatterLayer(recipe);
+            }
+
+            List<string> issues = recipe.CollectScatterIssues();
+            if (issues.Count > 0)
+            {
+                EditorGUILayout.HelpBox("・" + string.Join("\n・", issues), MessageType.Error);
+            }
+            else if (recipe.ScatterLayers != null && recipe.ScatterLayers.Length > 0)
+            {
+                EditorGUILayout.HelpBox($"散布レイヤー {recipe.ScatterLayers.Length} 件、設定に問題はありません。", MessageType.Info);
+            }
+
+            using (new EditorGUI.DisabledScope(issues.Count > 0 || recipe.ScatterLayers == null || recipe.ScatterLayers.Length == 0))
+            {
+                if (GUILayout.Button("Bake Stage Scatter", GUILayout.Height(30)))
+                {
+                    StageScatterBaker.Bake(recipe);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 初期値を入れた散布レイヤーを追加する。
+        /// </summary>
+        // Inspector の + で追加するとフィールド初期化子が無視されてゼロ初期化されるため、
+        // 使える初期値を明示的に書き込む。
+        private static void AddScatterLayer(StageRecipe recipe)
+        {
+            SerializedObject serializedObject = new SerializedObject(recipe);
+            SerializedProperty layers = serializedObject.FindProperty("scatterLayers");
+
+            int index = layers.arraySize;
+            layers.InsertArrayElementAtIndex(index);
+
+            SerializedProperty layer = layers.GetArrayElementAtIndex(index);
+            layer.FindPropertyRelative("name").stringValue = "Scatter";
+            layer.FindPropertyRelative("prototypeId").intValue = 1;
+            layer.FindPropertyRelative("spacing").floatValue = 4f;
+            layer.FindPropertyRelative("density").floatValue = 1f;
+            layer.FindPropertyRelative("jitter").floatValue = 0.9f;
+            layer.FindPropertyRelative("slopeRange").vector2Value = new Vector2(0f, 30f);
+            layer.FindPropertyRelative("depthRange").vector2Value = new Vector2(0f, 300f);
+            layer.FindPropertyRelative("maskChannel").enumValueIndex = (int)MaskChannel.R;
+            layer.FindPropertyRelative("maskThreshold").floatValue = 0.5f;
+            layer.FindPropertyRelative("maskAffectsDensity").boolValue = true;
+            layer.FindPropertyRelative("scaleRange").vector2Value = new Vector2(0.8f, 1.2f);
+            layer.FindPropertyRelative("alignToNormal").boolValue = false;
+            layer.FindPropertyRelative("normalAlignment").floatValue = 1f;
+            layer.FindPropertyRelative("randomYaw").boolValue = true;
+            layer.FindPropertyRelative("surfaceOffset").floatValue = 0f;
+            layer.FindPropertyRelative("instantiate").boolValue = false;
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

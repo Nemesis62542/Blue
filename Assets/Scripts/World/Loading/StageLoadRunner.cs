@@ -147,13 +147,14 @@ namespace Blue.World.Loading
             {
                 float share = totalSeconds > 0f ? report.seconds / totalSeconds : 0f;
                 builder.AppendLine(
-                    $"  {report.label,-24} {report.seconds,6:F2}秒 " +
-                    $"(実測比 {share:P0} / 設定 weight {report.weight:F2}) " +
-                    $"メモリ {report.reservedMemoryDelta / 1048576f,+8:F1} MB");
+                    $"  {report.label,-24} {report.seconds,6:F2}秒 (実測比 {share:P0} / 設定 weight {report.weight:F2})\n" +
+                    $"      メモリ  確保 {report.allocatedMemoryDelta / 1048576f,+8:F1} MB" +
+                    $"  /  予約 {report.reservedMemoryDelta / 1048576f,+8:F1} MB");
             }
 
             builder.AppendLine("  実測比と weight が乖離していると、進捗バーが途中で止まったように見えます。");
-            builder.Append("  メモリ増分はエディタでは Profiler 自身の膨張に埋もれます。確定値は Development Build で。");
+            builder.AppendLine("  予約は大きな単位で確保されるため増分が出ないことがあります。実量は「確保」を見てください。");
+            builder.Append("  エディタでは Profiler 自身の膨張に埋もれます。確定値は Development Build で。");
             Debug.Log(builder.ToString(), this);
         }
 

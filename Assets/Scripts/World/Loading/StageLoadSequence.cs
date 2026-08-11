@@ -16,9 +16,15 @@ namespace Blue.World.Loading
         public float seconds;
 
         /// <summary>このフェーズでの Total Reserved Memory の増分(byte)</summary>
-        // Development Build でのみ意味のある値が取れる（リリースビルドでは0）。
-        // エディタでは Profiler 自身の膨張に埋もれるので当てにしないこと。
+        // 予約プールは大きな単位で確保されるため、実際の確保量が増えても
+        // 予約済みの余りに収まると増分が出ない。粗い指標として扱うこと。
         public long reservedMemoryDelta;
+
+        /// <summary>このフェーズでの Total Allocated Memory の増分(byte)</summary>
+        // 実際に確保された量。予約プールの粒度に影響されないので、
+        // 「このフェーズが何MB積んだか」はこちらを見る。
+        // どちらも Development Build でのみ意味のある値が取れる（リリースビルドでは0）。
+        public long allocatedMemoryDelta;
     }
 
     /// <summary>
@@ -99,7 +105,8 @@ namespace Blue.World.Loading
                 {
                     IStageLoadPhase phase = phases[i];
                     float startTime = Time.realtimeSinceStartup;
-                    long startMemory = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong();
+                    long startReserved = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong();
+                    long startAllocated = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong();
 
                     phase.Begin();
                     Report(progress, i, phase, completedWeight, totalWeight);
@@ -129,7 +136,8 @@ namespace Blue.World.Loading
                         label = phase.Label,
                         weight = phase.Weight,
                         seconds = Time.realtimeSinceStartup - startTime,
-                        reservedMemoryDelta = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong() - startMemory,
+                        reservedMemoryDelta = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong() - startReserved,
+                        allocatedMemoryDelta = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() - startAllocated,
                     });
                 }
             }
