@@ -89,3 +89,9 @@ crashlytics-build.properties
 # 本番ステージの Generated/ は Digger が TerrainData の GUID を参照する都合でコミットする。
 /[Aa]ssets/Stages/TestStage/
 /[Aa]ssets/Stages/TestStage.meta
+
+# ---------------------------------------------------------------------------
+# Profiler キャプチャ
+# ---------------------------------------------------------------------------
+# .data は数百MB〜数GBになる。CSV/レポートは .data から再生成できる。
+/ProfilerCaptures/
