@@ -36,8 +36,11 @@ namespace Blue.Editor.World
         private static bool RegisterSelectedValidate() => Selection.activeObject is StageTileManifest;
 
         /// <summary>
-        /// マニフェストのタイルシーンを Build Settings に登録する。既存の登録は保持する。
+        /// マニフェストのタイルシーンを Build Settings に登録し、有効化する。
         /// </summary>
+        /// <returns>追加または有効化した件数</returns>
+        // 既に登録済みでも無効(チェックが外れている)ならビルドに含まれないので有効化する。
+        // 他のシーンの登録状態には触らない。
         public static int Register(StageTileManifest manifest)
         {
             if (manifest == null || manifest.Tiles.Length == 0)
@@ -45,14 +48,27 @@ namespace Blue.Editor.World
                 return 0;
             }
 
+            HashSet<string> targets = new HashSet<string>();
+            foreach (StageTileEntry entry in manifest.Tiles)
+            {
+                targets.Add(entry.scenePath);
+            }
+
             List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
             HashSet<string> existing = new HashSet<string>();
+            int changed = 0;
+
             foreach (EditorBuildSettingsScene scene in scenes)
             {
                 existing.Add(scene.path);
+
+                if (targets.Contains(scene.path) && !scene.enabled)
+                {
+                    scene.enabled = true;
+                    changed++;
+                }
             }
 
-            int added = 0;
             foreach (StageTileEntry entry in manifest.Tiles)
             {
                 if (existing.Contains(entry.scenePath))
@@ -62,15 +78,15 @@ namespace Blue.Editor.World
 
                 scenes.Add(new EditorBuildSettingsScene(entry.scenePath, true));
                 existing.Add(entry.scenePath);
-                added++;
+                changed++;
             }
 
-            if (added > 0)
+            if (changed > 0)
             {
                 EditorBuildSettings.scenes = scenes.ToArray();
             }
 
-            return added;
+            return changed;
         }
 
         /// <summary>

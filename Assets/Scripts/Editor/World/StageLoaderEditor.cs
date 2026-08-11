@@ -30,7 +30,7 @@ namespace Blue.Editor.World
                 return;
             }
 
-            int missing = CountUnregistered(manifest, out List<string> samples);
+            Inspect(manifest, out int missing, out int disabled, out List<string> samples);
 
             if (missing > 0)
             {
@@ -39,18 +39,30 @@ namespace Blue.Editor.World
                     "このままでは実行時に1枚もロードされません。\n\n" +
                     $"例: {string.Join("\n     ", samples)}",
                     MessageType.Error);
-
-                if (GUILayout.Button("Register Scenes In Build Settings", GUILayout.Height(28)))
-                {
-                    int added = StageSceneTools.Register(manifest);
-                    Debug.Log($"[StageLoader] タイルシーンを Build Settings に登録しました（新規 {added} 件）。", manifest);
-                }
+            }
+            else if (disabled > 0)
+            {
+                // 無効エントリはエディタの Play では読めてしまうため、ビルドして初めて失敗する
+                EditorGUILayout.HelpBox(
+                    $"タイルシーン {manifest.Tiles.Length} 枚のうち {disabled} 枚が Build Settings で無効(チェックが外れている)です。\n" +
+                    "エディタの Play では読めますが、ビルドには含まれないため実行時にロードが失敗します。\n\n" +
+                    $"例: {string.Join("\n     ", samples)}",
+                    MessageType.Warning);
             }
             else
             {
                 EditorGUILayout.HelpBox(
-                    $"タイルシーン {manifest.Tiles.Length} 枚すべてが Build Settings に登録済みです。",
+                    $"タイルシーン {manifest.Tiles.Length} 枚すべてが Build Settings に登録され、有効になっています。",
                     MessageType.Info);
+            }
+
+            if (missing > 0 || disabled > 0)
+            {
+                if (GUILayout.Button("Register / Enable Scenes In Build Settings", GUILayout.Height(28)))
+                {
+                    int changed = StageSceneTools.Register(manifest);
+                    Debug.Log($"[StageLoader] タイルシーンを Build Settings に登録・有効化しました（{changed} 件）。", manifest);
+                }
             }
 
             if (Application.isPlaying)
@@ -66,36 +78,43 @@ namespace Blue.Editor.World
         }
 
         /// <summary>
-        /// Build Settings に載っていないタイルシーンの数を数える。
+        /// タイルシーンの Build Settings 登録状況を調べる。
         /// </summary>
-        // 無効化された(enabled=false)エントリはビルドに含まれないが、
-        // エディタの Play では読めるので登録済みとして扱う。
-        private static int CountUnregistered(StageTileManifest manifest, out List<string> samples)
+        // 未登録と「登録済みだが無効」を区別する。無効エントリはエディタの Play では
+        // 読めてしまうため、区別しないとビルドして初めて失敗する。
+        private static void Inspect(StageTileManifest manifest, out int missing, out int disabled,
+                                    out List<string> samples)
         {
-            HashSet<string> registered = new HashSet<string>();
+            Dictionary<string, bool> registered = new Dictionary<string, bool>();
             foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
             {
-                registered.Add(scene.path);
+                registered[scene.path] = scene.enabled;
             }
 
             samples = new List<string>();
-            int missing = 0;
+            missing = 0;
+            disabled = 0;
 
             foreach (StageTileEntry entry in manifest.Tiles)
             {
-                if (registered.Contains(entry.scenePath))
+                if (!registered.TryGetValue(entry.scenePath, out bool enabled))
+                {
+                    missing++;
+                }
+                else if (!enabled)
+                {
+                    disabled++;
+                }
+                else
                 {
                     continue;
                 }
 
-                missing++;
                 if (samples.Count < 3)
                 {
                     samples.Add(entry.scenePath);
                 }
             }
-
-            return missing;
         }
     }
 }

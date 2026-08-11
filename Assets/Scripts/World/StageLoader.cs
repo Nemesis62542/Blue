@@ -17,6 +17,21 @@ namespace Blue.World
     }
 
     /// <summary>
+    /// タイルの供給方式。
+    /// </summary>
+    public enum StageStreamingMode
+    {
+        /// <summary>プレイヤーとの距離でロード/アンロードする</summary>
+        DistanceStreaming,
+
+        /// <summary>ステージ遷移時に全タイルをロードし、以後アンロードしない</summary>
+        // 地形は状態を持たないうえ、常駐できるだけのメモリがあるならゲーム中に
+        // ロードを走らせる理由がない。全タイルが載っていれば Terrain の LOD 接続も
+        // 常に成立し、ロード順による継ぎ目も起きない。
+        PreloadAll,
+    }
+
+    /// <summary>
     /// 1タイルのロードにかかった実測値。
     /// </summary>
     // Unity Profiler だけでは「どのタイルのせいでスパイクしたか」が分からない。
@@ -54,8 +69,14 @@ namespace Blue.World
         [Header("Source")]
         [SerializeField] private StageTileManifest manifest;
 
-        [Tooltip("この Transform の周囲のタイルをロードする。未設定なら MainCamera を探す")]
+        [Tooltip("DistanceStreaming のとき、この Transform の周囲のタイルをロードする。未設定なら MainCamera を探す")]
         [SerializeField] private Transform target;
+
+        [Header("Mode")]
+        [SerializeField] private StageStreamingMode mode = StageStreamingMode.DistanceStreaming;
+
+        [Tooltip("PreloadAll のときの同時ロード数。ロード画面中なのでフレーム予算を気にしなくてよい")]
+        [SerializeField] private int preloadMaxConcurrentLoads = 4;
 
         [Header("Radius")]
         [Tooltip("この距離以内のタイルをロードする(m)")]
@@ -129,6 +150,23 @@ namespace Blue.World
 
         public float UnloadRadius => loadRadius + unloadPadding;
 
+        public StageStreamingMode Mode => mode;
+
+        public int TotalTileCount => manifest != null ? manifest.Tiles.Length : 0;
+
+        /// <summary>全タイルに対するロード済みの割合 0-1。ロード画面の進捗に使う</summary>
+        public float LoadedFraction
+        {
+            get
+            {
+                int total = TotalTileCount;
+                return total > 0 ? (float)LoadedTileCount / total : 1f;
+            }
+        }
+
+        /// <summary>PreloadAll で全タイルが載りきったか</summary>
+        public bool IsFullyLoaded => TotalTileCount > 0 && LoadedTileCount >= TotalTileCount;
+
         #endregion
 
         #region Unity
@@ -143,7 +181,10 @@ namespace Blue.World
 
         private void Update()
         {
-            if (manifest == null || target == null)
+            // PreloadAll は距離を見ないので target は不要
+            bool needsTarget = mode == StageStreamingMode.DistanceStreaming;
+
+            if (manifest == null || (needsTarget && target == null))
             {
                 if (!warnedMissingTarget)
                 {
@@ -177,26 +218,43 @@ namespace Blue.World
         /// </summary>
         private void Evaluate()
         {
-            Vector3 position = target.position;
-            float unloadRadius = UnloadRadius;
-
             loadCandidates.Clear();
 
-            foreach (StageTileEntry entry in manifest.Tiles)
-            {
-                float distance = DistanceToTileXZ(entry.bounds, position);
-                StageTileState state = GetState(entry.tileIndex);
+            bool preload = mode == StageStreamingMode.PreloadAll;
+            int budget = preload ? preloadMaxConcurrentLoads : maxConcurrentLoads;
 
-                if (distance <= loadRadius)
+            if (preload)
+            {
+                // 全タイルを積む。アンロードは行わない
+                foreach (StageTileEntry entry in manifest.Tiles)
                 {
-                    if (state == StageTileState.Unloaded)
+                    if (GetState(entry.tileIndex) == StageTileState.Unloaded)
                     {
                         loadCandidates.Add(entry);
                     }
                 }
-                else if (distance > unloadRadius && state == StageTileState.Loaded)
+            }
+            else
+            {
+                Vector3 position = target.position;
+                float unloadRadius = UnloadRadius;
+
+                foreach (StageTileEntry entry in manifest.Tiles)
                 {
-                    BeginUnload(entry);
+                    float distance = DistanceToTileXZ(entry.bounds, position);
+                    StageTileState state = GetState(entry.tileIndex);
+
+                    if (distance <= loadRadius)
+                    {
+                        if (state == StageTileState.Unloaded)
+                        {
+                            loadCandidates.Add(entry);
+                        }
+                    }
+                    else if (distance > unloadRadius && state == StageTileState.Loaded)
+                    {
+                        BeginUnload(entry);
+                    }
                 }
             }
 
@@ -205,13 +263,19 @@ namespace Blue.World
                 return;
             }
 
-            // 近いタイルから埋める。遠くのタイルのロードで足元が空くのを防ぐ
-            loadCandidates.Sort((a, b) =>
-                DistanceToTileXZ(a.bounds, position).CompareTo(DistanceToTileXZ(b.bounds, position)));
+            // 近いタイルから埋める。遠くのタイルのロードで足元が空くのを防ぐ。
+            // PreloadAll でも、プレイヤー位置が分かるならその周囲から埋めた方が
+            // 途中でロード画面を抜けても破綻しにくい
+            if (target != null)
+            {
+                Vector3 position = target.position;
+                loadCandidates.Sort((a, b) =>
+                    DistanceToTileXZ(a.bounds, position).CompareTo(DistanceToTileXZ(b.bounds, position)));
+            }
 
             foreach (StageTileEntry entry in loadCandidates)
             {
-                if (pendingLoads.Count >= maxConcurrentLoads)
+                if (pendingLoads.Count >= budget)
                 {
                     break;
                 }
@@ -359,6 +423,17 @@ namespace Blue.World
         }
 
         public bool IsTileLoaded(int tileIndex) => GetState(tileIndex) == StageTileState.Loaded;
+
+        /// <summary>
+        /// 供給方式を切り替える。
+        /// </summary>
+        // ロード画面で PreloadAll に、大きすぎるステージでは DistanceStreaming に、
+        // といった使い分けを想定する。
+        public void SetMode(StageStreamingMode value)
+        {
+            mode = value;
+            nextEvaluateTime = 0f;
+        }
 
         /// <summary>
         /// 計測結果を CSV 文字列にする。
