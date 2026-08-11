@@ -2,63 +2,105 @@ Shader "Custom/OceanSurface"
 {
     Properties
     {
+        [Header(View)]
+        [KeywordEnum(Underwater, Above, Both)] _ViewMode ("View Mode", Float) = 0
+        [Enum(Both,0,Front,1,Back,2)] _CullMode ("Cull Mode", Float) = 1
+
         [Header(World Scale)]
         _WorldScale ("World Scale", Float) = 0.1
         _NormalTiling ("Normal Map Tiling", Float) = 0.05
 
-        [Header(Wave Settings Primary)]
-        _WaveAmplitude ("Wave Amplitude", Float) = 0.5
-        _WaveFrequency ("Wave Frequency", Float) = 1.0
-        _WaveSpeed ("Wave Speed", Float) = 1.0
-        _WaveSteepness ("Wave Steepness (Q)", Range(0, 1)) = 0.5
-        _WaveDirection ("Wave Direction", Vector) = (1, 0, 0, 0)
+        [Header(Wave Spectrum)]
+        // Six components are generated from these: directions fanned across
+        // _WaveSpread around _WaveDirection, frequencies on a golden-ratio
+        // series above _WaveFrequency. _WaveAmplitude is the TOTAL amplitude
+        // (sum over all components), so _FoamHeight stays meaningful against it.
+        _WaveAmplitude ("Total Amplitude", Float) = 1.0
+        _WaveFrequency ("Base Frequency", Float) = 1.0
+        _WaveSpeed ("Base Speed", Float) = 1.0
+        _WaveSteepness ("Wave Steepness (Q)", Range(0, 1)) = 0.9
+        _WaveDirection ("Wind Direction", Vector) = (1, 0, 0, 0)
+        _WaveSpread ("Direction Spread (deg)", Range(0, 60)) = 35
 
-        [Header(Wave Settings Secondary)]
-        _Wave2Amplitude ("Wave 2 Amplitude", Float) = 0.3
-        _Wave2Frequency ("Wave 2 Frequency", Float) = 1.5
-        _Wave2Speed ("Wave 2 Speed", Float) = 0.8
-        _Wave2Direction ("Wave 2 Direction", Vector) = (0.7, 0, 0.7, 0)
-
-        [Header(Wave Settings Tertiary)]
-        _Wave3Amplitude ("Wave 3 Amplitude", Float) = 0.15
-        _Wave3Frequency ("Wave 3 Frequency", Float) = 2.5
-        _Wave3Speed ("Wave 3 Speed", Float) = 1.2
-        _Wave3Direction ("Wave 3 Direction", Vector) = (0.5, 0, -0.866, 0)
+        [Header(Wave Groups)]
+        // Amplitude envelope a few wavelengths across. This is what breaks the
+        // regular rows of interference peaks - and with them, the regular foam.
+        _WaveGroupAmount ("Wave Group Strength", Range(0, 1)) = 0.6
+        _WaveGroupScale ("Wave Group Scale (1/m)", Float) = 0.015
 
         [Header(Water Appearance)]
         _ShallowColor ("Shallow Color", Color) = (0.2, 0.5, 0.7, 0.8)
         _DeepColor ("Deep Color", Color) = (0.05, 0.15, 0.3, 0.95)
         _DepthFade ("Depth Fade Distance", Float) = 5.0
 
-        [Header(Refraction)]
-        _RefractionStrength ("Refraction Strength", Range(0, 1)) = 0.3
-        _IOR ("Index of Refraction", Float) = 1.333
-
-        [Header(Reflection)]
-        _ReflectionTex ("Reflection Texture", 2D) = "black" {}
-        _ReflectionStrength ("Reflection Strength", Range(0, 1)) = 0.5
-
-        [Header(Fresnel)]
-        _FresnelPower ("Fresnel Power", Range(1, 10)) = 5.0
-        _FresnelBias ("Fresnel Bias (F0)", Range(0, 0.1)) = 0.02
-
         [Header(Normal Maps)]
-        _NormalMap1 ("Normal Map 1", 2D) = "bump" {}
-        _NormalMap2 ("Normal Map 2", 2D) = "bump" {}
+        [Normal] _NormalMap1 ("Normal Map 1", 2D) = "bump" {}
+        [Normal] _NormalMap2 ("Normal Map 2", 2D) = "bump" {}
         _NormalScale ("Normal Scale", Range(0, 2)) = 1.0
         _NormalSpeed1 ("Normal Speed 1", Vector) = (0.02, 0.01, 0, 0)
         _NormalSpeed2 ("Normal Speed 2", Vector) = (-0.01, 0.02, 0, 0)
+        _NormalFadeDistance ("Normal Fade Distance (0 = off)", Float) = 80.0
 
-        [Header(Specular)]
+        [Header(Underwater   Snells Window)]
+        _IOR ("Index of Refraction", Range(1.01, 2.0)) = 1.333
+        // Schlick exponent for the water->air fresnel. 5 is the physical value and
+        // gives the real window profile; lower fades the edge in earlier.
+        _WindowFalloff ("Window Edge Falloff", Range(1, 8)) = 5.0
+        _WindowNormalInfluence ("Window Normal Influence", Range(0, 1)) = 0.45
+        // Distance at which the window stops following the waves and becomes the
+        // clean circle of calm water. Without this the far window degenerates into
+        // the wave interference lattice.
+        _WindowFlattenDistance ("Window Flatten Distance (0 = off)", Float) = 50.0
+        _AboveWaterColor ("Above Water Fallback Color", Color) = (0.55, 0.75, 0.95, 1)
+        _SkyProbeStrength ("Sky Probe Strength", Range(0, 1)) = 1.0
+        _SunIntensity ("Sun Intensity", Range(0, 20)) = 3.0
+        _SunSharpness ("Sun Sharpness", Range(16, 4096)) = 512
+        _SunHalo ("Sun Halo", Range(0, 1)) = 0.2
+        _MirrorColor ("Total Reflection Color (horizon)", Color) = (0.14, 0.42, 0.68, 1)
+        _MirrorDeepColor ("Total Reflection Color (down)", Color) = (0.04, 0.17, 0.34, 1)
+        _UnderwaterFogColor ("Underwater Fog Color", Color) = (0.02, 0.25, 0.4, 1)
+        _UnderwaterDensity ("Underwater Fog Density", Range(0, 0.3)) = 0.02
+
+        [Header(Above Water)]
+        _RefractionStrength ("Refraction Strength", Range(0, 1)) = 0.3
+        _ReflectionTex ("Planar Reflection Texture", 2D) = "black" {}
+        _ReflectionStrength ("Planar vs Sky Blend", Range(0, 1)) = 0.5
+        _FresnelPower ("Fresnel Power", Range(1, 10)) = 5.0
+        _FresnelBias ("Fresnel Bias (F0)", Range(0, 0.1)) = 0.02
         _SpecularPower ("Specular Power", Range(1, 256)) = 128.0
         _SpecularIntensity ("Specular Intensity", Range(0, 2)) = 0.5
 
-        [Header(Snells Window)]
-        [Toggle(_SNELLS_WINDOW)] _EnableSnellsWindow ("Enable Snells Window", Float) = 0
-        _SnellEdgeSoftness ("Edge Softness", Range(0.01, 0.3)) = 0.1
+        [Header(Foam)]
+        _FoamColor ("Foam Color", Color) = (0.85, 0.93, 1.0, 1)
+        // Crest height in world units, so it has to be retuned if the wave
+        // amplitudes change. Total amplitude is the sum of the three waves.
+        _FoamHeight ("Foam Crest Height", Float) = 0.3
+        _FoamSoftness ("Foam Edge Softness", Float) = 0.15
+        _FoamSteepness ("Foam Steepness Bias", Range(0, 8)) = 3.0
+        // Density of the lace pattern (Voronoi cells per world unit, before streak).
+        _FoamWebScale ("Foam Web Scale", Float) = 0.4
+        // Thickness of the lace filaments, in web-cell units.
+        _FoamWebWidth ("Foam Web Width", Range(0.05, 1)) = 0.35
+        // Below 1 the pattern stretches along the primary wave direction, so the
+        // lace reads as wind-driven streaks.
+        _FoamStreak ("Foam Streak", Range(0.05, 1)) = 0.3
+        // Scattering blurs fine detail long before it dims large shapes, so foam
+        // has to wash out much sooner than the fog eats the big window gradient.
+        _FoamFadeDistance ("Foam Fade Distance (0 = off)", Float) = 50.0
 
-        [Header(Rendering)]
-        [Enum(Both,0,Front,1,Back,2)] _CullMode ("Cull Mode", Float) = 0
+        [Header(Depth Environment)]
+        // 0 keeps the old behaviour of taking the whole palette from this material.
+        // 1 hands brightness and fog colour to whatever DepthEnvironmentController
+        // has set for the current depth.
+        _EnvironmentResponse ("Environment Response", Range(0, 1)) = 1.0
+        // Ambient luminance the colours above were authored against. Raise or lower
+        // it until the shallows look the way they did before enabling the response.
+        _EnvAmbientReference ("Authored Ambient Level", Float) = 0.67
+
+        [Header(Style)]
+        // Size of one shading block in world units. This is where the pixel look
+        // comes from - quantizing the position, not the output values.
+        _PixelSize ("Pixel Size (world units, 0 = off)", Float) = 0.625
 
         [Header(Tessellation)]
         _TessellationFactor ("Tessellation Factor", Range(1, 64)) = 8
@@ -85,7 +127,9 @@ Shader "Custom/OceanSurface"
             Name "OceanForward"
             Tags { "LightMode" = "UniversalForward" }
 
-            Blend SrcAlpha OneMinusSrcAlpha
+            // Premultiplied alpha: both shading paths return colour * alpha with
+            // the sun / specular added on top, so highlights are not dimmed by it.
+            Blend One OneMinusSrcAlpha
             ZWrite Off
             Cull [_CullMode]
 
@@ -96,19 +140,20 @@ Shader "Custom/OceanSurface"
             #pragma domain OceanDomainShader
             #pragma fragment OceanFrag
 
-            // Shader features
-            #pragma shader_feature_local _SNELLS_WINDOW
+            // Underwater / Above are compiled separately so neither pays for the
+            // other. Both keeps the runtime VFACE branch for cases where the same
+            // surface is visible from inside and outside at once (e.g. a tank the
+            // player can swim into).
+            #pragma shader_feature_local_fragment _VIEWMODE_UNDERWATER _VIEWMODE_ABOVE _VIEWMODE_BOTH
 
-            // Multi-compile variants
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
-            #pragma multi_compile _ _SHADOWS_SOFT
             #pragma multi_compile_fog
 
             #include "OceanSurfaceInput.hlsl"
             #include "GerstnerWaves.hlsl"
             #include "OceanLighting.hlsl"
             #include "OceanTessellation.hlsl"
+            #include "OceanUnderwater.hlsl"
+            #include "OceanAbove.hlsl"
 
             // ================================================================
             // Fragment Shader
@@ -118,213 +163,144 @@ Shader "Custom/OceanSurface"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-                // Check if rendering back face (underwater view)
-                bool isBackFace = facing < 0;
+                float3 flatWS = input.flatPositionWS;
+                float3 cameraPosWS = GetCameraPositionWS();
 
-                // Normalize vectors
-                float3 normalWS = normalize(input.normalWS);
+                // Distance is taken from the unsnapped position: snapping it too
+                // would make the fog and the normal fade step in blocks as well.
+                float distToCamera = distance(flatWS, cameraPosWS);
 
-                // Flip normal for back face rendering
-                normalWS = isBackFace ? -normalWS : normalWS;
+                // ---- world-space pixel grid --------------------------------
+                // Snapping the shading position to a grid is what makes the surface
+                // read as blocks. Doing it here instead of posterising the output
+                // is the whole point: quantising a smooth value only produces
+                // contour banding, whereas quantising the position gives blocks
+                // that are genuinely attached to the water in world space.
+                float2 cellXZ = _PixelSize > 0.0
+                    ? (floor(flatWS.xz / _PixelSize) + 0.5) * _PixelSize
+                    : flatWS.xz;
+                float3 cellFlatWS = float3(cellXZ.x, flatWS.y, cellXZ.y);
 
-                float3 viewDirWS = normalize(input.viewDirWS);
-                float3 tangentWS = normalize(input.tangentWS.xyz);
-                float3 bitangentWS = cross(normalWS, tangentWS) * input.tangentWS.w;
+                // Analytic wave, evaluated per fragment at the cell centre: one
+                // flat normal per block, and completely independent of the
+                // tessellation level - which is what made the distant surface warp.
+                GerstnerWaveOutput cellWave = EvaluateGerstnerWavesSimple(cellFlatWS, _Time.y);
+                float3 cellPosWS = cellFlatWS + cellWave.displacement;
+                float3 normalUpWS = normalize(cellWave.normal);
 
-                // Flip tangent space for back face
-                if (isBackFace)
-                {
-                    tangentWS = -tangentWS;
-                }
+                // Snapping the position the view ray is measured against is what
+                // pixelates Snell's window itself.
+                float3 viewDirWS = normalize(cameraPosWS - cellPosWS);
 
-                // Sample and blend normal maps using world position
-                float time = _Time.y;
+                // The surface is a horizontal plane waved in world XZ and the normal
+                // map is tiled by world XZ, so the tangent frame can be built from
+                // the world axes. No mesh tangent, no handedness to get wrong.
+                float3 tangentWS = normalize(float3(1, 0, 0) - normalUpWS * normalUpWS.x);
+                float3 bitangentWS = cross(tangentWS, normalUpWS);
 
-                // Use world XZ coordinates for consistent tiling regardless of mesh scale
-                // input.positionOS now contains world position (passed from vertex shader)
-                float2 worldUV = input.positionOS.xz * _NormalTiling;
+                // A point-filtered 32px normal aliases hard at grazing angles, and
+                // the far surface should read as flat anyway.
+                float normalFade = _NormalFadeDistance > 0.0
+                    ? saturate(1.0 - distToCamera / _NormalFadeDistance)
+                    : 1.0;
+
+                // Snapped UV for the sample, unsnapped one for the derivatives.
+                float2 smoothUV = flatWS.xz * _NormalTiling;
+                float2 worldUV = cellXZ * _NormalTiling;
 
                 float3 normalTS = SampleBlendedNormals(
                     TEXTURE2D_ARGS(_NormalMap1, sampler_NormalMap1),
                     TEXTURE2D_ARGS(_NormalMap2, sampler_NormalMap2),
                     worldUV,
+                    ddx(smoothUV),
+                    ddy(smoothUV),
                     _NormalMap1_ST,
                     _NormalMap2_ST,
                     _NormalSpeed1,
                     _NormalSpeed2,
                     _NormalScale,
-                    time
+                    _Time.y
                 );
+                normalTS = normalize(lerp(float3(0, 0, 1), normalTS, normalFade));
 
-                // Transform normal to world space
-                float3 perturbedNormalWS = TransformNormalToWorld(normalTS, tangentWS, bitangentWS, normalWS);
+                // Second, much flatter copy for anything thresholded on angle.
+                float3 macroNormalTS = normalize(lerp(float3(0, 0, 1), normalTS, _WindowNormalInfluence));
+                float3 macroNormalWS = TransformNormalToWorld(macroNormalTS, tangentWS, bitangentWS, normalUpWS);
 
-                // Calculate screen UV
-                float2 screenUV = input.screenPos.xy / input.screenPos.w;
+                // Near the critical angle the boundary is where cos(theta) crosses a
+                // constant. Looking straight up, theta changes quickly with position
+                // so the edge is well defined; towards the horizon theta flattens out
+                // against 90 deg while the wave tilt stays the same size, so a couple
+                // of degrees of tilt slides the boundary by tens of metres. That is
+                // what replaced the far window with a lattice of the wave interference
+                // pattern. Settling the macro normal back onto true up with distance
+                // makes the window converge on the clean circle of calm water.
+                float windowFlatten = _WindowFlattenDistance > 0.0
+                    ? saturate(distToCamera / _WindowFlattenDistance)
+                    : 0.0;
+                macroNormalWS = normalize(lerp(macroNormalWS, float3(0, 1, 0), windowFlatten));
 
-                // Sample scene depth
-                float sceneDepthRaw = SampleSceneDepth(screenUV);
-                float sceneDepth = LinearEyeDepth(sceneDepthRaw, _ZBufferParams);
-                float surfaceDepth = LinearEyeDepth(input.positionCS.z, _ZBufferParams);
-                float depthDifference = sceneDepth - surfaceDepth;
+                OceanSurfaceData surface;
+                surface.positionWS = cellPosWS;
+                surface.normalUpWS = TransformNormalToWorld(normalTS, tangentWS, bitangentWS, normalUpWS);
+                surface.macroNormalUpWS = macroNormalWS;
+                surface.viewDirWS = viewDirWS;
+                surface.screenUV = input.screenPos.xy / input.screenPos.w;
+                surface.sceneDepth = LinearEyeDepth(SampleSceneDepth(surface.screenUV), _ZBufferParams);
+                surface.surfaceDepth = LinearEyeDepth(input.positionCS.z, _ZBufferParams);
+                surface.distToCamera = distToCamera;
+                surface.fogFactor = input.fogFactor;
 
-                // Check if camera is underwater
-                // Back face rendering = underwater view
-                bool isUnderwater = isBackFace || IsCameraUnderwater();
+                // Foam rides the crests. From below it is the only genuinely opaque
+                // part of the surface, so it reads without leaning on the palette -
+                // every other cue here is blue against blue. The crest height is
+                // already in hand from the per-fragment wave, and evaluating it at
+                // the cell centre makes it come out blocky like everything else.
+                // Steep faces break first, so they bias into foam earlier.
+                float crest = saturate((cellWave.displacement.y - _FoamHeight) / max(_FoamSoftness, 1e-4));
+                float steep = saturate((1.0 - dot(surface.normalUpWS, float3(0, 1, 0))) * _FoamSteepness);
 
-                // Initialize output
-                float3 finalColor = float3(0, 0, 0);
-                float finalAlpha = 1.0;
+                // Frame aligned to the primary wave, squashed along it so every
+                // foam feature comes out stretched with the wind. Built from the
+                // SNAPPED cell position like every other foam input - fed with the
+                // smooth position instead, the lace comes out as thin sub-cell
+                // slivers with smooth edges cutting across the pixel grid.
+                float2 waveDir = normalize(_WaveDirection.xz + float2(1e-6, 0));
+                float2 waveSide = float2(-waveDir.y, waveDir.x);
+                float2 alignedUV = float2(dot(cellXZ, waveDir) * _FoamStreak,
+                                          dot(cellXZ, waveSide));
 
-                if (isUnderwater)
-                {
-                    // ========================================================
-                    // Underwater View
-                    // ========================================================
+                // How foamy this cell wants to be. No masking noise on top: with a
+                // short-crested spectrum the peaks scatter irregularly on their own,
+                // and the wave groups keep whole stretches of sea calm.
+                float foamAmount = saturate(crest * (1.0 + steep));
 
-                    // For underwater view, we need the upward-facing normal
-                    // If back face, perturbedNormalWS points down, so we flip it
-                    float3 surfaceNormalUp = isBackFace ? -perturbedNormalWS : perturbedNormalWS;
+                // foamAmount does not gate the foam directly - it decides how deep to
+                // cut into a lace pattern. Weak crests keep only the brightest
+                // filaments as scraps, mid strength shows the connected web, and only
+                // a fully breaking crest floods the holes into solid white. Cutting a
+                // threshold into blob noise - every previous attempt - can only yield
+                // dots, because blob noise has no connected structure to reveal.
+                float web = OceanFoamWeb(alignedUV * _FoamWebScale + float2(_Time.y * 0.06, 0), _FoamWebWidth);
+                float cut = 1.2 - foamAmount * 1.45;
+                surface.foam = smoothstep(cut - 0.15, cut + 0.15, web);
 
-                    // View direction from camera to surface (for Snell's window calculation)
-                    // viewDirWS points from surface to camera, so we negate it
-                    float3 incidentDir = -viewDirWS;
+                // Scattering kills fine detail well before the fog kills the big
+                // luminance shapes, so foam gets its own, much shorter fade. This is
+                // also what keeps any residual crest regularity out of the far field.
+                float foamFade = _FoamFadeDistance > 0.0
+                    ? saturate(1.0 - distToCamera / _FoamFadeDistance)
+                    : 1.0;
+                surface.foam *= foamFade * foamFade;
 
-                    #if defined(_SNELLS_WINDOW)
-                    // Evaluate Snell's window
-                    // We need the angle between the incident ray and the surface normal
-                    float cosTheta = abs(dot(incidentDir, surfaceNormalUp));
-                    float theta = acos(saturate(cosTheta));
-
-                    // Critical angle for water-to-air (approximately 48.6 degrees)
-                    float criticalAngle = 0.8481; // radians
-
-                    // Check if outside critical angle (total internal reflection)
-                    bool isTotalReflection = theta > criticalAngle;
-
-                    // Smooth edge blend
-                    float edgeDistance = (criticalAngle - theta) / max(_SnellEdgeSoftness, 0.01);
-                    float windowBlend = saturate(smoothstep(0.0, 1.0, edgeDistance));
-
-                    if (isTotalReflection)
-                    {
-                        // Total internal reflection - mirror-like surface
-                        float3 reflectDir = reflect(incidentDir, surfaceNormalUp);
-
-                        // Dark reflection of underwater environment
-                        float3 reflectionColor = _DeepColor.rgb * 0.5;
-
-                        // Slight color variation based on reflection angle
-                        reflectionColor += saturate(-reflectDir.y) * _DeepColor.rgb * 0.3;
-
-                        finalColor = reflectionColor;
-                    }
-                    else
-                    {
-                        // Inside Snell's window - can see above water (bright)
-                        float3 refractionColor = SampleRefraction(
-                            screenUV,
-                            perturbedNormalWS,
-                            _RefractionStrength * 0.3,
-                            sceneDepth,
-                            surfaceDepth,
-                            _DepthFade
-                        );
-
-                        // Bright window color (sky/above water is visible)
-                        float3 skyColor = float3(0.5, 0.7, 0.9);
-                        float3 windowColor = lerp(refractionColor, skyColor, 0.4);
-
-                        // Blend at the edge of Snell's window
-                        float3 edgeColor = _DeepColor.rgb * 0.6;
-                        finalColor = lerp(edgeColor, windowColor, windowBlend);
-                    }
-                    #else
-                    // Simple underwater view without Snell's window
-                    // Just show the water color with slight depth variation
-                    float3 underwaterColor = lerp(_ShallowColor.rgb, _DeepColor.rgb, 0.5);
-
-                    // Add slight brightness variation based on view angle
-                    float upFactor = saturate(dot(-incidentDir, float3(0, 1, 0)));
-                    underwaterColor += upFactor * 0.15;
-
-                    finalColor = underwaterColor;
-                    #endif
-
-                    finalAlpha = _DeepColor.a;
-                }
-                else
-                {
-                    // ========================================================
-                    // Above Water View
-                    // ========================================================
-
-                    // Calculate depth-based water color
-                    float3 waterColor = EvaluateWaterColor(
-                        _ShallowColor.rgb,
-                        _DeepColor.rgb,
-                        depthDifference,
-                        _DepthFade
-                    );
-
-                    // Sample refraction (underwater scene)
-                    float3 refractionColor = SampleRefraction(
-                        screenUV,
-                        perturbedNormalWS,
-                        _RefractionStrength,
-                        sceneDepth,
-                        surfaceDepth,
-                        _DepthFade
-                    );
-
-                    // Tint refraction with water color based on depth
-                    float depthTint = saturate(depthDifference / _DepthFade);
-                    refractionColor = lerp(refractionColor, waterColor, depthTint * 0.7);
-
-                    // Sample reflection
-                    float3 reflectionColor = SampleReflection(
-                        TEXTURE2D_ARGS(_ReflectionTex, sampler_ReflectionTex),
-                        screenUV,
-                        perturbedNormalWS,
-                        _ReflectionStrength
-                    );
-
-                    // Add sky color approximation if reflection is dark
-                    float reflectionLuminance = dot(reflectionColor, float3(0.299, 0.587, 0.114));
-                    if (reflectionLuminance < 0.1)
-                    {
-                        // Approximate sky reflection using view direction
-                        float skyBlend = saturate(dot(reflect(-viewDirWS, perturbedNormalWS), float3(0, 1, 0)));
-                        reflectionColor = lerp(_DeepColor.rgb, float3(0.6, 0.7, 0.9), skyBlend) * _ReflectionStrength;
-                    }
-
-                    // Calculate fresnel
-                    float fresnel = WaterFresnel(viewDirWS, perturbedNormalWS, _FresnelPower, _FresnelBias);
-
-                    // Blend reflection and refraction using fresnel
-                    finalColor = lerp(refractionColor, reflectionColor, fresnel);
-
-                    // Add specular highlight
-                    Light mainLight = GetMainLight();
-                    float3 specular = CalculateSpecular(
-                        perturbedNormalWS,
-                        viewDirWS,
-                        mainLight.direction,
-                        mainLight.color,
-                        _SpecularPower,
-                        _SpecularIntensity
-                    );
-                    finalColor += specular;
-
-                    // Calculate alpha based on depth and fresnel
-                    float depthAlpha = lerp(_ShallowColor.a, _DeepColor.a, depthTint);
-                    finalAlpha = lerp(depthAlpha, 1.0, fresnel * 0.5);
-                }
-
-                // Apply fog
-                finalColor = MixFog(finalColor, input.fogFactor);
-
-                return half4(finalColor, finalAlpha);
+                #if defined(_VIEWMODE_ABOVE)
+                    return ShadeAboveWater(surface);
+                #elif defined(_VIEWMODE_BOTH)
+                    bool viewFromBelow = (facing < 0) || IsCameraUnderwater();
+                    return viewFromBelow ? ShadeUnderwater(surface) : ShadeAboveWater(surface);
+                #else
+                    return ShadeUnderwater(surface);
+                #endif
             }
             ENDHLSL
         }
@@ -343,223 +319,17 @@ Shader "Custom/OceanSurface"
 
             HLSLPROGRAM
             #pragma target 4.6
-            #pragma vertex DepthTessVert
-            #pragma hull DepthHullShader
+            #pragma vertex TessellationVert
+            #pragma hull OceanHullShader
             #pragma domain DepthDomainShader
             #pragma fragment DepthOnlyFrag
 
             #include "OceanSurfaceInput.hlsl"
             #include "GerstnerWaves.hlsl"
-
-            struct DepthOnlyVaryings
-            {
-                float4 positionCS : SV_POSITION;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
-            struct DepthTessControlPoint
-            {
-                float4 positionOS : INTERNALTESSPOS;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-            };
-
-            struct DepthTessFactors
-            {
-                float edge[3] : SV_TessFactor;
-                float inside : SV_InsideTessFactor;
-            };
-
-            float CalcDepthEdgeTessFactor(float3 pos0WS, float3 pos1WS)
-            {
-                float3 edgeCenter = (pos0WS + pos1WS) * 0.5;
-                float3 cameraPos = GetCameraPositionWS();
-                float dist = distance(edgeCenter, cameraPos);
-                float f = saturate((_TessellationMaxDistance - dist) / (_TessellationMaxDistance - _TessellationMinDistance));
-                return lerp(1.0, _TessellationFactor, f);
-            }
-
-            DepthTessControlPoint DepthTessVert(Attributes input)
-            {
-                DepthTessControlPoint output;
-                UNITY_SETUP_INSTANCE_ID(input);
-                UNITY_TRANSFER_INSTANCE_ID(input, output);
-                output.positionOS = input.positionOS;
-                return output;
-            }
-
-            DepthTessFactors DepthPatchConstant(InputPatch<DepthTessControlPoint, 3> patch)
-            {
-                UNITY_SETUP_INSTANCE_ID(patch[0]);
-                DepthTessFactors f;
-                float3 pos0WS = TransformObjectToWorld(patch[0].positionOS.xyz);
-                float3 pos1WS = TransformObjectToWorld(patch[1].positionOS.xyz);
-                float3 pos2WS = TransformObjectToWorld(patch[2].positionOS.xyz);
-                f.edge[0] = CalcDepthEdgeTessFactor(pos1WS, pos2WS);
-                f.edge[1] = CalcDepthEdgeTessFactor(pos2WS, pos0WS);
-                f.edge[2] = CalcDepthEdgeTessFactor(pos0WS, pos1WS);
-                f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0;
-                return f;
-            }
-
-            [domain("tri")]
-            [partitioning("fractional_odd")]
-            [outputtopology("triangle_cw")]
-            [outputcontrolpoints(3)]
-            [patchconstantfunc("DepthPatchConstant")]
-            [maxtessfactor(64)]
-            DepthTessControlPoint DepthHullShader(InputPatch<DepthTessControlPoint, 3> patch, uint id : SV_OutputControlPointID)
-            {
-                return patch[id];
-            }
-
-            [domain("tri")]
-            DepthOnlyVaryings DepthDomainShader(DepthTessFactors factors, OutputPatch<DepthTessControlPoint, 3> patch, float3 bary : SV_DomainLocation)
-            {
-                DepthOnlyVaryings output;
-                UNITY_SETUP_INSTANCE_ID(patch[0]);
-                UNITY_TRANSFER_INSTANCE_ID(patch[0], output);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-                float3 positionOS = patch[0].positionOS.xyz * bary.x + patch[1].positionOS.xyz * bary.y + patch[2].positionOS.xyz * bary.z;
-                float3 positionWS = TransformObjectToWorld(positionOS);
-                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
-                float3 displacedPositionWS = positionWS + waveOutput.displacement;
-                output.positionCS = TransformWorldToHClip(displacedPositionWS);
-                return output;
-            }
-
-            half4 DepthOnlyFrag(DepthOnlyVaryings input) : SV_Target
-            {
-                return 0;
-            }
-            ENDHLSL
-        }
-
-        // ====================================================================
-        // Shadow Caster Pass (optional - water usually doesn't cast shadows)
-        // ====================================================================
-        Pass
-        {
-            Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
-
-            ZWrite On
-            ZTest LEqual
-            ColorMask 0
-            Cull [_CullMode]
-
-            HLSLPROGRAM
-            #pragma target 4.6
-            #pragma vertex ShadowTessVert
-            #pragma hull ShadowHullShader
-            #pragma domain ShadowDomainShader
-            #pragma fragment ShadowPassFrag
-
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
-            #include "OceanSurfaceInput.hlsl"
-            #include "GerstnerWaves.hlsl"
-
-            float3 _LightDirection;
-
-            struct ShadowVaryings
-            {
-                float4 positionCS : SV_POSITION;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
-            struct ShadowTessControlPoint
-            {
-                float4 positionOS : INTERNALTESSPOS;
-                float3 normalOS : NORMAL;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
-            };
-
-            struct ShadowTessFactors
-            {
-                float edge[3] : SV_TessFactor;
-                float inside : SV_InsideTessFactor;
-            };
-
-            float CalcShadowEdgeTessFactor(float3 pos0WS, float3 pos1WS)
-            {
-                float3 edgeCenter = (pos0WS + pos1WS) * 0.5;
-                float3 cameraPos = GetCameraPositionWS();
-                float dist = distance(edgeCenter, cameraPos);
-                float f = saturate((_TessellationMaxDistance - dist) / (_TessellationMaxDistance - _TessellationMinDistance));
-                return lerp(1.0, _TessellationFactor, f);
-            }
-
-            ShadowTessControlPoint ShadowTessVert(Attributes input)
-            {
-                ShadowTessControlPoint output;
-                UNITY_SETUP_INSTANCE_ID(input);
-                UNITY_TRANSFER_INSTANCE_ID(input, output);
-                output.positionOS = input.positionOS;
-                output.normalOS = input.normalOS;
-                return output;
-            }
-
-            ShadowTessFactors ShadowPatchConstant(InputPatch<ShadowTessControlPoint, 3> patch)
-            {
-                UNITY_SETUP_INSTANCE_ID(patch[0]);
-                ShadowTessFactors f;
-                float3 pos0WS = TransformObjectToWorld(patch[0].positionOS.xyz);
-                float3 pos1WS = TransformObjectToWorld(patch[1].positionOS.xyz);
-                float3 pos2WS = TransformObjectToWorld(patch[2].positionOS.xyz);
-                f.edge[0] = CalcShadowEdgeTessFactor(pos1WS, pos2WS);
-                f.edge[1] = CalcShadowEdgeTessFactor(pos2WS, pos0WS);
-                f.edge[2] = CalcShadowEdgeTessFactor(pos0WS, pos1WS);
-                f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0;
-                return f;
-            }
-
-            [domain("tri")]
-            [partitioning("fractional_odd")]
-            [outputtopology("triangle_cw")]
-            [outputcontrolpoints(3)]
-            [patchconstantfunc("ShadowPatchConstant")]
-            [maxtessfactor(64)]
-            ShadowTessControlPoint ShadowHullShader(InputPatch<ShadowTessControlPoint, 3> patch, uint id : SV_OutputControlPointID)
-            {
-                return patch[id];
-            }
-
-            [domain("tri")]
-            ShadowVaryings ShadowDomainShader(ShadowTessFactors factors, OutputPatch<ShadowTessControlPoint, 3> patch, float3 bary : SV_DomainLocation)
-            {
-                ShadowVaryings output;
-                UNITY_SETUP_INSTANCE_ID(patch[0]);
-                UNITY_TRANSFER_INSTANCE_ID(patch[0], output);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-                float3 positionOS = patch[0].positionOS.xyz * bary.x + patch[1].positionOS.xyz * bary.y + patch[2].positionOS.xyz * bary.z;
-                float3 positionWS = TransformObjectToWorld(positionOS);
-
-                GerstnerWaveOutput waveOutput = EvaluateGerstnerWavesSimple(positionWS, _Time.y);
-                float3 displacedPositionWS = positionWS + waveOutput.displacement;
-                float3 normalWS = waveOutput.normal;
-
-                output.positionCS = TransformWorldToHClip(ApplyShadowBias(displacedPositionWS, normalWS, _LightDirection));
-
-                #if UNITY_REVERSED_Z
-                output.positionCS.z = min(output.positionCS.z, UNITY_NEAR_CLIP_VALUE);
-                #else
-                output.positionCS.z = max(output.positionCS.z, UNITY_NEAR_CLIP_VALUE);
-                #endif
-
-                return output;
-            }
-
-            half4 ShadowPassFrag(ShadowVaryings input) : SV_Target
-            {
-                return 0;
-            }
+            #include "OceanTessellation.hlsl"
             ENDHLSL
         }
     }
 
-    FallBack "Universal Render Pipeline/Lit"
+    FallBack Off
 }
