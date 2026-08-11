@@ -95,3 +95,9 @@ crashlytics-build.properties
 # ---------------------------------------------------------------------------
 # .data は数百MB〜数GBになる。CSV/レポートは .data から再生成できる。
 /ProfilerCaptures/
+
+# 計測用テストステージの Digger データ
+# 地形もタイルシーンも ignore 対象なので、これだけ残しても参照先が無い。
+# フォルダ名は DiggerMaster が置かれたシーン名から決まる。
+/[Aa]ssets/DiggerData/Scenes/testStage/
+/[Aa]ssets/DiggerData/Scenes/testStage.meta
