@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BlackDragon
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
   id: 7
-  cachedGUID: 
+  cachedGUID: 6ca50d2bfe824784397d4c25c2821c0e
   name: "\u30AF\u30ED\u30DF\u30CE\u30A6\u30DF\u30A6\u30B7"
   hp: 200
   attackPower: 10

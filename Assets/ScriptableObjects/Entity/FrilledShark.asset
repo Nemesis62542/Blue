@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FrilledShark
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.EntityData
   id: 6
-  cachedGUID: 
+  cachedGUID: 3be098417ec15b240b2557b1ef8c536a
   name: "\u30D6\u30E9\u30C3\u30C7\u30A3\u30B7\u30E3\u30FC\u30AF"
   hp: 20
   attackPower: 0

@@ -35,6 +35,7 @@ ExportedObj/
 .consulo/
 *.csproj
 *.unityproj
+*.slnx
 *.sln
 *.suo
 *.tmp
@@ -72,3 +73,32 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# ---------------------------------------------------------------------------
+# Digger の編集アンドゥ履歴
+# ---------------------------------------------------------------------------
+# DiggerSystem.UndoStackSize = 15 で個数は頭打ちだが、編集のたびに中身が入れ替わるため
+# git 履歴が膨れ続ける。現行の voxel データはサフィックス無しの *.vox3 で、そちらは残す。
+# ※ .internal は先頭がドットなので Unity は .meta を作らない（追跡対象は実体ファイルのみ）
+/[Aa]ssets/DiggerData/**/*.vox3_v*
+/[Aa]ssets/DiggerData/**/version_*.ver
+
+# ---------------------------------------------------------------------------
+# 負荷計測用のテストステージ
+# ---------------------------------------------------------------------------
+# Blue > World > Create 2km Test Stage でいつでも再生成できるため、コミットしない。
+# 本番ステージの Generated/ は Digger が TerrainData の GUID を参照する都合でコミットする。
+/[Aa]ssets/Stages/TestStage/
+/[Aa]ssets/Stages/TestStage.meta
+
+# ---------------------------------------------------------------------------
+# Profiler キャプチャ
+# ---------------------------------------------------------------------------
+# .data は数百MB〜数GBになる。CSV/レポートは .data から再生成できる。
+/ProfilerCaptures/
+
+# 計測用テストステージの Digger データ
+# 地形もタイルシーンも ignore 対象なので、これだけ残しても参照先が無い。
+# フォルダ名は DiggerMaster が置かれたシーン名から決まる。
+/[Aa]ssets/DiggerData/Scenes/testStage/
+/[Aa]ssets/DiggerData/Scenes/testStage.meta
