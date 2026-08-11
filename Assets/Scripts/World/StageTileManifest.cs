@@ -25,11 +25,10 @@ namespace Blue.World
     }
 
     /// <summary>
-    /// ステージのベイク結果一覧。ストリーミングローダーはこれだけを見ればよく、
-    /// シーンやアセットを走査する必要がない。
-    ///
-    /// これは生成物なので、手で編集しない（再ベイクで上書きされる）。
+    /// ステージのベイク結果一覧。
     /// </summary>
+    // ストリーミングローダーはこれだけを見ればよく、シーンやアセットを走査する必要がない。
+    // 生成物なので手で編集しないこと（再ベイクで上書きされる）。
     public class StageTileManifest : ScriptableObject
     {
         [SerializeField] private string stageId;

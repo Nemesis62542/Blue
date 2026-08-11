@@ -7,11 +7,10 @@ namespace Blue.Editor.World
 {
     /// <summary>
     /// StageLoader のカスタムインスペクター。
-    ///
-    /// タイルシーンが Build Settings に登録されていないと SceneManager.LoadSceneAsync は
-    /// null を返し、ロードが全て失敗する。それでも Play 自体は成立してしまい、
-    /// 「エラーに気づかないまま無効な計測をする」事故が起きるため、Play 前に検出する。
     /// </summary>
+    // タイルシーンが Build Settings に登録されていないと SceneManager.LoadSceneAsync は
+    // null を返し、ロードが全て失敗する。それでも Play 自体は成立してしまい、
+    // 「エラーに気づかないまま無効な計測をする」事故が起きるため、Play 前に検出する。
     [CustomEditor(typeof(StageLoader))]
     public class StageLoaderEditor : UnityEditor.Editor
     {
@@ -68,9 +67,9 @@ namespace Blue.Editor.World
 
         /// <summary>
         /// Build Settings に載っていないタイルシーンの数を数える。
-        /// 無効化された(enabled=false)エントリはビルドに含まれないが、
-        /// エディタの Play では読めるので登録済みとして扱う。
         /// </summary>
+        // 無効化された(enabled=false)エントリはビルドに含まれないが、
+        // エディタの Play では読めるので登録済みとして扱う。
         private static int CountUnregistered(StageTileManifest manifest, out List<string> samples)
         {
             HashSet<string> registered = new HashSet<string>();

@@ -7,10 +7,9 @@ namespace Blue.Editor.World
 {
     /// <summary>
     /// 負荷計測用の 2km テストステージ一式（ハイトマップ + StageRecipe）を生成する。
-    ///
-    /// 外部ツール(Gaea等)でハイトマップを作る前に、タイル分割・ストリーミング・
-    /// メモリ量を実測できるようにするためのもの。地形の作り込みは目的ではない。
     /// </summary>
+    // 外部ツール(Gaea等)でハイトマップを作る前に、タイル分割・ストリーミング・
+    // メモリ量を実測できるようにするためのもの。地形の作り込みは目的ではない。
     public static class TestStageGenerator
     {
         private const string STAGE_ROOT = "Assets/Stages/TestStage";

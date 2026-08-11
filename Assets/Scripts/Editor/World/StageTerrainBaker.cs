@@ -11,20 +11,18 @@ using Debug = UnityEngine.Debug;
 namespace Blue.Editor.World
 {
     /// <summary>
-    /// StageRecipe から Terrain タイル群とタイルシーンを生成するベイカー。
-    ///
-    /// 【なぜ Terrain Tools パッケージを使わないか】
-    /// Terrain Toolbox が提供するのは「ハイトマップ→タイル分割 Terrain 生成」までで、
-    /// しかもカレントシーンに生成するため、タイルごとにシーンを分ける構成では結局後処理が必要になる。
-    /// 加えて 5.x は Unity 2022.2 想定で Unity 6 対応が明示されていない。
-    /// 自作範囲（マスク→アルファマップ、散布、スポーンフィールド、タイルシーン）が支配的なので、
-    /// 全工程をスクリプトから再実行できる形にしている。
-    ///
-    /// 【再ベイクの安全性】
-    /// TerrainData は作り直さず、既存アセットを上書き更新して GUID を維持する。
-    /// Digger は編集データを TerrainData の GUID でフォルダ分けしているため、
-    /// GUID が変わると掘削済みの洞窟が全て参照を失う。
+    /// StageRecipe から Terrain タイル群とタイルシーンを生成する。
     /// </summary>
+    // Terrain Tools パッケージは使わない。Terrain Toolbox が提供するのは
+    // 「ハイトマップ→タイル分割 Terrain 生成」までで、しかもカレントシーンに生成するため、
+    // タイルごとにシーンを分ける構成では結局後処理が必要になる。加えて 5.x は
+    // Unity 2022.2 想定で Unity 6 対応が明示されていない。自作範囲（マスク→アルファマップ、
+    // 散布、スポーンフィールド、タイルシーン）が支配的なので、全工程をスクリプトから
+    // 再実行できる形にしている。
+    //
+    // 再ベイクでは TerrainData を作り直さず、既存アセットを上書き更新して GUID を維持する。
+    // Digger は編集データを TerrainData の GUID でフォルダ分けしているため、
+    // GUID が変わると掘削済みの洞窟が全て参照を失う。
     public static class StageTerrainBaker
     {
         private const string GENERATED_FOLDER = "Generated";
@@ -234,10 +232,9 @@ namespace Blue.Editor.World
 
         /// <summary>
         /// タイルのハイトマップを構築する。
-        ///
-        /// 隣接タイルは境界の1列を共有するので、グローバルなサンプル添字から UV を求める。
-        /// こうすると共有列は必ず同じ UV → 同じ高さになり、継ぎ目が原理的に発生しない。
         /// </summary>
+        // 隣接タイルは境界の1列を共有するので、グローバルなサンプル添字から UV を求める。
+        // こうすると共有列は必ず同じ UV → 同じ高さになり、継ぎ目が原理的に発生しない。
         private static float[,] BuildHeights(
             StageRecipe recipe,
             TextureSampler sampler,
@@ -287,10 +284,9 @@ namespace Blue.Editor.World
 
         /// <summary>
         /// バイオームマスクから Terrain のスプラットウェイトを構築する。
-        ///
-        /// ハイトマップと違いアルファマップは頂点ではなくテクセル（面積サンプル）なので、
-        /// 境界を共有せずテクセル中心で UV を取る。
         /// </summary>
+        // ハイトマップと違いアルファマップは頂点ではなくテクセル（面積サンプル）なので、
+        // 境界を共有せずテクセル中心で UV を取る。
         private static void ApplyAlphamaps(
             StageRecipe recipe,
             BiomeSamplers biomeSamplers,
@@ -355,8 +351,8 @@ namespace Blue.Editor.World
 
         /// <summary>
         /// タイルシーンを生成または更新する。
-        /// 既存シーンは開き直して中身を更新するため、手で足したオブジェクトは失われない。
         /// </summary>
+        // 既存シーンは開き直して中身を更新するため、手で足したオブジェクトは失われない。
         private static void BakeTileScene(
             StageRecipe recipe,
             TerrainData terrainData,
@@ -476,11 +472,10 @@ namespace Blue.Editor.World
 
         /// <summary>
         /// テクスチャを1度だけ CPU 側に読み出して、クランプ付きバイリニアでサンプルする。
-        ///
-        /// Texture2D.GetPixelBilinear を直接使わない理由:
-        ///   - テクスチャの wrapMode が Repeat だと u=1 が反対側に回り込み、タイル境界が壊れる
-        ///   - 2km を 8x8 タイルでベイクすると数百万回の呼び出しになる
         /// </summary>
+        // Texture2D.GetPixelBilinear を直接使わない理由:
+        //   - テクスチャの wrapMode が Repeat だと u=1 が反対側に回り込み、タイル境界が壊れる
+        //   - 2km を 8x8 タイルでベイクすると数百万回の呼び出しになる
         private sealed class TextureSampler
         {
             private readonly float[] values;

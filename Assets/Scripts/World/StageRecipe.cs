@@ -38,18 +38,15 @@ namespace Blue.World
 
     /// <summary>
     /// ステージ1つ分の生成レシピ。地形パイプラインの唯一のソース。
-    ///
-    /// 【設計方針】
-    /// Terrain は成果物であってソースデータではない。手作業は「マスクを塗る」に集約し、
-    /// ベイカーがそこから TerrainData・タイルシーン・（後のフェーズで）散布物とスポーン情報を生成する。
-    /// レシピと元画像だけがコミット対象の正本になる。
-    ///
-    /// 【再ベイクと Digger の関係】
-    /// Digger は編集データを TerrainData アセットの GUID で紐付けている
-    /// （Assets/DiggerData/Scenes/(シーン名)/(TerrainDataのGUID)/）。
-    /// このためベイカーは TerrainData を作り直さず、既存アセットを上書き更新して GUID を維持する。
-    /// GUID が変わると掘削済みの洞窟が全て迷子になる。
     /// </summary>
+    // Terrain は成果物であってソースデータではない。手作業は「マスクを塗る」に集約し、
+    // ベイカーがそこから TerrainData・タイルシーン・（後のフェーズで）散布物とスポーン情報を
+    // 生成する。レシピと元画像だけがコミット対象の正本になる。
+    //
+    // Digger は編集データを TerrainData アセットの GUID で紐付けている
+    // （Assets/DiggerData/Scenes/(シーン名)/(TerrainDataのGUID)/）。
+    // このためベイカーは TerrainData を作り直さず、既存アセットを上書き更新して GUID を維持する。
+    // GUID が変わると掘削済みの洞窟が全て迷子になる。
     [CreateAssetMenu(fileName = "StageRecipe", menuName = "Blue/ScriptableObject/StageRecipe")]
     public class StageRecipe : ScriptableObject
     {
@@ -124,8 +121,8 @@ namespace Blue.World
 
         /// <summary>
         /// ベイク可能かを検証し、問題があればすべて列挙する。
-        /// 1件目で止めないのは、エディタ上でまとめて直せるようにするため。
         /// </summary>
+        // 1件目で止めないのは、エディタ上でまとめて直せるようにするため。
         public List<string> Validate()
         {
             List<string> errors = new List<string>();
@@ -185,9 +182,10 @@ namespace Blue.World
         }
 
         /// <summary>
-        /// 8bitテクスチャは高さ方向の量子化が粗く、段差(テラス)として見える。
-        /// エラーではないので Validate とは分けて警告として返す。
+        /// ベイクは可能だが品質に影響する問題を列挙する。
         /// </summary>
+        // 8bitテクスチャは高さ方向の量子化が粗く、段差(テラス)として見える。
+        // エラーではないので Validate とは分けて警告として返す。
         public List<string> CollectWarnings()
         {
             List<string> warnings = new List<string>();

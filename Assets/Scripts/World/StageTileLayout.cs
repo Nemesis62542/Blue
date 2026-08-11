@@ -4,12 +4,10 @@ using UnityEngine;
 namespace Blue.World
 {
     /// <summary>
-    /// ステージのタイル分割レイアウト。
-    /// ワールド座標とタイル座標の変換をここに集約する。
-    ///
-    /// ベイク時（エディタ）とランタイム（ストリーミング）で必ずこの構造体を経由すること。
-    /// 双方で座標計算を書くとタイル境界がずれ、散布物の所有タイルが食い違う。
+    /// ステージのタイル分割レイアウト。ワールド座標とタイル座標の変換を行う。
     /// </summary>
+    // ベイク時（エディタ）とランタイム（ストリーミング）で必ずこの構造体を経由すること。
+    // 双方で座標計算を書くとタイル境界がずれ、散布物の所有タイルが食い違う。
     [Serializable]
     public struct StageTileLayout
     {
@@ -53,10 +51,8 @@ namespace Blue.World
         /// <summary>タイル総数</summary>
         public int TileCount => tilesPerAxis * tilesPerAxis;
 
-        /// <summary>
-        /// ステージ全体で見たときのハイトマップサンプル数（一辺）。
-        /// 隣接タイルは境界の1列を共有するので、単純な res * tiles にはならない。
-        /// </summary>
+        /// <summary>ステージ全体で見たときのハイトマップサンプル数（一辺）</summary>
+        // 隣接タイルは境界の1列を共有するので、単純な res * tiles にはならない。
         public int GlobalHeightSamples => tilesPerAxis * (heightmapResolution - 1) + 1;
 
         /// <summary>
@@ -82,10 +78,8 @@ namespace Blue.World
             this.maxHeight = maxHeight;
         }
 
-        /// <summary>
-        /// 2km / 8x8タイル(256m) / 1m per texel の既定構成。
-        /// 水中はフォグで視界が短いため、タイルは小さめにしてストリーミング粒度を稼ぐ。
-        /// </summary>
+        /// <summary>2km / 8x8タイル(256m) / 1m per texel の既定構成</summary>
+        // 水中はフォグで視界が短いため、タイルは小さめにしてストリーミング粒度を稼ぐ。
         public static StageTileLayout Default =>
             new StageTileLayout(2048f, 8, 257, 512, -300f, 20f);
 
@@ -107,10 +101,8 @@ namespace Blue.World
 
         #region Coordinate Conversion
 
-        /// <summary>
-        /// タイルの原点（Terrain の transform.position に入る値）。
-        /// Y は最深部なので、Terrain のローカル高さ 0 が minHeight に対応する。
-        /// </summary>
+        /// <summary>タイルの原点（Terrain の transform.position に入る値）</summary>
+        // Y は最深部なので、Terrain のローカル高さ 0 が minHeight に対応する。
         public Vector3 TileOrigin(int tileX, int tileZ)
         {
             Vector3 origin = Origin;
@@ -126,8 +118,8 @@ namespace Blue.World
 
         /// <summary>
         /// ワールド座標が属するタイル座標を返す。範囲外の場合は端のタイルにクランプされる。
-        /// 散布物の「所有タイル」判定はこれで行う（インスタンスの基点が属するタイルが所有する）。
         /// </summary>
+        // 散布物の「所有タイル」判定はこれで行う（インスタンスの基点が属するタイルが所有する）。
         public void WorldToTile(Vector3 worldPosition, out int tileX, out int tileZ)
         {
             Vector3 origin = Origin;
@@ -149,9 +141,7 @@ namespace Blue.World
 
         #region Validation
 
-        /// <summary>
-        /// 設定が Unity の Terrain の制約を満たしているか検証する。
-        /// </summary>
+        /// <summary>設定が Unity の Terrain の制約を満たしているか検証する。</summary>
         public bool Validate(out string error)
         {
             if (worldSize <= 0f)

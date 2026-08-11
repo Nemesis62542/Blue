@@ -9,11 +9,10 @@ namespace Blue.Editor.World
 {
     /// <summary>
     /// タイルシーンの Build Settings 登録と、確認用の一括オープン。
-    ///
-    /// SceneManager.LoadSceneAsync はパス指定でも Build Settings に載っているシーンしか
-    /// 読めないため、ベイク後の登録が必須になる。
-    /// （将来 Addressables に移す場合、置き換わるのはここと StageLoader の読み込み部分だけ）
     /// </summary>
+    // SceneManager.LoadSceneAsync はパス指定でも Build Settings に載っているシーンしか
+    // 読めないため、ベイク後の登録が必須になる。
+    // 将来 Addressables に移す場合、置き換わるのはここと StageLoader の読み込み部分だけ。
     public static class StageSceneTools
     {
         #region Build Settings
@@ -116,9 +115,10 @@ namespace Blue.Editor.World
         #region Inspection
 
         /// <summary>
-        /// 全タイルを加算で開く。ベイクした地形の全体像を目視確認するためのもの。
-        /// 64枚の Terrain が同時に載るので、確認が終わったら閉じること。
+        /// 全タイルを加算で開く。
         /// </summary>
+        // ベイクした地形の全体像を目視確認するためのもの。
+        // 64枚の Terrain が同時に載るので、確認が終わったら閉じること。
         [MenuItem("Blue/World/Open All Stage Tiles")]
         public static void OpenAllSelected()
         {

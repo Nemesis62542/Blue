@@ -6,8 +6,8 @@ namespace Blue.World.Scatter
 {
     /// <summary>
     /// 散布物の1種類ぶんの定義。
-    /// サンゴ・海藻・岩・落ちているアイテムのいずれもこの型で表す。
     /// </summary>
+    // サンゴ・海藻・岩・落ちているアイテムのいずれもこの型で表す。
     [Serializable]
     public class ScatterPrototype
     {
@@ -33,10 +33,9 @@ namespace Blue.World.Scatter
 
     /// <summary>
     /// 散布物プロトタイプの一覧。ベイク結果は prototypeId でここを引く。
-    ///
-    /// 【重要】id は永続IDの一部になっている（ScatterInstanceId 参照）。
-    /// 既存の id を振り直すと、セーブデータ中の「回収済みアイテム」が別の物を指してしまう。
     /// </summary>
+    // id は永続IDの一部になっている（ScatterInstanceId 参照）。
+    // 既存の id を振り直すと、セーブデータ中の「回収済みアイテム」が別の物を指してしまう。
     [CreateAssetMenu(fileName = "ScatterPrototypeRegistry", menuName = "Blue/ScriptableObject/ScatterPrototypeRegistry")]
     public class ScatterPrototypeRegistry : ScriptableObject
     {
@@ -64,8 +63,9 @@ namespace Blue.World.Scatter
         }
 
         /// <summary>
-        /// id の重複を検出する。重複すると永続IDが一意でなくなるため、ベイク前に必ず検証する。
+        /// id の重複を検出する。
         /// </summary>
+        // 重複すると永続IDが一意でなくなるため、ベイク前に必ず検証する。
         public bool ValidateIds(out string error)
         {
             HashSet<int> seen = new HashSet<int>();

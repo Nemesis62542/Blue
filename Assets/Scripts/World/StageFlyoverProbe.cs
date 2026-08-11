@@ -5,17 +5,16 @@ namespace Blue.World
 {
     /// <summary>
     /// ステージを一定速度で直線横断させる計測用ハーネス。
-    ///
-    /// Unity Profiler は直近2000フレームしか保持しないため、通常の遊泳速度で 2km を
-    /// 横断すると録画範囲に収まらない。高速で横断させて1キャプチャに収める。
-    /// 高速移動はストリーミングの最悪ケースでもあるので、テストとしても妥当。
-    ///
-    /// 使い方:
-    ///   1. このコンポーネントを空の GameObject に付け、StageLoader の target に指定する
-    ///   2. Play して横断させる（Profiler は Record 状態にしておく）
-    ///   3. 終了時に ProfilerCaptures/ へ CSV が出るので、
-    ///      profiler-capture-dumper の出力とフレーム番号で突き合わせる
     /// </summary>
+    // Unity Profiler は直近2000フレームしか保持しないため、通常の遊泳速度で 2km を
+    // 横断すると録画範囲に収まらない。高速で横断させて1キャプチャに収める。
+    // 高速移動はストリーミングの最悪ケースでもあるので、テストとしても妥当。
+    //
+    // 使い方:
+    //   1. このコンポーネントを空の GameObject に付け、StageLoader の target に指定する
+    //   2. Play して横断させる（Profiler は Record 状態にしておく）
+    //   3. 終了時に ProfilerCaptures/ へ CSV が出るので、
+    //      profiler-capture-dumper の出力とフレーム番号で突き合わせる
     public class StageFlyoverProbe : MonoBehaviour
     {
         #region Serialized Fields
@@ -205,9 +204,7 @@ namespace Blue.World
             }
         }
 
-        /// <summary>
-        /// ロード実測を ProfilerCaptures/ に CSV で書き出す。
-        /// </summary>
+        /// <summary>ロード実測を ProfilerCaptures/ に CSV で書き出す。</summary>
         public void WriteReport()
         {
             string directory = Path.Combine(Application.dataPath, "..", "ProfilerCaptures");

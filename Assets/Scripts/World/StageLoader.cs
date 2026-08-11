@@ -17,13 +17,12 @@ namespace Blue.World
     }
 
     /// <summary>
-    /// 1タイルのロードにかかった実測値。ヒッチの原因追跡に使う。
-    ///
-    /// Unity Profiler だけでは「どのタイルのせいでスパイクしたか」が分からない。
-    /// シーン統合のコストは AsyncOperation の完了フレームにエンジン内部で発生するため、
-    /// こちらのコードで Profiler.BeginSample を掛けても囲めないため。
-    /// completedFrame をキャプチャのフレーム番号と突き合わせて特定する。
+    /// 1タイルのロードにかかった実測値。
     /// </summary>
+    // Unity Profiler だけでは「どのタイルのせいでスパイクしたか」が分からない。
+    // シーン統合のコストは AsyncOperation の完了フレームにエンジン内部で発生し、
+    // こちらのコードで Profiler.BeginSample を掛けても囲めないため。
+    // completedFrame をキャプチャのフレーム番号と突き合わせて特定する。
     public struct StageTileLoadRecord
     {
         public int tileIndex;
@@ -38,18 +37,16 @@ namespace Blue.World
     }
 
     /// <summary>
-    /// マニフェストを元に、対象(プレイヤー)の周囲のタイルシーンを加算ロード/アンロードする。
-    ///
-    /// 水中はフォグで視界が短いため、2km ステージでも常時ロードは数枚で足りる。
-    ///
-    /// 【allowSceneActivation を使わない理由】
-    /// 当初はアクティベーションを1枚ずつに直列化してヒッチを平すつもりで
-    /// allowSceneActivation = false による順番待ちを使っていたが、これは機能しない。
-    /// Unity の非同期オペレーションはキューで処理され、activation を保留した
-    /// オペレーションは後続をブロックするため、2枚目以降が 0.9 にすら到達せず
-    /// ロードが永久に止まる（Hierarchy に "(now loading)" が残り続ける）。
-    /// 同時実行数を絞ることで直列化する方式に変更している。
+    /// マニフェストを元に、タイルシーンを加算ロード/アンロードする。
     /// </summary>
+    // 水中はフォグで視界が短いため、2km ステージでも常時ロードは数枚で足りる。
+    //
+    // allowSceneActivation は使わない。当初はアクティベーションを1枚ずつに直列化して
+    // ヒッチを平すつもりで allowSceneActivation = false による順番待ちを使っていたが、
+    // これは機能しない。Unity の非同期オペレーションはキューで処理され、activation を
+    // 保留したオペレーションは後続をブロックするため、2枚目以降が progress 0.9 にすら
+    // 到達せずロードが永久に止まる（Hierarchy に "(now loading)" が残り続ける）。
+    // 同時実行数を絞ることで直列化する方式に変更している。
     public class StageLoader : MonoBehaviour
     {
         #region Serialized Fields
@@ -224,8 +221,9 @@ namespace Blue.World
         }
 
         /// <summary>
-        /// タイルの XZ 矩形までの距離。タイルは高さ方向にステージ全体を覆うので Y は見ない。
+        /// タイルの XZ 矩形までの距離を返す。
         /// </summary>
+        // タイルは高さ方向にステージ全体を覆うので Y は見ない。
         private static float DistanceToTileXZ(Bounds bounds, Vector3 position)
         {
             float dx = Mathf.Max(0f, Mathf.Max(bounds.min.x - position.x, position.x - bounds.max.x));
@@ -363,8 +361,9 @@ namespace Blue.World
         public bool IsTileLoaded(int tileIndex) => GetState(tileIndex) == StageTileState.Loaded;
 
         /// <summary>
-        /// 計測結果を CSV 文字列にする。profiler キャプチャのフレーム番号と突き合わせて使う。
+        /// 計測結果を CSV 文字列にする。
         /// </summary>
+        // profiler キャプチャのフレーム番号と突き合わせて使う。
         public string BuildReportCsv()
         {
             StringBuilder builder = new StringBuilder();
