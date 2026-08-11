@@ -15,9 +15,9 @@ MonoBehaviour:
   name: "\u30B7\u30FC\u30B0\u30E9\u30B9"
   description: "\u6D77\u5E95\u306B\u843D\u3061\u3066\u3044\u305F\u30AC\u30E9\u30B9\u306E\u6B20\u7247\u3002"
   icon: {fileID: 0}
-  modelMesh: {fileID: 0}
+  model: {fileID: 0}
   type: 4
   isStackable: 1
   heldItemPrefab: {fileID: 0}
   attributes: []
-  cachedGUID: 
+  cachedGUID: 391e8b3c7cd3f9c46894549fd6ba9b04
