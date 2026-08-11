@@ -79,6 +79,11 @@ namespace Blue.Editor.World
             int totalInstances = 0;
             bool cancelled = false;
 
+            // 洞窟の天井は下向きレイから見ると back face なので、既定では当たらない。
+            // ベイク中だけ有効にして、天井に付く種（slopeRange 150-180）を置けるようにする
+            bool previousBackfaces = Physics.queriesHitBackfaces;
+            Physics.queriesHitBackfaces = true;
+
             try
             {
                 // レイキャストのためにコライダーが要る。ベイク中だけ全タイルを開く
@@ -105,6 +110,7 @@ namespace Blue.Editor.World
             }
             finally
             {
+                Physics.queriesHitBackfaces = previousBackfaces;
                 EditorUtility.ClearProgressBar();
                 CloseTileScenes(openedScenes);
             }
@@ -234,11 +240,8 @@ namespace Blue.Editor.World
                             continue;
                         }
 
-                        if (TryPlace(recipe, layout, sampler, random, new Vector3(x, rayStartY, z),
-                                     rayDistance, out ScatterInstance instance))
-                        {
-                            instances.Add(instance);
-                        }
+                        PlaceColumn(recipe, layout, sampler, random, new Vector3(x, rayStartY, z),
+                                    rayDistance, instances);
                     }
                 }
 
@@ -261,17 +264,48 @@ namespace Blue.Editor.World
             return total;
         }
 
-        private static bool TryPlace(StageRecipe recipe, StageTileLayout layout, LayerSampler sampler,
-                                     System.Random random, Vector3 origin, float rayDistance,
-                                     out ScatterInstance instance)
+        /// <summary>
+        /// 候補点の真下にある面を上から順に調べ、条件を満たすものへ配置する。
+        /// </summary>
+        // 最初に当たった面だけを見ると、地表の下にある洞窟の中には永遠に置けない。
+        // 下向きのレイは「地表の上面」「洞窟の床」…と front face を順に拾うので、
+        // maxSurfacesPerColumn を増やせば洞窟内部にも届く。
+        // 洞窟の天井は back face なので、ベイク中だけ queriesHitBackfaces を有効にして拾う。
+        private static void PlaceColumn(StageRecipe recipe, StageTileLayout layout, LayerSampler sampler,
+                                        System.Random random, Vector3 origin, float rayDistance,
+                                        List<ScatterInstance> results)
+        {
+            ScatterLayer layer = sampler.Layer;
+            int wanted = Mathf.Clamp(layer.maxSurfacesPerColumn, 1, ColumnHitBuffer.Length);
+
+            int hitCount = Physics.RaycastNonAlloc(origin, Vector3.down, ColumnHitBuffer, rayDistance);
+            if (hitCount == 0)
+            {
+                return;
+            }
+
+            // RaycastNonAlloc は距離順を保証しない
+            System.Array.Sort(ColumnHitBuffer, 0, hitCount, HitDistanceComparer);
+
+            int placed = 0;
+            for (int i = 0; i < hitCount && placed < wanted; i++)
+            {
+                if (TryPlaceAt(recipe, layout, sampler, random, ColumnHitBuffer[i], out ScatterInstance instance))
+                {
+                    results.Add(instance);
+                }
+
+                // 条件を満たさなくても「面を1つ消費した」と数える。
+                // そうしないと、地表が条件外のときに洞窟の床まで一気に降りてしまう
+                placed++;
+            }
+        }
+
+        private static bool TryPlaceAt(StageRecipe recipe, StageTileLayout layout, LayerSampler sampler,
+                                       System.Random random, RaycastHit hit, out ScatterInstance instance)
         {
             instance = default;
             ScatterLayer layer = sampler.Layer;
-
-            if (!Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayDistance))
-            {
-                return false;
-            }
 
             // 水深フィルタ。水面より上や、深すぎる場所を弾く
             float depth = recipe.WaterLevel - hit.point.y;
@@ -326,6 +360,15 @@ namespace Blue.Editor.World
         }
 
         private static float NextFloat(System.Random random) => (float)random.NextDouble();
+
+        private static readonly RaycastHit[] ColumnHitBuffer = new RaycastHit[8];
+
+        private static readonly IComparer<RaycastHit> HitDistanceComparer = new RaycastHitDistanceComparer();
+
+        private sealed class RaycastHitDistanceComparer : IComparer<RaycastHit>
+        {
+            public int Compare(RaycastHit a, RaycastHit b) => a.distance.CompareTo(b.distance);
+        }
 
         #endregion
 

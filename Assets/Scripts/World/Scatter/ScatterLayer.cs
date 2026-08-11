@@ -31,8 +31,18 @@ namespace Blue.World.Scatter
         [Range(0f, 1f)]
         public float jitter = 0.9f;
 
+        [Header("Surfaces")]
+        [Tooltip("1つの候補点の真下で、上から順にいくつの面を調べるか。\n" +
+                 "1 = 最初に当たった面（＝地表）だけ。開けた地形はこれで足りる。\n" +
+                 "閉じた洞窟の中に置きたい場合は 4 を推奨。\n" +
+                 "下向きレイは「地表の上面 → 洞窟の天井 → 洞窟の床」の順に当たるため、\n" +
+                 "床に届かせるには天井のぶんも数える必要がある")]
+        [Range(1, 8)]
+        public int maxSurfacesPerColumn = 1;
+
         [Header("Filter")]
-        [Tooltip("配置を許可する地形の傾斜(度)")]
+        [Tooltip("配置を許可する面の傾斜(度)。\n" +
+                 "0-30 は平らな床。90 付近は壁。150-180 は天井（洞窟の上面にぶら下がる種）")]
         public Vector2 slopeRange = new Vector2(0f, 30f);
 
         [Tooltip("配置を許可する水深(m)。水面を0として下向きが正")]
