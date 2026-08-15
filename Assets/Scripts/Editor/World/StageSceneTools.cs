@@ -90,6 +90,30 @@ namespace Blue.Editor.World
         }
 
         /// <summary>
+        /// マニフェストが指すタイルシーンを Build Settings から外す。
+        /// </summary>
+        // タイル分割を変えて焼き直すとき、先にこれを実行する必要がある。
+        // 再ベイク後のマニフェストは新しいタイルしか指さないため、
+        // 古い構成の登録を消す機会がそこで失われる。
+        [MenuItem("Blue/World/Unregister Stage Scenes From Build Settings")]
+        public static void UnregisterSelected()
+        {
+            StageTileManifest manifest = Selection.activeObject as StageTileManifest;
+            if (manifest == null)
+            {
+                EditorUtility.DisplayDialog("Stage Scene Tools",
+                    "StageTileManifest アセットを選択してから実行してください。", "OK");
+                return;
+            }
+
+            int removed = Unregister(manifest);
+            Debug.Log($"[StageSceneTools] '{manifest.StageId}' のタイルシーンを Build Settings から外しました（{removed} 件）。", manifest);
+        }
+
+        [MenuItem("Blue/World/Unregister Stage Scenes From Build Settings", true)]
+        private static bool UnregisterSelectedValidate() => Selection.activeObject is StageTileManifest;
+
+        /// <summary>
         /// マニフェストのタイルシーンを Build Settings から外す。
         /// </summary>
         public static int Unregister(StageTileManifest manifest)
