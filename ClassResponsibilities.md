@@ -30,6 +30,42 @@
 | UIController | UI画面状態の管理 | screen_dict（CanvasGroup管理） | ShowScreen(), HideAllScreen() | PlayerController |
 
 
+## World系（地形）
+
+制作手順は [StageAuthoring.md](StageAuthoring.md) を参照。手で編集するアセットは `StageGeneratorSettings`（地形の形）と `StageRecipe`（ベイクの入力）の2つだけで、残りは生成物。
+
+### 設定アセット
+
+| クラス名 | 役割 | 主なフィールド | 定義ファイル |
+|---------|------|----------------|-------------|
+| StageGeneratorSettings | 地形の形を決める生成パラメータ | 断面(shelf/slope/basin)、起伏、regionProfiles、features | StageGeneratorSettings.cs |
+| StageRecipe | ベイクの入力一式 | layout, heightmap, biomes, scatterLayers | StageRecipe.cs |
+| BiomeLayerBinding | TerrainLayer 1枚と、それを塗るマスク・チャンネルの対応 | terrainLayer, mask, channel, weight | **StageRecipe.cs** |
+| StageRegionProfile | リージョン1つ分の地形の性格 | ridgeScale/Height, depthBias, talusAngle | StageRegionProfile.cs |
+| StageFeature | 座標指定で置く造作（海丘・海嶺・海溝） | shape, blend, position, path, radius, height | StageFeature.cs |
+| StageTileLayout | タイル分割とワールド座標の変換 | worldSize, tilesPerAxis, min/maxHeight | StageTileLayout.cs |
+
+### ランタイム
+
+| クラス名 | 役割 | 主なメソッド | 関連クラス |
+|---------|------|--------------|------------|
+| StageRegionField | 位置からリージョンと重みを求める | SampleDistances(), ToWeights() | StageGeneratorSettings |
+| StageTileManifest | ベイク結果の一覧（生成物） | Find() | StageLoader |
+| StageLoader | タイルシーンの加算ロード／アンロード | SetMode() | StageTileManifest |
+| StageTile | タイル1枚の識別情報 | Setup() | StageLoader |
+
+### エディタ
+
+| クラス名 | 役割 | 入口 |
+|---------|------|------|
+| StageScaffolder | ステージのフォルダとレシピの雛形を作る | Blue > World > Stage Scaffolder |
+| StageHeightmapGenerator | ハイトマップとマスクを生成して Source/ に書き出す | 設定アセットの Generate ボタン |
+| StagePreviewWindow | 生成結果の俯瞰・断面表示、リージョン割当、造作の配置 | Blue > World > Stage Preview |
+| StageTerrainBaker | レシピから TerrainData とタイルシーンを生成 | レシピの Bake ボタン |
+| StageScatterBaker | 散布物をベイク | レシピの Bake Scatter ボタン |
+| StageSourceTextureImporter | Source/ のテクスチャのインポート設定を強制 | 自動（AssetPostprocessor） |
+
+
 ## Sound系
 
 | クラス名 | 役割 | 主なフィールド | 主なメソッド | 関連クラス |
