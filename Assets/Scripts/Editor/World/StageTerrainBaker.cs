@@ -535,6 +535,7 @@ namespace Blue.Editor.World
         {
             private TextureSampler[] samplers;
             private float[] weights;
+            private BiomeLayerBinding[] bindings;
 
             public TerrainLayer[] Layers { get; private set; }
 
@@ -555,6 +556,7 @@ namespace Blue.Editor.World
                 List<TerrainLayer> layers = new List<TerrainLayer>();
                 List<TextureSampler> samplers = new List<TextureSampler>();
                 List<float> weights = new List<float>();
+                List<BiomeLayerBinding> bindings = new List<BiomeLayerBinding>();
 
                 foreach (BiomeLayerBinding biome in recipe.Biomes)
                 {
@@ -567,18 +569,27 @@ namespace Blue.Editor.World
                     // マスクが無いものは常時ウェイト1のベースレイヤーとして扱う
                     samplers.Add(biome.mask != null ? new TextureSampler(biome.mask, biome.channel) : null);
                     weights.Add(biome.weight);
+                    bindings.Add(biome);
                 }
 
                 result.Layers = layers.ToArray();
                 result.samplers = samplers.ToArray();
                 result.weights = weights.ToArray();
+                result.bindings = bindings.ToArray();
                 return result;
             }
 
             public float SampleWeight(int layer, float u, float v)
             {
                 TextureSampler sampler = samplers[layer];
-                float value = sampler == null ? 1f : sampler.SampleBilinear(u, v);
+
+                // マスクが無いレイヤーは変換範囲も適用しない。ベース扱いのまま
+                if (sampler == null)
+                {
+                    return Mathf.Max(0f, weights[layer]);
+                }
+
+                float value = bindings[layer].ApplyRange(sampler.SampleBilinear(u, v));
                 return Mathf.Max(0f, value * weights[layer]);
             }
         }
