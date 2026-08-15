@@ -546,7 +546,11 @@ namespace Blue.Editor.World
             texture.SetPixels(pixels);
             texture.Apply(false, false);
 
-            byte[] exr = texture.EncodeToEXR(Texture2D.EXRFlags.OutputAsFloat);
+            // 圧縮を掛ける。海底は滑らかで、しかも R しか使わないのに RGBA 4チャンネルに
+            // 同じ値が入るため、非圧縮だと 1025x1025 で 17MB になる。
+            // 生成しなおすたびに git の履歴へ積み上がるので、ここは絞っておく
+            byte[] exr = texture.EncodeToEXR(
+                Texture2D.EXRFlags.OutputAsFloat | Texture2D.EXRFlags.CompressZIP);
             UnityEngine.Object.DestroyImmediate(texture);
 
             File.WriteAllBytes(path, exr);
