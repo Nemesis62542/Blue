@@ -32,8 +32,35 @@ namespace Blue.World
 
         public MaskChannel channel = MaskChannel.R;
 
+        [Tooltip("マスク値の変換範囲。x未満を0、y以上を1として、間を滑らかに繋ぐ。\n" +
+                 "x と y が同じなら変換しない（マスク値をそのまま使う）。\n" +
+                 "x > y にすると反転する。ベースと切り替えレイヤーで逆向きの範囲を指定すると、" +
+                 "きれいに塗り分かる")]
+        public Vector2 maskRange;
+
         [Tooltip("マスクの値にかける倍率")]
         public float weight = 1f;
+
+        /// <summary>
+        /// マスク値に変換範囲を適用する。
+        /// </summary>
+        // 傾斜マスクをそのまま使うと、値が 0.1〜0.2 の緩斜面にも中途半端にウェイトが乗り、
+        // 全域が中間色になって「切り替わっている」ように見えない。
+        // 「何度から何度で切り替えるか」を指定できるようにして、境界を作れるようにする。
+        //
+        // 範囲が退化しているとき素通しにするのは、Inspector の + で追加した要素が
+        // ゼロ初期化されるため。(0,0) が「変換しない」を意味しないと、
+        // 追加した瞬間に全部が0になって何も塗られなくなる。
+        public float ApplyRange(float value)
+        {
+            if (Mathf.Approximately(maskRange.x, maskRange.y))
+            {
+                return value;
+            }
+
+            // InverseLerp は x > y でも符号込みで正しく効くので、反転は範囲の指定だけで済む
+            return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(maskRange.x, maskRange.y, value));
+        }
     }
 
     /// <summary>

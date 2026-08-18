@@ -83,6 +83,16 @@ namespace Blue.World
         public static StageTileLayout Default =>
             new StageTileLayout(2048f, 8, 257, 512, -300f, 20f);
 
+        /// <summary>
+        /// 実ステージの標準構成。1km四方 / 4x4タイル(256m) / 1m per texel。
+        /// 水深帯だけがステージごとに変わるので、高さの上下端を引数で受ける。
+        /// </summary>
+        // タイル16枚なら PreloadAll で全部載せきれるので、ゲーム中にロードを走らせずに済む。
+        // 一辺のハイトマップサンプル数は 4*(257-1)+1 = 1025 になる。外部ツール側も
+        // この解像度で書き出せば、ベイク時に拡大補間が挟まらず輪郭が鈍らない。
+        public static StageTileLayout Stage(float minHeight, float maxHeight) =>
+            new StageTileLayout(1024f, 4, 257, 512, minHeight, maxHeight);
+
         #endregion
 
         #region Tile Index

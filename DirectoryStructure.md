@@ -24,6 +24,19 @@ Scripts/
 ```
 
 
+### ステージデータ
+
+```
+Assets/Stages/
+└── Stage01/                      # ステージ1つ = 1フォルダ
+    ├── Stage01_Recipe.asset      # 生成レシピ（正本）
+    ├── Source/                   # 外部ツールの書き出し（正本）
+    └── Generated/                # ベイク生成物（手で編集しない・削除しない）
+```
+
+制作手順・座標系の約束・WorldMachine 側の設定値は [StageAuthoring.md](StageAuthoring.md) を参照。
+
+
 ## 命名ルール
 
 | 種別 | 命名規則 | 備考 |
