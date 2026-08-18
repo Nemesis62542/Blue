@@ -146,7 +146,7 @@ namespace Blue.Editor.World
 
                 SerializedProperty element = biomes.GetArrayElementAtIndex(i);
 
-                // 配列を伸ばすとゼロ初期化されるので、全ての項目を明示的に入れる
+                // 配列を伸ばすと直前の要素の値が複製されるので、全ての項目を明示的に入れる
                 element.FindPropertyRelative("name").stringValue = name;
                 element.FindPropertyRelative("mask").objectReferenceValue = mask;
                 element.FindPropertyRelative("channel").enumValueIndex = i;

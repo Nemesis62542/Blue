@@ -144,10 +144,11 @@ namespace Blue.Editor.World
                 : 0f;
 
             // サンプルごとに確保すると 100万回の割り当てになるので使い回す
-            int[] regionCells = new int[StageRegionField.MAX_NEIGHBOURS];
-            float[] regionDistances = new float[StageRegionField.MAX_NEIGHBOURS];
-            float[] reliefWeights = new float[StageRegionField.MAX_NEIGHBOURS];
-            float[] biasWeights = new float[StageRegionField.MAX_NEIGHBOURS];
+            int neighbourCapacity = regionField?.MaxNeighbours ?? 1;
+            int[] regionCells = new int[neighbourCapacity];
+            float[] regionDistances = new float[neighbourCapacity];
+            float[] reliefWeights = new float[neighbourCapacity];
+            float[] biasWeights = new float[neighbourCapacity];
 
             for (int z = 0; z < size; z++)
             {
@@ -694,9 +695,9 @@ namespace Blue.Editor.World
         {
             StageRegionField field = settings.CreateRegionField(layout.WorldSize);
 
-            int[] cells = new int[StageRegionField.MAX_NEIGHBOURS];
-            float[] distances = new float[StageRegionField.MAX_NEIGHBOURS];
-            float[] weights = new float[StageRegionField.MAX_NEIGHBOURS];
+            int[] cells = new int[field.MaxNeighbours];
+            float[] distances = new float[field.MaxNeighbours];
+            float[] weights = new float[field.MaxNeighbours];
             float[] profileWeights = new float[MASK_CHANNELS];
 
             Color[] pixels = new Color[size * size];

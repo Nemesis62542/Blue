@@ -27,6 +27,7 @@ namespace Blue.World
         private readonly float warpFrequency;
         private readonly float warpOffsetX;
         private readonly float warpOffsetZ;
+        private readonly int searchRings;
 
         #endregion
 
@@ -36,6 +37,9 @@ namespace Blue.World
 
         public int CellCount => cellsPerAxis * cellsPerAxis;
 
+        /// <summary>SampleDistances が返しうる最大要素数。呼び元のバッファ長になる</summary>
+        public int MaxNeighbours => (searchRings * 2 + 1) * (searchRings * 2 + 1);
+
         #endregion
 
         #region Constructor
@@ -44,14 +48,24 @@ namespace Blue.World
         /// <param name="jitter">セル中心の揺らし量 0-1。0で正方格子</param>
         /// <param name="blendWidth">境界のブレンド幅(m)</param>
         /// <param name="warpAmount">境界を歪ませる量(m)</param>
+        /// <param name="maxBlendWidth">
+        /// 呼び元が ToWeights に渡しうる最大の幅(m)。近傍の探索範囲をここから決める
+        /// </param>
         public StageRegionField(
-            int cellsPerAxis, float worldSize, float jitter, float blendWidth, float warpAmount, int seed)
+            int cellsPerAxis, float worldSize, float jitter, float blendWidth, float warpAmount, int seed,
+            float maxBlendWidth)
         {
             this.cellsPerAxis = Mathf.Max(1, cellsPerAxis);
             this.blendWidth = Mathf.Max(0f, blendWidth);
             this.warpAmount = Mathf.Max(0f, warpAmount);
 
             cellSize = worldSize / this.cellsPerAxis;
+
+            // ToWeights は最近傍から maxBlendWidth 以内のセル全てに重みを与える。
+            // 探索を 3x3 に固定すると、幅がセル1つ分を超えたときに範囲外のセルが
+            // 重みを持つべき場所で無視され、格子に沿った段差が出る。
+            // 最近傍までの距離とジッタの分を +2 リングの余裕として見込む。
+            searchRings = Mathf.CeilToInt(Mathf.Max(0f, maxBlendWidth) / cellSize) + 2;
 
             // 歪みの波長はセル1つ分程度にする。これより細かいと境界がギザギザになり、
             // これより粗いと分割全体が平行移動するだけで形が変わらない
@@ -114,8 +128,9 @@ namespace Blue.World
             int nearestIndex = centerZ * cellsPerAxis + centerX;
             int secondIndex = -1;
 
-            // ジッタは半セル以内に収めているので、隣接3x3を見れば最近傍を取り逃がさない
-            for (int offsetZ = -1; offsetZ <= 1; offsetZ++)
+            // 探索範囲はブレンド幅から決めている。最近傍だけなら 3x3 で足りるが、
+            // 重みを持ちうるセルまで含めないと ToWeights の結果が格子に沿って飛ぶ
+            for (int offsetZ = -searchRings; offsetZ <= searchRings; offsetZ++)
             {
                 int cellZ = centerZ + offsetZ;
                 if (cellZ < 0 || cellZ >= cellsPerAxis)
@@ -123,7 +138,7 @@ namespace Blue.World
                     continue;
                 }
 
-                for (int offsetX = -1; offsetX <= 1; offsetX++)
+                for (int offsetX = -searchRings; offsetX <= searchRings; offsetX++)
                 {
                     int cellX = centerX + offsetX;
                     if (cellX < 0 || cellX >= cellsPerAxis)
@@ -179,9 +194,6 @@ namespace Blue.World
         /// <summary>設定されているブレンド幅(m)</summary>
         public float BlendWidth => blendWidth;
 
-        /// <summary>SampleDistances が返しうる最大要素数</summary>
-        public const int MAX_NEIGHBOURS = 9;
-
         /// <summary>
         /// 近傍セルまでの距離をまとめて返す。戻り値は有効な要素数。
         /// </summary>
@@ -198,7 +210,7 @@ namespace Blue.World
             int count = 0;
             minDistance = float.MaxValue;
 
-            for (int offsetZ = -1; offsetZ <= 1; offsetZ++)
+            for (int offsetZ = -searchRings; offsetZ <= searchRings; offsetZ++)
             {
                 int cellZ = centerZ + offsetZ;
                 if (cellZ < 0 || cellZ >= cellsPerAxis)
@@ -206,7 +218,7 @@ namespace Blue.World
                     continue;
                 }
 
-                for (int offsetX = -1; offsetX <= 1; offsetX++)
+                for (int offsetX = -searchRings; offsetX <= searchRings; offsetX++)
                 {
                     int cellX = centerX + offsetX;
                     if (cellX < 0 || cellX >= cellsPerAxis)

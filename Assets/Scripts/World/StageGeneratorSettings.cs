@@ -177,7 +177,11 @@ namespace Blue.World
         /// </summary>
         public StageRegionField CreateRegionField(float worldSize)
         {
-            return new StageRegionField(regionCellsPerAxis, worldSize, regionJitter, regionBlend, regionWarp, seed);
+            // depthBias は起伏より広い幅でぼかすので、探索範囲はそちらに合わせる必要がある
+            float maxBlendWidth = regionBlend * Mathf.Max(1f, regionBiasBlendScale);
+
+            return new StageRegionField(
+                regionCellsPerAxis, worldSize, regionJitter, regionBlend, regionWarp, seed, maxBlendWidth);
         }
 
         /// <summary>
@@ -423,6 +427,10 @@ namespace Blue.World
             // 造作は場所を選ばず置けるので、最悪ケース（一番暴れるものが一番浅い/深い所にある）で見る
             float featureRise = 0f;
             float featureDrop = 0f;
+            float additiveRise = 0f;
+            float additiveDrop = 0f;
+            float groupRise = 0f;
+            float groupDrop = 0f;
 
             if (features != null)
             {
@@ -434,15 +442,29 @@ namespace Blue.World
                     }
 
                     float amplitude = Mathf.Abs(feature.height) + Mathf.Abs(feature.roughness);
-                    if (feature.height >= 0f)
+
+                    // Crater は中心で -height、縁で +0.6*height になるため、
+                    // height が正でも造作の中心は同じだけ深くなる
+                    bool bothWays = feature.shape == StageFeatureShape.Crater;
+                    float rise = feature.height >= 0f || bothWays ? amplitude : 0f;
+                    float drop = feature.height < 0f || bothWays ? amplitude : 0f;
+
+                    // Add は重なった分だけ足し合わされるが、Max/Min はグループ内の
+                    // ひとつしか残らない。EvaluateFeatures と同じ組み方で見積もる
+                    if (feature.blend == StageFeatureBlend.Add)
                     {
-                        featureRise = Mathf.Max(featureRise, amplitude);
+                        additiveRise += rise;
+                        additiveDrop += drop;
                     }
                     else
                     {
-                        featureDrop = Mathf.Max(featureDrop, amplitude);
+                        groupRise = Mathf.Max(groupRise, rise);
+                        groupDrop = Mathf.Max(groupDrop, drop);
                     }
                 }
+
+                featureRise = additiveRise + groupRise;
+                featureDrop = additiveDrop + groupDrop;
             }
 
             float shallowest = Mathf.Min(shoreDepth, shelfDepth) - relief + minDepthBias - featureRise;
