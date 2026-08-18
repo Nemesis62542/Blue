@@ -151,6 +151,10 @@ namespace Blue.Editor.World
                 element.FindPropertyRelative("mask").objectReferenceValue = mask;
                 element.FindPropertyRelative("channel").enumValueIndex = i;
                 element.FindPropertyRelative("weight").floatValue = 1f;
+
+                // リージョンの重みはそのまま使うので変換しない。
+                // 明示しないと、直前の要素に入っていた傾斜の閾値を引き継いで重みが反転する
+                element.FindPropertyRelative("maskRange").vector2Value = Vector2.zero;
                 element.FindPropertyRelative("terrainLayer").objectReferenceValue =
                     assigned.TryGetValue(name, out TerrainLayer layer) ? layer : null;
             }

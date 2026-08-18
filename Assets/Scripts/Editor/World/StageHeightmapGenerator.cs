@@ -237,7 +237,9 @@ namespace Blue.Editor.World
         /// <summary>
         /// リージョン1つ分の起伏を、断面水深に足す差分(m)として返す。
         /// </summary>
-        // 尾根は隆起なので水深を浅くする（負の値になる）。depthBias は逆に深くする方向。
+        // 尾根は隆起なので水深を浅くする（負の値になる）。
+        // depthBias はここに含めない。起伏より広い幅でぼかすため呼び元が別に足しており、
+        // ここでも返すと二重に効いて、設定値の倍の深さの窪地になる。
         private static float Relief(
             StageRegionProfile profile,
             NoiseField ridgeNoise,
@@ -250,7 +252,7 @@ namespace Blue.Editor.World
                           * profile.ridgeHeight * ridgeMask;
             float detail = (detailNoise.Sample(worldX, worldZ, profile.detailScale) - 0.5f) * profile.detailHeight;
 
-            return profile.depthBias - ridge - detail;
+            return -ridge - detail;
         }
 
         /// <summary>
@@ -277,12 +279,8 @@ namespace Blue.Editor.World
             float smoothness)
         {
             float addTotal = 0f;
-            float maxValue = 0f;
-            float minValue = 0f;
-            float maxInfluence = 0f;
-            float minInfluence = 0f;
-            bool hasMax = false;
-            bool hasMin = false;
+            FeatureBlendGroup maxGroup = default;
+            FeatureBlendGroup minGroup = default;
 
             Vector2 point = new Vector2(centeredX, centeredZ);
 
@@ -312,22 +310,11 @@ namespace Blue.Editor.World
                 switch (feature.ResolvedBlend)
                 {
                     case StageFeatureBlend.Max:
-                        // 丸め量は「弱い方の効き具合」まで落とす。定数のままだと、
-                        // 造作の影響範囲に入った瞬間に最大 k/4 だけ地面が持ち上がり、
-                        // 輪郭が段差として見える
-                        maxValue = hasMax
-                            ? SmoothMax(maxValue, contribution, smoothness * Mathf.Min(maxInfluence, influence))
-                            : contribution;
-                        maxInfluence = Mathf.Max(maxInfluence, influence);
-                        hasMax = true;
+                        maxGroup.Add(contribution, influence, true);
                         break;
 
                     case StageFeatureBlend.Min:
-                        minValue = hasMin
-                            ? SmoothMin(minValue, contribution, smoothness * Mathf.Min(minInfluence, influence))
-                            : contribution;
-                        minInfluence = Mathf.Max(minInfluence, influence);
-                        hasMin = true;
+                        minGroup.Add(contribution, influence, false);
                         break;
 
                     default:
@@ -336,7 +323,68 @@ namespace Blue.Editor.World
                 }
             }
 
-            return addTotal + (hasMax ? maxValue : 0f) + (hasMin ? minValue : 0f);
+            return addTotal + maxGroup.Resolve(true, smoothness) + minGroup.Resolve(false, smoothness);
+        }
+
+        /// <summary>
+        /// Max / Min グループの合成結果を、要素の順序に依らずに求める。
+        /// </summary>
+        // 累積値へ順番に SmoothMax を掛けると、3つ以上重なったときに結合則が成り立たず、
+        // 丸め幅も直前までの累積に依存するため、配列を並べ替えただけで高さが変わる。
+        // 造作を1つ足しただけで既存の地形が最大 k/4 動くと、Digger で彫った後には
+        // 洞窟と地形の位置関係がずれる。原因の特定が難しい種類の事故になる。
+        //
+        // 折り目が出るのは上位2つの面が交差する場所なので、丸めもその2つだけで決まればよい。
+        // 上位2件だけ保持すれば、集合が同じなら結果も同じになる。
+        private struct FeatureBlendGroup
+        {
+            private float first;
+            private float second;
+            private float firstInfluence;
+            private float secondInfluence;
+            private int count;
+
+            /// <param name="keepHighest">true で大きい方、false で小さい方を上位とする</param>
+            public void Add(float value, float influence, bool keepHighest)
+            {
+                if (count == 0 || (keepHighest ? value > first : value < first))
+                {
+                    second = first;
+                    secondInfluence = firstInfluence;
+                    first = value;
+                    firstInfluence = influence;
+                }
+                else if (count == 1 || (keepHighest ? value > second : value < second))
+                {
+                    second = value;
+                    secondInfluence = influence;
+                }
+
+                count++;
+            }
+
+            /// <summary>グループの合成値。要素が無ければ0</summary>
+            public float Resolve(bool keepHighest, float smoothness)
+            {
+                if (count == 0)
+                {
+                    return 0f;
+                }
+
+                // 1つしか効いていない地点では丸める相手がいないので、加算と同じ結果になる
+                if (count == 1)
+                {
+                    return first;
+                }
+
+                // 丸め量は弱い方の効き具合まで落とす。定数のままだと、造作の影響範囲に
+                // 入った瞬間に最大 k/4 だけ地面が持ち上がり、輪郭が段差として見える
+                float smoothing = smoothness * Mathf.Min(firstInfluence, secondInfluence);
+
+                return keepHighest
+                    ? SmoothMax(first, second, smoothing)
+                    : SmoothMin(first, second, smoothing);
+            }
         }
 
         /// <summary>
