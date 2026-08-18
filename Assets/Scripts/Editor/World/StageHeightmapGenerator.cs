@@ -170,8 +170,12 @@ namespace Blue.Editor.World
 
                     float depth = settings.DepthAt(offshore);
 
-                    // 尾根は隆起なので水深を浅くする。棚の上では抑える
-                    float ridgeMask = Mathf.Lerp(settings.RidgeOnShelf, 1f, Mathf.SmoothStep(0f, 1f, offshore));
+                    // 尾根は隆起なので水深を浅くする。棚の上では抑える。
+                    // 進行度は棚の中で 0→1 にする。offshore（ステージ全体の進行度）を
+                    // そのまま使うと沖の果てまで抑制が残り、リージョンに設定した
+                    // ridgeHeight が海盆でも8割程度しか出ない隠れ係数になる
+                    float shelfProgress = Mathf.Clamp01(offshore / Mathf.Max(1e-4f, settings.ShelfExtent));
+                    float ridgeMask = Mathf.Lerp(settings.RidgeOnShelf, 1f, Mathf.SmoothStep(0f, 1f, shelfProgress));
 
                     int index = z * size + x;
 

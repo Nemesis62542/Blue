@@ -64,7 +64,8 @@ namespace Blue.World
         [Tooltip("尾根による起伏の大きさ(m)")]
         [SerializeField] private float ridgeHeight = 40f;
 
-        [Tooltip("大陸棚の上で尾根をどれだけ抑えるか。棚は平坦な方が「浅くて広い」感じが出る")]
+        [Tooltip("大陸棚の上で尾根をどれだけ抑えるか。棚は平坦な方が「浅くて広い」感じが出る。\n" +
+                 "抑制は棚の外縁で解け、そこから先はリージョンの ridgeHeight がそのまま出る")]
         [Range(0f, 1f)]
         [SerializeField] private float ridgeOnShelf = 0.25f;
 
