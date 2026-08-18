@@ -385,6 +385,19 @@ namespace Blue.World
                     $"shelfExtent ({shelfExtent:F2}) と slopeExtent ({slopeExtent:F2}) の合計が1以上です。海盆が生成されません。");
             }
 
+            // 生成側はセルに割り当てられたプロファイルを必ず参照する。
+            // 空のまま生成に入ると NullReference で止まるので、ここで理由を出して弾く
+            if (useRegions && regionProfiles != null)
+            {
+                for (int i = 0; i < regionProfiles.Length; i++)
+                {
+                    if (regionProfiles[i] == null)
+                    {
+                        errors.Add($"regionProfiles[{i}] が空です。リージョンの設定を埋めるか、要素を削除してください。");
+                    }
+                }
+            }
+
             return errors;
         }
 

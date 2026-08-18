@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -140,9 +141,12 @@ namespace Blue.Editor.World
             return path.IndexOf(SOURCE_SEGMENT, STAGES_ROOT.Length, StringComparison.Ordinal) >= 0;
         }
 
+        // ファイル名だけを見る。パス全体を検索すると、フォルダ名に _Height を含むステージで
+        // 配下の全テクスチャがハイトマップ扱いになり、RGBA のマスクが R16 に潰れて
+        // G/B/A の重みが失われる。
         private static bool IsHeightmap(string path)
         {
-            return path.IndexOf(HEIGHT_MARKER, StringComparison.OrdinalIgnoreCase) >= 0;
+            return Path.GetFileName(path).IndexOf(HEIGHT_MARKER, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static bool IsFloatSource(string path)
