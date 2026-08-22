@@ -103,19 +103,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.ProceduralBoneChain
   segments:
   - bone: {fileID: 7156845418751669616}
-    damping: 0.15
+    lagTime: 0.05
   - bone: {fileID: 5103613875272554003}
-    damping: 0.2
+    lagTime: 0.02373
   - bone: {fileID: 7607006317879913028}
-    damping: 0.25
+    lagTime: 0.03578
   - bone: {fileID: 970361165541459087}
-    damping: 0.3
+    lagTime: 0.05593
   - bone: {fileID: 1700640384469906881}
-    damping: 0.35
+    lagTime: 0.09932
   - bone: {fileID: 1402925478529815242}
-    damping: 0.4
-  rotationSpeed: 35
-  dampingFalloff: 0.5
+    lagTime: 0.2712
+  lagFalloff: 0
   useAnimatorRotation: 0
   constrainBoneLength: 1
   maxBendAngle: 45

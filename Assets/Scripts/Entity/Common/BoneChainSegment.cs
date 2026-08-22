@@ -14,20 +14,21 @@ namespace Blue.Entity.Common
         [SerializeField] private Transform bone;
 
         [Header("Settings")]
-        [Tooltip("追従の遅れ（0=即座に追従、1=ほぼ追従しない）")]
-        [SerializeField, Range(0f, 0.99f)] private float damping = 0.1f;
+        [Tooltip("追従の遅れ時間（秒）。大きいほど親から遅れて付いてくる")]
+        [SerializeField, Range(0.01f, 1f)] private float lagTime = 0.1f;
 
         // ランタイム用キャッシュ（非シリアライズ）
         private float cachedBoneLength;
         private Quaternion initialLocalRotation;
         private Vector3 previousPosition;
         private Vector3 velocity;
+        private Vector3 angularVelocity;
         private Quaternion currentRotation;
         private bool isInitialized;
 
         // プロパティ
         public Transform Bone => bone;
-        public float Damping => damping;
+        public float LagTime => lagTime;
 
         /// <summary>このボーンから次のボーンまでの距離（末端は0）</summary>
         // 親からの距離ではない。segments[i] の長さを使いたい側は
@@ -39,6 +40,9 @@ namespace Blue.Entity.Common
 
         /// <summary>直近フレームでのワールド移動速度</summary>
         public Vector3 Velocity { get => velocity; set => velocity = value; }
+
+        /// <summary>バネ追従の角速度（ラジアン/秒、回転軸方向）</summary>
+        public Vector3 AngularVelocity { get => angularVelocity; set => angularVelocity = value; }
 
         public Quaternion CurrentRotation { get => currentRotation; set => currentRotation = value; }
         public bool IsInitialized => isInitialized;
@@ -58,6 +62,7 @@ namespace Blue.Entity.Common
             initialLocalRotation = bone.localRotation;
             previousPosition = bone.position;
             velocity = Vector3.zero;
+            angularVelocity = Vector3.zero;
             currentRotation = bone.rotation;
 
             // ボーン長を計算（次のボーンがある場合）
@@ -81,6 +86,7 @@ namespace Blue.Entity.Common
             if (bone != null && isInitialized)
             {
                 bone.localRotation = initialLocalRotation;
+                angularVelocity = Vector3.zero;
                 currentRotation = bone.rotation;
             }
         }

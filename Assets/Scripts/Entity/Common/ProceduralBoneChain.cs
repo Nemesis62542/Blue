@@ -15,11 +15,11 @@ namespace Blue.Entity.Common
         [SerializeField] private List<BoneChainSegment> segments = new List<BoneChainSegment>();
 
         [Header("Follow Settings")]
-        [Tooltip("回転の追従速度（大きいほど速く追従）")]
-        [SerializeField, Range(1f, 50f)] private float rotationSpeed = 15f;
+        [Tooltip("末端に向かうほど遅れを伸ばす倍率（0=セグメント個別の設定のみ）")]
+        [SerializeField, Range(0f, 3f)] private float lagFalloff = 0f;
 
-        [Tooltip("末端に向かうほど遅延を増加させる係数")]
-        [SerializeField, Range(0f, 2f)] private float dampingFalloff = 0.5f;
+        [Tooltip("行き過ぎて揺れ戻る量（0=行き過ぎなし、大きいほど揺れが残る）")]
+        [SerializeField, Range(0f, 0.9f)] private float overshoot = 0f;
 
         [Tooltip("Animatorアニメーションを使用するか")]
         [SerializeField] private bool useAnimatorRotation = true;
@@ -39,9 +39,6 @@ namespace Blue.Entity.Common
         // ランタイム
         private const float LengthTolerance = 0.0001f;
 
-        // 1.0 にすると t が 0 になりボーンが完全に停止するため、わずかに手前で止める
-        private const float MaxDamping = 0.999f;
-
         private bool isInitialized = false;
         private Transform headBone;
 
@@ -49,7 +46,6 @@ namespace Blue.Entity.Common
         public List<BoneChainSegment> Segments => segments;
         public List<BoneChainBranch> Branches => branches;
         public bool IsInitialized => isInitialized;
-        public float RotationSpeed { get => rotationSpeed; set => rotationSpeed = Mathf.Max(1f, value); }
 
         #region Unity Lifecycle
 
@@ -144,18 +140,17 @@ namespace Blue.Entity.Common
 
                 if (currentSegment.Bone == null || parentSegment.Bone == null) continue;
 
-                // 末端に向かうほどダンピングを増加
+                // 末端に向かうほど遅れを大きくする
                 float chainProgress = (float)i / (segments.Count - 1);
-                float additionalDamping = chainProgress * dampingFalloff;
 
-                UpdateSegment(currentSegment, parentSegment, deltaTime, additionalDamping);
+                UpdateSegment(currentSegment, parentSegment, deltaTime, chainProgress);
             }
         }
 
         /// <summary>
         /// 個別セグメントの更新
         /// </summary>
-        private void UpdateSegment(BoneChainSegment segment, BoneChainSegment parent, float deltaTime, float additionalDamping)
+        private void UpdateSegment(BoneChainSegment segment, BoneChainSegment parent, float deltaTime, float chainProgress)
         {
             Transform bone = segment.Bone;
             Transform parentBone = parent.Bone;
@@ -199,16 +194,13 @@ namespace Blue.Entity.Common
             Quaternion localRotation = useAnimatorRotation ? bone.localRotation : segment.InitialLocalRotation;
             Quaternion targetRotation = parentBone.rotation * localRotation;
 
-            // ダンピング計算（シンプルな指数減衰）
-            float effectiveDamping = segment.Damping + additionalDamping;
-            effectiveDamping = Mathf.Clamp(effectiveDamping, 0f, MaxDamping);
+            // 遅れ時間は秒。末端ほど lagFalloff の分だけ伸びる
+            float lagTime = segment.LagTime * (1f + chainProgress * lagFalloff);
 
-            // t = 1 - damping^(deltaTime * speed) の近似
-            float t = 1f - Mathf.Pow(effectiveDamping, deltaTime * rotationSpeed);
-            t = Mathf.Clamp01(t);
-
-            // 現在の回転から目標回転へ補間
-            Quaternion newRotation = Quaternion.Slerp(segment.CurrentRotation, targetRotation, t);
+            Vector3 angularVelocity = segment.AngularVelocity;
+            Quaternion newRotation = BoneChainSpring.Step(
+                segment.CurrentRotation, targetRotation, ref angularVelocity, lagTime, overshoot, deltaTime);
+            segment.AngularVelocity = angularVelocity;
 
             // 角度制限の適用
             // 折れ曲がりは補間の遅れによって生じるので、目標回転ではなく補間結果に掛ける。
@@ -278,7 +270,7 @@ namespace Blue.Entity.Common
 
                 // 速度は UpdateSegment 内で PreviousPosition を上書きする前に取ってある。
                 // ここで差分を取り直すと同一フレームの値同士になり常にゼロになる
-                branch.UpdateBranch(parentSegment.Velocity, deltaTime, rotationSpeed);
+                branch.UpdateBranch(parentSegment.Velocity, deltaTime);
             }
         }
 
