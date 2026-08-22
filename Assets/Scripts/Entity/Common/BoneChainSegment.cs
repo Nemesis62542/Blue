@@ -21,15 +21,25 @@ namespace Blue.Entity.Common
         private float cachedBoneLength;
         private Quaternion initialLocalRotation;
         private Vector3 previousPosition;
+        private Vector3 velocity;
         private Quaternion currentRotation;
         private bool isInitialized;
 
         // プロパティ
         public Transform Bone => bone;
         public float Damping => damping;
+
+        /// <summary>このボーンから次のボーンまでの距離（末端は0）</summary>
+        // 親からの距離ではない。segments[i] の長さを使いたい側は
+        // segments[i].BoneLength ではなく segments[i-1].BoneLength を見ること。
         public float BoneLength => cachedBoneLength;
+
         public Quaternion InitialLocalRotation => initialLocalRotation;
         public Vector3 PreviousPosition { get => previousPosition; set => previousPosition = value; }
+
+        /// <summary>直近フレームでのワールド移動速度</summary>
+        public Vector3 Velocity { get => velocity; set => velocity = value; }
+
         public Quaternion CurrentRotation { get => currentRotation; set => currentRotation = value; }
         public bool IsInitialized => isInitialized;
 
@@ -47,6 +57,7 @@ namespace Blue.Entity.Common
 
             initialLocalRotation = bone.localRotation;
             previousPosition = bone.position;
+            velocity = Vector3.zero;
             currentRotation = bone.rotation;
 
             // ボーン長を計算（次のボーンがある場合）

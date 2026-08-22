@@ -37,9 +37,13 @@ namespace Blue.Entity.Common
         [SerializeField] private Color debugConstraintColor = Color.yellow;
 
         // ランタイム
+        private const float LengthTolerance = 0.0001f;
+
+        // 1.0 にすると t が 0 になりボーンが完全に停止するため、わずかに手前で止める
+        private const float MaxDamping = 0.999f;
+
         private bool isInitialized = false;
         private Transform headBone;
-        private Vector3 previousHeadPosition;
 
         // プロパティ
         public List<BoneChainSegment> Segments => segments;
@@ -48,6 +52,15 @@ namespace Blue.Entity.Common
         public float RotationSpeed { get => rotationSpeed; set => rotationSpeed = Mathf.Max(1f, value); }
 
         #region Unity Lifecycle
+
+        /// <summary>
+        /// 再有効化時に初期化をやり直す
+        /// </summary>
+        // プール等で使い回した際に前回の姿勢・ボーン長を持ち越さないようにする
+        private void OnEnable()
+        {
+            isInitialized = false;
+        }
 
         /// <summary>
         /// LateUpdateでAnimator更新後にボーンを制御
@@ -65,12 +78,6 @@ namespace Blue.Entity.Common
 
             UpdateBoneChain();
             UpdateBranches();
-
-            // 状態を保存
-            if (headBone != null)
-            {
-                previousHeadPosition = headBone.position;
-            }
         }
 
         #endregion
@@ -85,6 +92,7 @@ namespace Blue.Entity.Common
             if (segments.Count == 0)
             {
                 Debug.LogWarning($"[ProceduralBoneChain] {name}: No segments defined.");
+                isInitialized = true; // 毎フレーム警告を出し続けないようにする
                 return;
             }
 
@@ -99,10 +107,6 @@ namespace Blue.Entity.Common
 
             // 先頭ボーンをキャッシュ
             headBone = segments[0].Bone;
-            if (headBone != null)
-            {
-                previousHeadPosition = headBone.position;
-            }
 
             // 分岐の初期化
             foreach (BoneChainBranch branch in branches)
@@ -127,8 +131,9 @@ namespace Blue.Entity.Common
             float deltaTime = Time.deltaTime;
             if (deltaTime <= 0f) return;
 
-            // 先頭ボーンの回転を保存（先頭は制御しない）
+            // 先頭ボーンの状態を保存（先頭は制御しない）
             segments[0].CurrentRotation = headBone.rotation;
+            segments[0].Velocity = (headBone.position - segments[0].PreviousPosition) / deltaTime;
             segments[0].PreviousPosition = headBone.position;
 
             // 後続のボーンを順番に更新（前から後ろへ）
@@ -155,24 +160,35 @@ namespace Blue.Entity.Common
             Transform bone = segment.Bone;
             Transform parentBone = parent.Bone;
 
+            // チェーン補正を掛ける前の位置から今フレームの速度を求める（分岐が参照する）
+            segment.Velocity = (bone.position - segment.PreviousPosition) / deltaTime;
+
             // === Step 1: 位置の制約（ボーン長を保持） ===
-            if (constrainBoneLength && segment.BoneLength > 0f)
+            // 親からこのボーンまでの距離は parent.BoneLength 側に入っている。
+            // 通常は bone が parentBone の子なので親を回した時点で長さは保たれており、
+            // 位置アニメや階層が繋がっていないボーンを並べた場合だけ補正が要る。
+            float restLength = parent.BoneLength;
+
+            if (constrainBoneLength && restLength > 0f)
             {
-                // 現在の位置から親への方向を取得
-                Vector3 dirFromParent = (bone.position - parentBone.position);
+                Vector3 dirFromParent = bone.position - parentBone.position;
+                float currentLength = dirFromParent.magnitude;
 
-                if (dirFromParent.sqrMagnitude < 0.0001f)
+                if (Mathf.Abs(currentLength - restLength) > LengthTolerance)
                 {
-                    // ほぼ同じ位置の場合、親の後方を使用
-                    dirFromParent = -parentBone.forward;
-                }
-                else
-                {
-                    dirFromParent.Normalize();
-                }
+                    if (currentLength < LengthTolerance)
+                    {
+                        // ほぼ同じ位置の場合、親の後方を使用
+                        dirFromParent = -parentBone.forward;
+                    }
+                    else
+                    {
+                        dirFromParent /= currentLength;
+                    }
 
-                // 親から固定距離の位置に配置
-                bone.position = parentBone.position + dirFromParent * segment.BoneLength;
+                    // 親から固定距離の位置に配置
+                    bone.position = parentBone.position + dirFromParent * restLength;
+                }
             }
 
             // === Step 2: 回転の追従（親の回転に滑らかに追従） ===
@@ -183,15 +199,9 @@ namespace Blue.Entity.Common
             Quaternion localRotation = useAnimatorRotation ? bone.localRotation : segment.InitialLocalRotation;
             Quaternion targetRotation = parentBone.rotation * localRotation;
 
-            // 角度制限の適用
-            if (maxBendAngle < 180f)
-            {
-                targetRotation = ApplyAngleConstraint(targetRotation, parent.CurrentRotation, localRotation);
-            }
-
             // ダンピング計算（シンプルな指数減衰）
             float effectiveDamping = segment.Damping + additionalDamping;
-            effectiveDamping = Mathf.Clamp01(effectiveDamping);
+            effectiveDamping = Mathf.Clamp(effectiveDamping, 0f, MaxDamping);
 
             // t = 1 - damping^(deltaTime * speed) の近似
             float t = 1f - Mathf.Pow(effectiveDamping, deltaTime * rotationSpeed);
@@ -199,6 +209,14 @@ namespace Blue.Entity.Common
 
             // 現在の回転から目標回転へ補間
             Quaternion newRotation = Quaternion.Slerp(segment.CurrentRotation, targetRotation, t);
+
+            // 角度制限の適用
+            // 折れ曲がりは補間の遅れによって生じるので、目標回転ではなく補間結果に掛ける。
+            // 基準は初期ローカル回転。ここに現在のローカル回転を渡すと差分が常に恒等回転になり制限が効かない
+            if (maxBendAngle < 180f)
+            {
+                newRotation = ApplyAngleConstraint(newRotation, parentBone.rotation, segment.InitialLocalRotation);
+            }
 
             bone.rotation = newRotation;
             segment.CurrentRotation = newRotation;
@@ -258,10 +276,9 @@ namespace Blue.Entity.Common
                 BoneChainSegment parentSegment = segments[branch.ParentSegmentIndex];
                 if (parentSegment.Bone == null) continue;
 
-                // 親セグメントの速度を計算
-                Vector3 parentVelocity = (parentSegment.Bone.position - parentSegment.PreviousPosition) / deltaTime;
-
-                branch.UpdateBranch(parentVelocity, deltaTime);
+                // 速度は UpdateSegment 内で PreviousPosition を上書きする前に取ってある。
+                // ここで差分を取り直すと同一フレームの値同士になり常にゼロになる
+                branch.UpdateBranch(parentSegment.Velocity, deltaTime, rotationSpeed);
             }
         }
 
@@ -346,10 +363,14 @@ namespace Blue.Entity.Common
                     BoneChainSegment segment = segments[i];
                     BoneChainSegment parent = segments[i - 1];
 
-                    if (parent.Bone != null && segment.BoneLength > 0f)
-                    {
-                        Gizmos.DrawWireSphere(parent.Bone.position, segment.BoneLength);
-                    }
+                    if (parent.Bone == null || segment.Bone == null) continue;
+
+                    // 再生前は BoneLength が未キャッシュなので現在の距離で代用する
+                    float restLength = parent.BoneLength > 0f
+                        ? parent.BoneLength
+                        : Vector3.Distance(parent.Bone.position, segment.Bone.position);
+
+                    Gizmos.DrawWireSphere(parent.Bone.position, restLength);
                 }
             }
 
