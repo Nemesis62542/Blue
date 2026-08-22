@@ -358,7 +358,7 @@ MonoBehaviour:
   avoidStrength: 75
   avoidanceMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966783
   pushDistance: 1
   pushForce: 2
   roamCenter: {x: 0, y: 0, z: 0}

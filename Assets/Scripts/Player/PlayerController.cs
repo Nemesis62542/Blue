@@ -1,6 +1,7 @@
 using Blue.Attack;
 using Blue.Audio;
 using Blue.Entity;
+using Blue.Entity.Common;
 using Blue.Game;
 using Blue.Input;
 using Blue.Interface;
@@ -479,10 +480,11 @@ namespace Blue.Player
                 attack_power = quick_slot_item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
             }
 
-            if (RaycastFromCamera(out RaycastHit hit, interactDistance) && hit.collider.TryGetComponent(out IAttackable attackable))
+            if (RaycastFromCamera(out RaycastHit hit, interactDistance) &&
+                EntityHit.TryResolve(hit.collider, out IAttackable attackable, out BodyPart part))
             {
-                Debug.Log($"攻撃: {hit.collider.gameObject.name}");
-                attackable.Damage(new AttackData(this, attackable, attack_power, AttackType.Melee, transform.position + transform.forward));
+                Debug.Log($"攻撃: {hit.collider.gameObject.name} ({part})");
+                attackable.Damage(new AttackData(this, attackable, attack_power, AttackType.Melee, transform.position + transform.forward, part));
             }
         }
 

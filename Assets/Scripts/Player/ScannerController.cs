@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using Blue.Entity.Common;
 using Blue.Interface;
 using Blue.UI;
 using Blue.UI.Common;
@@ -77,10 +78,12 @@ namespace Blue.Player
             playingScanEffect.gameObject.SetActive(true);
             playingScanEffect.PlayOnce();
 
+            // ボーンごとに分けたエンティティは 1 体から複数ヒットが返るので Distinct が要る
             IEnumerable<IScannable> hits = Physics.OverlapSphere(origin, scanRadius)
-                .Select(hit => hit.GetComponent<IScannable>())
+                .Select(hit => EntityHit.TryResolve(hit, out IScannable scannable) ? scannable : null)
                 .Where(scannable => scannable != null &&
-                                    !scannedObjects.Contains(scannable));
+                                    !scannedObjects.Contains(scannable))
+                .Distinct();
 
             StartCoroutine(AddScannables(hits));
             StartCooldownAsync().Forget();

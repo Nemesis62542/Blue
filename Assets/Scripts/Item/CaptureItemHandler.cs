@@ -1,3 +1,4 @@
+using Blue.Entity.Common;
 using Blue.Interface;
 using Blue.Item;
 using Blue.Player;
@@ -27,12 +28,16 @@ public class CaptureItemHandler : ItemUseHandler
     {
         if (!user.TryGetComponent(out PlayerController player)) return;
 
-        if (other.TryGetComponent(out ICapturable capturable))
-        {
-            if (!capturable.IsCapturable) return;
-            player.CaptureEntity(capturable.EntityData);
-            Instantiate(captureEffect, other.transform.position, Quaternion.identity);
-            Destroy(other);
-        }
+        // ボーンごとに分けたコライダーに当たっても、消すのは所有者側でなければならない
+        if (!EntityHit.TryResolve(other, out ICapturable capturable)) return;
+        if (!capturable.IsCapturable) return;
+
+        // ICapturable の実装は Controller なので MonoBehaviour のはずだが、念のため確認する
+        MonoBehaviour behaviour = capturable as MonoBehaviour;
+        if (behaviour == null) return;
+
+        player.CaptureEntity(capturable.EntityData);
+        Instantiate(captureEffect, behaviour.transform.position, Quaternion.identity);
+        Destroy(behaviour.gameObject);
     }
 }
