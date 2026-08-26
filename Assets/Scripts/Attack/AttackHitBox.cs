@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Blue.Entity.Common;
 using Blue.Interface;
 
 namespace Blue.Attack
@@ -32,13 +33,14 @@ namespace Blue.Attack
         {
             if (!isAttacking) return;
 
-            if (other.TryGetComponent(out IAttackable target))
+            // ボーンごとに分けたコライダーでも同じ所有者へ解決される
+            if (EntityHit.TryResolve(other, out IAttackable target, out BodyPart part))
             {
                 if (alreadyHitTargets.Contains(target)) return;
 
                 alreadyHitTargets.Add(target);
 
-                AttackData attackData = new AttackData(owner, target, power, AttackType.Melee, other.ClosestPointOnBounds(transform.position));
+                AttackData attackData = new AttackData(owner, target, power, AttackType.Melee, other.ClosestPointOnBounds(transform.position), part);
                 target.Damage(attackData);
             }
         }

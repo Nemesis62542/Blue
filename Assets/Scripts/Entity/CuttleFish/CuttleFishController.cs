@@ -80,7 +80,7 @@ namespace Blue.Entity
         {
             if (threateningEntity != null) return;
 
-            if (other.TryGetComponent(out ILivingEntity entity))
+            if (EntityHit.TryResolve(other, out ILivingEntity entity))
             {
                 threateningEntity = entity;
                 SetState(CuttleFishModel.CuttleFishState.Intimidate);
@@ -94,7 +94,7 @@ namespace Blue.Entity
         {
             if (threateningEntity == null) return;
 
-            if (other.TryGetComponent(out ILivingEntity entity) && entity == threateningEntity)
+            if (EntityHit.TryResolve(other, out ILivingEntity entity) && entity == threateningEntity)
             {
                 threateningEntity = null;
                 SetState(CuttleFishModel.CuttleFishState.Dim);
