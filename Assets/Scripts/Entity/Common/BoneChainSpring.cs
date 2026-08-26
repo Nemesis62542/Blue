@@ -19,8 +19,11 @@ namespace Blue.Entity.Common
         // zeta を 0 にすると永久に揺れ続けるため下限を設ける
         private const float MinDampingRatio = 0.1f;
 
-        // 明示積分なので omega * deltaTime が大きいと発散する
+        // 1 サブステップあたりに許す omega * 刻み幅。これを超えると明示積分が発散する
         private const float MaxOmegaStep = 0.5f;
+
+        // 分割数の上限。極端に低いフレームレートでは頭打ちになる
+        private const int MaxSubSteps = 8;
 
         // これ以下の角速度は回転軸が不定になるので無視する
         private const float MinAngularStep = 1e-6f;
@@ -40,26 +43,37 @@ namespace Blue.Entity.Common
             float clampedLag = Mathf.Clamp(lagTime, MinLagTime, MaxLagTime);
 
             // omega は固有角振動数、zeta は減衰比
-            float omega = Mathf.Min(1f / clampedLag, MaxOmegaStep / deltaTime);
+            float omega = 1f / clampedLag;
             float zeta = Mathf.Max(1f - overshoot, MinDampingRatio);
 
-            // 目標までのズレを回転ベクトル（ラジアン）として取り出す
-            Quaternion difference = Quaternion.Normalize(target * Quaternion.Inverse(current));
-            difference.ToAngleAxis(out float differenceAngle, out Vector3 differenceAxis);
-            if (differenceAngle > 180f)
+            // 明示積分なので omega * 刻み幅 が大きいと発散する。omega を下げて回避すると
+            // 1 フレームあたりの進み方が固定されてしまい、フレームレートによって追従の
+            // 速さが変わる（lagTime を秒で指定した意味が無くなる）。刻みを分割して積む。
+            int subSteps = Mathf.Clamp(Mathf.CeilToInt(omega * deltaTime / MaxOmegaStep), 1, MaxSubSteps);
+            float subDeltaTime = deltaTime / subSteps;
+
+            for (int i = 0; i < subSteps; i++)
             {
-                differenceAngle -= 360f;
+                // 目標までのズレを回転ベクトル（ラジアン）として取り出す
+                Quaternion difference = Quaternion.Normalize(target * Quaternion.Inverse(current));
+                difference.ToAngleAxis(out float differenceAngle, out Vector3 differenceAxis);
+                if (differenceAngle > 180f)
+                {
+                    differenceAngle -= 360f;
+                }
+                Vector3 error = differenceAxis * (differenceAngle * Mathf.Deg2Rad);
+
+                // 準陰的オイラー：速度を先に更新してから積分する
+                angularVelocity += (omega * omega * error - 2f * zeta * omega * angularVelocity) * subDeltaTime;
+
+                float angularStep = angularVelocity.magnitude * subDeltaTime;
+                if (angularStep > MinAngularStep)
+                {
+                    current = Quaternion.AngleAxis(angularStep * Mathf.Rad2Deg, angularVelocity.normalized) * current;
+                }
             }
-            Vector3 error = differenceAxis * (differenceAngle * Mathf.Deg2Rad);
 
-            // 準陰的オイラー：速度を先に更新してから積分する
-            angularVelocity += (omega * omega * error - 2f * zeta * omega * angularVelocity) * deltaTime;
-
-            float angularStep = angularVelocity.magnitude * deltaTime;
-
-            return angularStep > MinAngularStep
-                ? Quaternion.AngleAxis(angularStep * Mathf.Rad2Deg, angularVelocity.normalized) * current
-                : current;
+            return current;
         }
     }
 }
