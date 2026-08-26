@@ -904,14 +904,58 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7039212855289850407, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -6732131686157157299, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -6646258619432294721, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -6108681363853142052, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -4551840826021852206, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -3848228135198278535, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
       propertyPath: m_Name
       value: BloodyShark
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3024977501002152536, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3091949758950248906, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4152176900156087989, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: fa176daf068efc147b24b763fc040559, type: 2}
+    - target: {fileID: 7157309607397930224, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1012,17 +1056,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 1
   rotationSpeed: 1
-  waypointDistance: 1
+  turnSmoothing: 4
+  waypointDistance: 1.67
+  maxPitchAngle: 60
+  maintainCruise: 1
+  wanderStrength: 0.15
+  wanderFrequency: 0.3
+  maxBankAngle: 25
+  bankResponse: 3
+  speedVariation: 0.4
+  turnVariation: 0.4
+  accelerationRate: 1
+  decelerationRate: 0.4
   useAvoidance: 1
   avoidDistance: 2
-  avoidStrength: 75
+  avoidProbeRadius: 0.25
   avoidanceMask:
     serializedVersion: 2
-    m_Bits: 4294966783
+    m_Bits: 448
+  avoidAlignmentWeight: 0.5
+  avoidHysteresis: 0.25
+  avoidMinSpeedFactor: 0.25
   pushDistance: 1
   pushForce: 2
+  useSeparation: 1
+  separationRadius: 1.5
+  separationWeight: 1
+  separationMask:
+    serializedVersion: 2
+    m_Bits: 128
+  separationInterval: 0.1
+  roamCenterFromSpawnPosition: 1
   roamCenter: {x: 0, y: 0, z: 0}
   roamArea: {x: 10, y: 1, z: 10}
+  waypointAttempts: 12
+  waypointClearance: 0.5
+  requireClearPath: 1
+  stuckToleranceGrowth: 0.5
+  roamHeadingLimit: 120
+  showGizmos: 1
+  alwaysShowGizmos: 0
+  showRoamArea: 1
+  showWaypoint: 1
+  showReachability: 1
+  showAvoidanceRays: 1
+  showSeparation: 1
+  showTrail: 1
+  showLabels: 1
+  trailSeconds: 12
+  labelHeightOffset: 0.6
 --- !u!54 &5883764311079016439
 Rigidbody:
   m_ObjectHideFlags: 0
