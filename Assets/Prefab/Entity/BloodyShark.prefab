@@ -978,6 +978,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -6802644806654753175, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
   m_PrefabInstance: {fileID: 2913866907077522969}
   m_PrefabAsset: {fileID: 0}
+--- !u!137 &903223848484341885 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2664098864995057252, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+  m_PrefabInstance: {fileID: 2913866907077522969}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1666121222292201335 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4652391107514570386, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
@@ -1057,8 +1062,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e56780bbedade4488b73a7b336fe91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.BloodySharkController
-  view: {fileID: 0}
-  data: {fileID: 0}
+  view: {fileID: 2493004825133416658}
+  data: {fileID: 11400000, guid: 3be098417ec15b240b2557b1ef8c536a, type: 2}
 --- !u!114 &2493004825133416658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1071,8 +1076,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 411b78407dc497249b57bda8971cab52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.BloodySharkView
-  skinnedMeshRenderer: {fileID: 0}
-  animator: {fileID: 0}
+  skinnedMeshRenderer: {fileID: 903223848484341885}
+  animator: {fileID: 8726488621229509512}
 --- !u!4 &2694215898121398248 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8281022853963099663, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
@@ -1188,6 +1193,11 @@ Transform:
 --- !u!4 &8610244186561653975 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2374072153046902066, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
+  m_PrefabInstance: {fileID: 2913866907077522969}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8726488621229509512 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 8da12ec85a51d23458f0d3dc39467ed8, type: 3}
   m_PrefabInstance: {fileID: 2913866907077522969}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8740279348180058818 stripped
