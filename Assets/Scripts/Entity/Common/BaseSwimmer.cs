@@ -108,6 +108,8 @@ namespace Blue.Entity.Common
         private Vector3 separationForce;
         private float separationTimer;
         private readonly Collider[] neighbourBuffer = new Collider[16];
+        private readonly RaycastHit[] probeBuffer = new RaycastHit[8];
+        private Collider[] ownColliders;
 
         /// <summary>
         /// 現在の駆動状態
@@ -172,6 +174,8 @@ namespace Blue.Entity.Common
 
             smoothedHeading = transform.forward;
             currentTurnSpeed = targetTurnSpeed;
+
+            CacheOwnColliders();
 
             // 行動を明示されていない個体は徘徊させる
             if (behaviour == null) SetBehaviour(new RoamBehaviour());
@@ -439,11 +443,13 @@ namespace Blue.Entity.Common
             {
                 Collider neighbour = neighbourBuffer[i];
 
-                // 泳ぐ生き物だけを対象にする。地形や他のコライダーは回避側の担当
-                if (neighbour.transform == transform) continue;
-                if (!neighbour.TryGetComponent(out BaseSwimmer other) || other == this) continue;
+                // 移動用ボリュームは子に付くため、親を辿って所有者へ解決する。
+                // コライダー自身から探すと、分割された生物が丸ごと検出できなくなる
+                BaseSwimmer other = neighbour.GetComponentInParent<BaseSwimmer>();
+                if (other == null || other == this) continue;
 
-                Vector3 offset = position - neighbour.transform.position;
+                // 力の向きはコライダーではなく個体の位置で決める
+                Vector3 offset = position - other.transform.position;
                 float distance = offset.magnitude;
                 if (distance < 0.0001f) continue;
 
@@ -637,8 +643,7 @@ namespace Blue.Entity.Common
             Vector3 position = transform.position;
 
             // 前方が空いていれば探索しない。通常遊泳時のコストを 1 クエリに抑えるための門番
-            if (!Physics.SphereCast(position, avoidProbeRadius, transform.forward, out RaycastHit blocker,
-                    avoidDistance, avoidanceMask, QueryTriggerInteraction.Ignore))
+            if (!Probe(position, transform.forward, avoidDistance, out RaycastHit blocker))
             {
                 lastAvoidDirection = Vector3.zero;
                 return desired;
@@ -693,13 +698,60 @@ namespace Blue.Entity.Common
 
         private float MeasureClearance(Vector3 position, Vector3 direction)
         {
-            if (Physics.SphereCast(position, avoidProbeRadius, direction, out RaycastHit hit,
-                    avoidDistance, avoidanceMask, QueryTriggerInteraction.Ignore))
+            if (Probe(position, direction, avoidDistance, out RaycastHit hit))
             {
                 return Mathf.Clamp01(hit.distance / avoidDistance);
             }
 
             return 1f;
+        }
+
+        // 自分のコライダーを除いた最寄りのヒットを返す。
+        // 移動用ボリュームは自分の内側にあり、探索の原点がその中に入るため、
+        // 素直に撃つと常に「正面が塞がっている」と判定されて減速し続ける
+        private bool Probe(Vector3 origin, Vector3 direction, float distance, out RaycastHit nearest)
+        {
+            int count = Physics.SphereCastNonAlloc(origin, avoidProbeRadius, direction, probeBuffer,
+                distance, avoidanceMask, QueryTriggerInteraction.Ignore);
+
+            nearest = default;
+            bool found = false;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (IsOwnCollider(probeBuffer[i].collider)) continue;
+                if (found && probeBuffer[i].distance >= nearest.distance) continue;
+
+                nearest = probeBuffer[i];
+                found = true;
+            }
+
+            return found;
+        }
+
+        private bool IsOwnCollider(Collider candidate)
+        {
+            if (ownColliders == null) return false;
+
+            for (int i = 0; i < ownColliders.Length; i++)
+            {
+                if (ownColliders[i] == candidate) return true;
+            }
+
+            return false;
+        }
+
+        // トリガーは全クエリで除外しているので、非トリガーだけ覚えておけば足りる
+        private void CacheOwnColliders()
+        {
+            List<Collider> solids = new List<Collider>();
+
+            foreach (Collider collider in GetComponentsInChildren<Collider>(true))
+            {
+                if (!collider.isTrigger) solids.Add(collider);
+            }
+
+            ownColliders = solids.ToArray();
         }
 
         // 内積 [-1,1] を重み付けに使える [0,1] へ
@@ -712,8 +764,7 @@ namespace Blue.Entity.Common
         {
             Vector3 forward = transform.forward;
 
-            if (!Physics.SphereCast(transform.position, avoidProbeRadius, forward, out RaycastHit hit,
-                    pushDistance, avoidanceMask, QueryTriggerInteraction.Ignore))
+            if (!Probe(transform.position, forward, pushDistance, out RaycastHit hit))
             {
                 return;
             }
@@ -915,8 +966,7 @@ namespace Blue.Entity.Common
             Vector3 forward = transform.forward;
 
             // 扇状スキャンを起動するかを決める門番プローブ
-            bool blocked = Physics.SphereCast(position, avoidProbeRadius, forward, out RaycastHit blocker,
-                avoidDistance, avoidanceMask, QueryTriggerInteraction.Ignore);
+            bool blocked = Probe(position, forward, avoidDistance, out RaycastHit blocker);
 
             Gizmos.color = blocked ? ColorRayHit : ColorRayClear;
             Gizmos.DrawRay(position, forward * avoidDistance);

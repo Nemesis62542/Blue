@@ -19,6 +19,7 @@ namespace Blue.EditorTools.Entity
     public class EntityHitboxBuilder : EditorWindow
     {
         private const string HitboxPrefix = "Hitbox_";
+        private const string NavVolumeName = "NavVolume";
 
         [SerializeField] private GameObject target;
         [SerializeField] private float weightThreshold = 0.2f;
@@ -26,6 +27,9 @@ namespace Blue.EditorTools.Entity
         [SerializeField] private float radiusScale = 1f;
         [SerializeField] private string skipNameFilter = "_end";
         [SerializeField] private string layerName = "EntityHitbox";
+        [SerializeField] private bool generateNavVolume = true;
+        [SerializeField] private string navLayerName = "Entity";
+        [SerializeField] private float navRadiusScale = 0.4f;
 
         [MenuItem("Blue/Entity/Hitbox Builder")]
         private static void Open()
@@ -53,6 +57,15 @@ namespace Blue.EditorTools.Entity
             radiusScale = EditorGUILayout.Slider("半径の倍率", radiusScale, 0.5f, 2f);
             skipNameFilter = EditorGUILayout.TextField("除外する名前", skipNameFilter);
             layerName = EditorGUILayout.TextField("レイヤー", layerName);
+
+            EditorGUILayout.Space();
+            generateNavVolume = EditorGUILayout.Toggle("移動用ボリュームも作る", generateNavVolume);
+
+            using (new EditorGUI.DisabledScope(!generateNavVolume))
+            {
+                navLayerName = EditorGUILayout.TextField("　レイヤー", navLayerName);
+                navRadiusScale = EditorGUILayout.Slider("　半径の倍率", navRadiusScale, 0.1f, 0.9f);
+            }
 
             EditorGUILayout.Space();
 
@@ -132,8 +145,82 @@ namespace Blue.EditorTools.Entity
                 created++;
             }
 
+            string navResult = generateNavVolume
+                ? CreateNavVolume(root, owner)
+                : "移動用ボリュームなし";
+
             EditorSceneManager.MarkSceneDirty(root.scene);
-            Debug.Log($"[EntityHitboxBuilder] {root.name}: {created} 個の Hitbox を生成しました。");
+            Debug.Log($"[EntityHitboxBuilder] {root.name}: {created} 個の Hitbox を生成しました。{navResult}");
+        }
+
+        /// <summary>
+        /// 回避と分離が参照する移動用のボリュームを作る
+        /// </summary>
+        // 攻撃判定は Hitbox だけが担う。ここで体を包む大きさにすると、レイが必ず先に
+        // こちらへ当たって BodyPart.Body で解決されてしまい、部位判定が死ぬ。
+        // 必ず Hitbox より内側に収まる細さで作ること。
+        private string CreateNavVolume(GameObject root, MonoBehaviour owner)
+        {
+            int navLayer = LayerMask.NameToLayer(navLayerName);
+            if (navLayer < 0)
+            {
+                return $"移動用ボリュームは作れませんでした（レイヤーが見つかりません: {navLayerName}）";
+            }
+
+            // 生成済みの Hitbox からルート空間での広がりと、最小半径を取る
+            Bounds bounds = default;
+            bool hasBounds = false;
+            float minRadius = float.MaxValue;
+
+            foreach (CapsuleCollider hitbox in root.GetComponentsInChildren<CapsuleCollider>(true))
+            {
+                if (!hitbox.name.StartsWith(HitboxPrefix)) continue;
+
+                Vector3 center = root.transform.InverseTransformPoint(
+                    hitbox.transform.TransformPoint(hitbox.center));
+
+                if (!hasBounds)
+                {
+                    bounds = new Bounds(center, Vector3.zero);
+                    hasBounds = true;
+                }
+                else
+                {
+                    bounds.Encapsulate(center);
+                }
+
+                minRadius = Mathf.Min(minRadius, hitbox.radius);
+            }
+
+            if (!hasBounds) return "移動用ボリュームは作れませんでした（Hitbox がありません）";
+
+            // 一番長い軸に沿わせる
+            Vector3 size = bounds.size;
+            int direction = 0;
+            if (size.y >= size.x && size.y >= size.z) direction = 1;
+            else if (size.z >= size.x && size.z >= size.y) direction = 2;
+
+            GameObject navVolume = new GameObject(NavVolumeName);
+            Undo.RegisterCreatedObjectUndo(navVolume, "Create Entity Nav Volume");
+
+            navVolume.transform.SetParent(root.transform, false);
+            navVolume.transform.localPosition = bounds.center;
+            navVolume.transform.localRotation = Quaternion.identity;
+            navVolume.transform.localScale = Vector3.one;
+            navVolume.layer = navLayer;
+
+            CapsuleCollider collider = navVolume.AddComponent<CapsuleCollider>();
+            collider.direction = direction;
+            collider.height = size[direction];
+            collider.radius = minRadius * navRadiusScale;
+            collider.isTrigger = false;
+
+            // 攻撃レイが万一こちらへ当たっても正しく解決できるようにする。
+            // 付けないと「解決できない実体」として攻撃が遮蔽物扱いされる
+            EntityPart part = navVolume.AddComponent<EntityPart>();
+            part.Setup(owner, BodyPart.Body);
+
+            return $"移動用ボリューム 半径 {collider.radius:F3}（Hitbox 最小 {minRadius:F3}）";
         }
 
         /// <summary>
@@ -234,7 +321,7 @@ namespace Blue.EditorTools.Entity
             foreach (EntityPart part in root.GetComponentsInChildren<EntityPart>(true))
             {
                 if (part.gameObject == root) continue;
-                if (!part.name.StartsWith(HitboxPrefix)) continue;
+                if (!part.name.StartsWith(HitboxPrefix) && part.name != NavVolumeName) continue;
 
                 removing.Add(part.gameObject);
             }
