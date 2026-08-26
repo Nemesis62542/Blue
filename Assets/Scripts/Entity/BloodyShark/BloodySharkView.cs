@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class FrilledSharkView : BaseEntityView
+    public class BloodySharkView : BaseEntityView
     {
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         [SerializeField] private Animator animator;

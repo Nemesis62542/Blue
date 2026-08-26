@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Blue.Entity
 {
-    public class FrilledSharkController : BaseEntityController<FrilledSharkModel, FrilledSharkView>, IScannable, ICapturable
+    public class BloodySharkController : BaseEntityController<BloodySharkModel, BloodySharkView>, IScannable, ICapturable
     {
         public Renderer[] TargetRenderers => new Renderer[] { view.Renderer };
         public ScanData ScanData => new ScanData(model.Status.Name, ScanData.Threat.Safety, IsCapturable);
@@ -18,7 +18,7 @@ namespace Blue.Entity
 
         protected override void Awake()
         {
-            model = new FrilledSharkModel(data);
+            model = new BloodySharkModel(data);
             
             view.SetAnimatorSwim(true);
         }

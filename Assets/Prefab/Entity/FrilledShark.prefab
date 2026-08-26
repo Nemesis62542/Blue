@@ -172,7 +172,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9e56780bbedade4488b73a7b336fe91, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.FrilledSharkController
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.BloodySharkController
   view: {fileID: 1133519218413141906}
   data: {fileID: 11400000, guid: 3be098417ec15b240b2557b1ef8c536a, type: 2}
 --- !u!114 &1133519218413141906
@@ -186,7 +186,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 411b78407dc497249b57bda8971cab52, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.FrilledSharkView
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.BloodySharkView
   skinnedMeshRenderer: {fileID: 2977448166610132700}
   animator: {fileID: 6683437717510085929}
 --- !u!114 &854014553691562928
