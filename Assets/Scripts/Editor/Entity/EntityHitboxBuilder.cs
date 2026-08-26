@@ -5,6 +5,9 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
+// UnityEditor にも BodyPart(Avatar 設定用) があるため、どちらを指すか明示する
+using BodyPart = Blue.Entity.Common.BodyPart;
+
 namespace Blue.EditorTools.Entity
 {
     /// <summary>
