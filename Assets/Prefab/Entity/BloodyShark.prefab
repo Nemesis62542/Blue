@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 0
 --- !u!1 &1172829684754366169
 GameObject:
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 4
 --- !u!1 &1350338472866468534
 GameObject:
@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 3
 --- !u!1 &1690489952031634290
 GameObject:
@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 4
 --- !u!1 &1854519949673195856
 GameObject:
@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 1
 --- !u!1 &2151151416387015823
 GameObject:
@@ -418,7 +418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 4
 --- !u!1 &3388287289508266967
 GameObject:
@@ -488,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 0
 --- !u!1 &3687826415477660046
 GameObject:
@@ -558,7 +558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 4
 --- !u!1 &6475659925291892104
 GameObject:
@@ -628,7 +628,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 0
 --- !u!1 &6762642202190694509
 GameObject:
@@ -698,7 +698,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 0
 --- !u!1 &7634664618148680660
 GameObject:
@@ -768,7 +768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 2
 --- !u!1 &8875433509118427831
 GameObject:
@@ -838,7 +838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e202c81c6d124aa480823563ab4e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.EntityPart
-  owner: {fileID: 0}
+  owner: {fileID: -894598900919833660}
   part: 0
 --- !u!1001 &2913866907077522969
 PrefabInstance:

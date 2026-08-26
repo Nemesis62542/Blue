@@ -470,6 +470,11 @@ namespace Blue.Player
             model.RefillOxygen(model.MaxOxygen);
         }
 
+        // 攻撃レイキャスト用のバッファ。毎フレーム確保しないよう使い回す
+        private const int AttackHitBufferSize = 16;
+        private readonly RaycastHit[] attackHitBuffer = new RaycastHit[AttackHitBufferSize];
+        private readonly bool[] attackHitUsed = new bool[AttackHitBufferSize];
+
         private void Attack()
         {
             QuickSlotItem quick_slot_item = QuickSlot.CurrentQuickSlotItem;
@@ -480,12 +485,59 @@ namespace Blue.Player
                 attack_power = quick_slot_item.ItemData.GetAttributeValue(ItemAttribute.AttackPower);
             }
 
-            if (RaycastFromCamera(out RaycastHit hit, interactDistance) &&
-                EntityHit.TryResolve(hit.collider, out IAttackable attackable, out BodyPart part))
+            if (!TryFindAttackTarget(interactDistance, out IAttackable attackable, out BodyPart part, out Collider hitCollider)) return;
+
+            Debug.Log($"攻撃: {hitCollider.gameObject.name} ({part})");
+            attackable.Damage(new AttackData(this, attackable, attack_power, AttackType.Melee, transform.position + transform.forward, part));
+        }
+
+        /// <summary>
+        /// 視線上の攻撃対象を探す
+        /// </summary>
+        // ボーンごとのヒットボックスはトリガーなので、トリガーを含めて拾う必要がある。
+        // ただし手前に無関係なトリガー（水流など）が入りうるので、近い順に見て
+        // 攻撃対象でないトリガーは素通りさせる。実体のコライダーに当たったらそこで遮られる。
+        private bool TryFindAttackTarget(float range, out IAttackable attackable, out BodyPart part, out Collider hitCollider)
+        {
+            attackable = null;
+            part = BodyPart.Body;
+            hitCollider = null;
+
+            int player_layer = LayerMask.NameToLayer("Player");
+            int layer_mask = ~(1 << player_layer);
+
+            int count = Physics.RaycastNonAlloc(camTransform.position, camTransform.forward,
+                attackHitBuffer, range, layer_mask, QueryTriggerInteraction.Collide);
+
+            // RaycastNonAlloc は距離順を保証しないので、毎回いちばん近い未処理を選ぶ
+            bool[] used = attackHitUsed;
+            for (int i = 0; i < count; i++) used[i] = false;
+
+            for (int processed = 0; processed < count; processed++)
             {
-                Debug.Log($"攻撃: {hit.collider.gameObject.name} ({part})");
-                attackable.Damage(new AttackData(this, attackable, attack_power, AttackType.Melee, transform.position + transform.forward, part));
+                int nearest = -1;
+                for (int i = 0; i < count; i++)
+                {
+                    if (used[i]) continue;
+                    if (nearest < 0 || attackHitBuffer[i].distance < attackHitBuffer[nearest].distance) nearest = i;
+                }
+
+                if (nearest < 0) break;
+                used[nearest] = true;
+
+                Collider candidate = attackHitBuffer[nearest].collider;
+
+                if (EntityHit.TryResolve(candidate, out attackable, out part))
+                {
+                    hitCollider = candidate;
+                    return true;
+                }
+
+                // 攻撃対象でない実体に遮られた
+                if (!candidate.isTrigger) return false;
             }
+
+            return false;
         }
 
         public void Damage(AttackData attack_data)

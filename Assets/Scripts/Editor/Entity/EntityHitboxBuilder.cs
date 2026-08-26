@@ -106,8 +106,12 @@ namespace Blue.EditorTools.Entity
             MonoBehaviour owner = FindOwner(root);
             if (owner == null)
             {
-                Debug.LogWarning($"[EntityHitboxBuilder] {root.name}: 所有者が見つかりません。" +
-                                 "IScannable / ICapturable / IAttackable を実装したコンポーネントをルートに付けてください。");
+                // owner が空のまま生成すると、当たり判定からエンティティを解決できず
+                // スキャンも捕獲も攻撃も素通りする。生成せずに止める。
+                Debug.LogError($"[EntityHitboxBuilder] {root.name}: 所有者が見つかりません。" +
+                               "IScannable / ICapturable / IAttackable を実装したコンポーネントを" +
+                               "ルートに付けてから実行してください。");
+                return;
             }
 
             ClearInternal(root);
