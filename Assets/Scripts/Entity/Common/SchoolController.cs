@@ -285,9 +285,19 @@ public class SchoolController : MonoBehaviour
 		Gizmos.DrawWireSphere(centroid, 0.4f);
 		Gizmos.DrawRay(centroid, averageForward * 2f);
 
-		if (!hasThreat) return;
+		if (hasThreat)
+		{
+			Gizmos.color = Color.red;
+			Gizmos.DrawLine(centroid, threatPosition);
+		}
 
-		Gizmos.color = Color.red;
-		Gizmos.DrawLine(centroid, threatPosition);
+#if UNITY_EDITOR
+		// 匹数を増やしても箱を広げれば密度は下がる。見た目では判断できないので数字で出す
+		float volume = _spawnSphere * _spawnSphereHeight * _spawnSphereDepth * 8f;
+		string density = volume > 0.0001f ? $"{members.Count / volume:F2} 匹/m3" : "-";
+
+		UnityEditor.Handles.Label(centre,
+			$"{name}\n匹数 {members.Count} / {_childAmount}\n密度 {density}");
+#endif
 	}
 }
