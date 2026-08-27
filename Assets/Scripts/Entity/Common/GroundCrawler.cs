@@ -44,6 +44,9 @@ namespace Blue.Entity.Common
         [SerializeField] private Vector3 roamCenter = Vector3.zero;
         [SerializeField] private Vector2 roamArea = new Vector2(5f, 5f);
 
+        [Header("Waypoint Settings")]
+        [SerializeField] private float stuckToleranceGrowth = 0.5f;
+
         // 地面に沿った候補方向の角度（前方からのオフセット）。
         // 遊泳と違い上下に逃げられないので、扇は水平面だけに張る
         private static readonly float[] ProbeAngles =
@@ -51,12 +54,17 @@ namespace Blue.Entity.Common
             0f, 25f, -25f, 50f, -50f, 75f, -75f, 105f, -105f, 135f, -135f
         };
 
+        // 進捗が縮んだと見なす最小量。数値誤差で「前進した」と誤判定しないための下限
+        private const float ProgressEpsilon = 0.05f;
+
         private Rigidbody rb;
         private Vector3 targetWaypoint;
         private State state = State.None;
         private Vector3 lastAvoidDirection;
         private float avoidSpeedFactor = 1f;
         private bool roamCenterOverridden;
+        private float bestDistanceToWaypoint;
+        private float stuckTime;
 
         public State State => state;
 
@@ -141,7 +149,7 @@ namespace Blue.Entity.Common
 
         private Vector3 GetTargetDirection()
         {
-            if (Vector3.Distance(rb.position, targetWaypoint) < waypointDistance)
+            if (HasReachedWaypoint())
             {
                 state = State.Arrival;
             }
@@ -152,6 +160,26 @@ namespace Blue.Entity.Common
             direction = direction.normalized;
 
             return direction;
+        }
+
+        // 目標に近づけている間は判定半径を据え置き、進捗が止まった時間に比例して広げる。
+        // 到達を外部が待っている（DragonBaby は State.Arrival を待って次の指示を出す）ため、
+        // 抜けられなくなると移動アニメのまま永久に固まる
+        private bool HasReachedWaypoint()
+        {
+            float distance = Vector3.Distance(rb.position, targetWaypoint);
+
+            if (distance < bestDistanceToWaypoint - ProgressEpsilon)
+            {
+                bestDistanceToWaypoint = distance;
+                stuckTime = 0f;
+            }
+            else
+            {
+                stuckTime += Time.fixedDeltaTime;
+            }
+
+            return distance < waypointDistance + stuckTime * stuckToleranceGrowth;
         }
 
         // 進みたい方向に対し、実際に進める方向を返す。あわせて速度倍率を出す。
@@ -298,6 +326,9 @@ namespace Blue.Entity.Common
         public void SetWaypoint(Vector3 point)
         {
             targetWaypoint = point;
+
+            stuckTime = 0f;
+            bestDistanceToWaypoint = Vector3.Distance(rb.position, targetWaypoint);
 
             state = State.Move; 
         }
