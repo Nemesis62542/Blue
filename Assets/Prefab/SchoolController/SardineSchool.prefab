@@ -45,77 +45,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childPrefab:
-  - {fileID: 630366693248861759, guid: 92c418530b3c1374eaa1583fe4884451, type: 3}
+  - {fileID: 9074039352754460322, guid: 92c418530b3c1374eaa1583fe4884451, type: 3}
+  _childAmount: 300
+  _groupChildToSchool: 1
   _groupChildToNewTransform: 0
   _groupTransform: {fileID: 0}
   _groupName: 
-  _groupChildToSchool: 1
-  _childAmount: 150
-  _spawnSphere: 1
-  _spawnSphereDepth: 1
-  _spawnSphereHeight: 2
-  _childSpeedMultipler: 0.71
-  _minSpeed: 1
-  _maxSpeed: 5
-  _speedCurveMultiplier:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   _minScale: 0.5
   _maxScale: 1
-  _minDamping: 1
-  _maxDamping: 2
-  _waypointDistance: 0.67
-  _minAnimationSpeed: 0.125
-  _maxAnimationSpeed: 0.125
-  _randomPositionTimerMax: 5
-  _randomPositionTimerMin: 3
-  _acceleration: 0.025
-  _brake: 0.01
-  _positionSphere: 4
-  _positionSphereDepth: 4
-  _positionSphereHeight: 0.1
-  _childTriggerPos: 1
-  _forceChildWaypoints: 1
+  _spawnSphere: 5
+  _spawnSphereHeight: 5
+  _spawnSphereDepth: 5
+  _positionSphere: 8
+  _positionSphereHeight: 3
+  _positionSphereDepth: 8
   _autoRandomPosition: 1
-  _forcedRandomDelay: 2
-  _schoolSpeed: 0
-  _roamers: []
-  _posBuffer: {x: -7.46, y: 4.79, z: -10.29}
+  _randomPositionTimerMin: 3
+  _randomPositionTimerMax: 5
+  _centreMoveSpeed: 1.5
   _posOffset: {x: 0, y: 0, z: 0}
-  _avoidance: 1
-  _avoidAngle: 0.35
-  _avoidDistance: 2
-  _avoidSpeed: 75
-  _stopDistance: 0.5
-  _stopSpeedMultiplier: 2
-  _avoidanceMask:
-    serializedVersion: 2
-    m_Bits: 375
-  _push: 0
-  _pushDistance: 0
-  _pushForce: 5
-  _updateDivisor: 1
-  _newDelta: 0
-  _updateCounter: 0
-  _activeChildren: 0
+  _alignmentWeight: 1
+  _cohesionWeight: 1
+  _detectThreat: 1
+  _schoolThreatSize: 1
+  _schoolThreatThreshold: 2
+  _threatDetectionRadius: 10
+  _fleeWeight: 3
+  _threatDetectionInterval: 5

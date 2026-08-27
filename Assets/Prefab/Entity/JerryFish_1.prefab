@@ -104,16 +104,14 @@ PrefabInstance:
       addedObject: {fileID: 1804202959736896292}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -7526636099259334995}
+      addedObject: {fileID: 3641128620027405446}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3641128620027405446}
+      addedObject: {fileID: 2159529281091767378}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2636612173796046393}
   m_SourcePrefab: {fileID: 100100000, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}
---- !u!4 &1666940296090900514 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}
-  m_PrefabInstance: {fileID: 1200367782520504265}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2047442325691957912 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}
@@ -147,19 +145,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 3769609568132792749}
   animator: {fileID: 4738355850747675224}
---- !u!114 &-7526636099259334995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047442325691957912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01b67c8c535019d47ba387e88bd5adcd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scanner: {fileID: 1666940296090900514}
 --- !u!65 &3641128620027405446
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -181,6 +166,88 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5, y: 0.7, z: 0.5}
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &2159529281091767378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047442325691957912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe30b2726165f854ea9bffd7cbb3cf68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.BaseSwimmer
+  moveSpeed: 0.1
+  rotationSpeed: 1
+  turnSmoothing: 4
+  waypointDistance: 1
+  maxPitchAngle: 60
+  maintainCruise: 1
+  wanderStrength: 0.15
+  wanderFrequency: 0.3
+  maxBankAngle: 25
+  maxPitchOffset: 12
+  bankResponse: 3
+  speedVariation: 0.9
+  turnVariation: 0.5
+  accelerationRate: 1
+  decelerationRate: 0.4
+  lowSpeedTurnBonus: 1.5
+  useAvoidance: 1
+  avoidDistance: 1
+  avoidProbeRadius: 0.25
+  avoidanceMask:
+    serializedVersion: 2
+    m_Bits: 320
+  avoidAlignmentWeight: 0.5
+  avoidHysteresis: 0.25
+  avoidMinSpeedFactor: 0.25
+  queryInterval: 8
+  pushDistance: 1
+  pushForce: 2
+  useSeparation: 1
+  separationRadius: 0.4
+  separationWeight: 1
+  separationMask:
+    serializedVersion: 2
+    m_Bits: 128
+  separationInterval: 0.1
+  roamCenterFromSpawnPosition: 1
+  roamCenter: {x: 0, y: 0, z: 0}
+  roamArea: {x: 5, y: 2, z: 5}
+  useMigration: 0
+  migrationRange: {x: 20, y: 5, z: 20}
+  migrationSpeed: 0.5
+  migrationIntervalRange: {x: 15, y: 30}
+  waypointAttempts: 12
+  waypointClearance: 0.5
+  requireClearPath: 1
+  stuckToleranceGrowth: 0.5
+  roamHeadingLimit: 120
+  showGizmos: 1
+  alwaysShowGizmos: 0
+  showRoamArea: 1
+  showWaypoint: 1
+  showReachability: 1
+  showAvoidanceRays: 1
+  showSeparation: 1
+  showTrail: 1
+  showLabels: 1
+  trailSeconds: 12
+  labelHeightOffset: 0.6
+--- !u!114 &2636612173796046393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047442325691957912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eacdbbf74ef9e1f4b8881e9a590a3c70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.SchoolMember
 --- !u!137 &3769609568132792749 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2664098864995057252, guid: 42cb6d6a6fad8a341be04ebdb40f6ddf, type: 3}

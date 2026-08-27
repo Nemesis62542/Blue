@@ -203,17 +203,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 1
   rotationSpeed: 1
-  waypointDistance: 1
+  turnSmoothing: 4
+  waypointDistance: 2
+  maxPitchAngle: 60
+  maintainCruise: 1
+  wanderStrength: 0.15
+  wanderFrequency: 0.3
+  maxBankAngle: 25
+  bankResponse: 3
+  speedVariation: 0.4
+  turnVariation: 0.4
+  accelerationRate: 1
+  decelerationRate: 0.4
   useAvoidance: 1
   avoidDistance: 2
-  avoidStrength: 75
+  avoidProbeRadius: 0.25
   avoidanceMask:
     serializedVersion: 2
-    m_Bits: 4294966783
+    m_Bits: 448
+  avoidAlignmentWeight: 0.5
+  avoidHysteresis: 0.25
+  avoidMinSpeedFactor: 0.25
   pushDistance: 1
   pushForce: 2
+  useSeparation: 1
+  separationRadius: 1.5
+  separationWeight: 1
+  separationMask:
+    serializedVersion: 2
+    m_Bits: 128
+  separationInterval: 0.1
+  roamCenterFromSpawnPosition: 1
   roamCenter: {x: 0, y: 0, z: 0}
   roamArea: {x: 10, y: 1, z: 10}
+  waypointAttempts: 12
+  waypointClearance: 0.5
+  requireClearPath: 1
+  stuckToleranceGrowth: 0.5
+  roamHeadingLimit: 120
+  showGizmos: 1
+  alwaysShowGizmos: 0
+  showRoamArea: 1
+  showWaypoint: 1
+  showReachability: 1
+  showAvoidanceRays: 1
+  showSeparation: 1
+  showTrail: 1
+  showLabels: 1
+  trailSeconds: 12
+  labelHeightOffset: 0.6
 --- !u!65 &5025213449896169461
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -264,6 +302,8 @@ MonoBehaviour:
   - bone: {fileID: 8664379918331621826}
     lagTime: 0.8963
   lagFalloff: 0
+  overshoot: 0
+  useAnimatorRotation: 1
   constrainBoneLength: 1
   maxBendAngle: 45
   branches: []

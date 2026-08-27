@@ -124,11 +124,11 @@ namespace Blue.Player
             }
         } 
 
-        private bool FindSameSchool(SchoolChild obj)
+        private bool FindSameSchool(SchoolMember obj)
         {
-            IEnumerable<SchoolChild> school_fish = scannedObjects
-                                                    .Select(scannable => ((MonoBehaviour)scannable).GetComponent<SchoolChild>())
-                                                    .Where(scannable => scannable != null && scannable.Spawner == obj.Spawner);
+            IEnumerable<SchoolMember> school_fish = scannedObjects
+                                                    .Select(scannable => ((MonoBehaviour)scannable).GetComponent<SchoolMember>())
+                                                    .Where(scannable => scannable != null && scannable.School == obj.School);
 
             return school_fish.Count() > 1;
         }
@@ -186,11 +186,11 @@ namespace Blue.Player
         {
             Transform target_position = ((MonoBehaviour)scannable).transform;
 
-            if (((MonoBehaviour)scannable).transform.TryGetComponent(out SchoolChild fish))
+            if (((MonoBehaviour)scannable).transform.TryGetComponent(out SchoolMember fish))
             {
                 if (!FindSameSchool(fish))
                 {
-                    target_position = fish.Spawner.transform;
+                    target_position = fish.School.transform;
                     view.SetDetailUI(target_position, scannable);
                 }
             }
