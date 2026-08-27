@@ -124,6 +124,8 @@ namespace Blue.Entity.Common
         private Vector3 homeCenter;
         private Vector3 migrationTarget;
         private float migrationTimer;
+        private float forwardHitDistance = float.PositiveInfinity;
+        private bool forwardProbeValid;
 
         /// <summary>
         /// 現在の駆動状態
@@ -207,6 +209,9 @@ namespace Blue.Entity.Common
 
         protected virtual void Update()
         {
+            // 前方プローブは回避が撃つ。撃たれなかったフレームは押し戻し側が自前で撃つ
+            forwardProbeValid = false;
+
             UpdateMigration();
 
             // 分離も行動と同じ注入口を通す。BaseSwimmer 自身が最初の利用者になることで、
@@ -754,7 +759,13 @@ namespace Blue.Entity.Common
             Vector3 position = transform.position;
 
             // 前方が空いていれば探索しない。通常遊泳時のコストを 1 クエリに抑えるための門番
-            if (!Probe(position, MotionForward, avoidDistance, out RaycastHit blocker))
+            bool blocked = Probe(position, MotionForward, avoidDistance, out RaycastHit blocker);
+
+            // 押し戻しも同じ前方への SphereCast なので、この結果を使い回す
+            forwardHitDistance = blocked ? blocker.distance : float.PositiveInfinity;
+            forwardProbeValid = true;
+
+            if (!blocked)
             {
                 lastAvoidDirection = Vector3.zero;
                 return desired;
@@ -817,6 +828,26 @@ namespace Blue.Entity.Common
             return 1f;
         }
 
+        // 回避の門番が撃った前方プローブを使い回す。
+        // 押し戻しの距離が回避の探索距離を超える設定のときだけ、別途撃つ
+        private bool TryGetForwardDistance(Vector3 forward, out float distance)
+        {
+            if (forwardProbeValid && pushDistance <= avoidDistance)
+            {
+                distance = forwardHitDistance;
+                return !float.IsPositiveInfinity(distance);
+            }
+
+            if (Probe(transform.position, forward, pushDistance, out RaycastHit hit))
+            {
+                distance = hit.distance;
+                return true;
+            }
+
+            distance = float.PositiveInfinity;
+            return false;
+        }
+
         // 自分のコライダーを除いた最寄りのヒットを返す。
         // 移動用ボリュームは自分の内側にあり、探索の原点がその中に入るため、
         // 素直に撃つと常に「正面が塞がっている」と判定されて減速し続ける
@@ -875,12 +906,10 @@ namespace Blue.Entity.Common
         {
             Vector3 forward = MotionForward;
 
-            if (!Probe(transform.position, forward, pushDistance, out RaycastHit hit))
-            {
-                return;
-            }
+            if (!TryGetForwardDistance(forward, out float hitDistance)) return;
+            if (hitDistance >= pushDistance) return;
 
-            float distanceRatio = (pushDistance - hit.distance) / pushDistance;
+            float distanceRatio = (pushDistance - hitDistance) / pushDistance;
 
             // 前進速度を超えて押し戻すと、向きを変えられないまま後退し続けて固着する。
             // 前進を打ち消すところまでは許し、逆行はさせない
