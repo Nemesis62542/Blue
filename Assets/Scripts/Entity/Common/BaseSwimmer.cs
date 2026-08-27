@@ -212,6 +212,9 @@ namespace Blue.Entity.Common
 
             queryPhase = UnityEngine.Random.Range(0, 16);
 
+            // 全員が同じフレームで近傍探索すると、間隔を空けても 1 フレームに山ができる
+            separationTimer = UnityEngine.Random.Range(0f, Mathf.Max(separationInterval, 0.0001f));
+
             CacheOwnColliders();
 
             // 行動を明示されていない個体は徘徊させる
