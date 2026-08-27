@@ -56,6 +56,13 @@ namespace Blue.Entity.Common
         [SerializeField] private Vector3 roamCenter = Vector3.zero;
         [SerializeField] private Vector3 roamArea = new Vector3(5f, 2f, 5f);
 
+        // 縄張りの中心そのものをゆっくり移動させる。水槽など動いては困る場所があるので既定は off
+        [Header("Migration Settings")]
+        [SerializeField] private bool useMigration = false;
+        [SerializeField] private Vector3 migrationRange = new Vector3(20f, 5f, 20f);
+        [SerializeField] private float migrationSpeed = 0.5f;
+        [SerializeField] private Vector2 migrationIntervalRange = new Vector2(15f, 30f);
+
         [Header("Waypoint Settings")]
         [SerializeField] private int waypointAttempts = 12;
         [SerializeField] private float waypointClearance = 0.5f;
@@ -110,6 +117,9 @@ namespace Blue.Entity.Common
         private readonly Collider[] neighbourBuffer = new Collider[16];
         private readonly RaycastHit[] probeBuffer = new RaycastHit[8];
         private Collider[] ownColliders;
+        private Vector3 homeCenter;
+        private Vector3 migrationTarget;
+        private float migrationTimer;
 
         /// <summary>
         /// 現在の駆動状態
@@ -167,6 +177,10 @@ namespace Blue.Entity.Common
                 roamCenter = transform.position;
             }
 
+            // 回遊の基準。roamCenter は動くが、こちらは動かさない
+            homeCenter = roamCenter;
+            migrationTarget = roamCenter;
+
             // 個体ごとに異なるゆらぎを与える。同じ地点へ向かう群れが同期して見えないように
             wanderSeed = UnityEngine.Random.value * 1000f;
 
@@ -183,6 +197,8 @@ namespace Blue.Entity.Common
 
         protected virtual void Update()
         {
+            UpdateMigration();
+
             // 分離も行動と同じ注入口を通す。BaseSwimmer 自身が最初の利用者になることで、
             // 群れがこの口に乗る前に動作が確かめられる
             UpdateSeparation();
@@ -306,6 +322,10 @@ namespace Blue.Entity.Common
         {
             roamCenter = center;
             roamCenterOverridden = true;
+
+            // 回遊の基準ごと移す。指定された位置を中心に泳ぎ回ってほしいはずなので
+            homeCenter = center;
+            migrationTarget = center;
         }
 
         private void SetMode(SwimMode next)
@@ -417,6 +437,47 @@ namespace Blue.Entity.Common
             currentSpeed = Mathf.MoveTowards(currentSpeed, goalSpeed, moveSpeed * rate * Time.deltaTime);
 
             transform.position += transform.forward * currentSpeed * Time.deltaTime;
+        }
+
+        // 縄張りの中心を少しずつ移す。中心が固定だと、どれだけ動きを作り込んでも
+        // 一生同じ箱の中を往復し続けることになる
+        private void UpdateMigration()
+        {
+            if (!useMigration) return;
+
+            migrationTimer -= Time.deltaTime;
+
+            if (migrationTimer <= 0f)
+            {
+                migrationTimer = UnityEngine.Random.Range(migrationIntervalRange.x, migrationIntervalRange.y);
+                migrationTarget = FindMigrationTarget();
+            }
+
+            // 瞬間移動させず寄せていく。目的地は中心から抽選されるので、
+            // 中心が動けば行き先も自然に移っていく
+            roamCenter = Vector3.MoveTowards(roamCenter, migrationTarget, migrationSpeed * Time.deltaTime);
+        }
+
+        private Vector3 FindMigrationTarget()
+        {
+            for (int attempt = 0; attempt < waypointAttempts; attempt++)
+            {
+                Vector3 candidate = homeCenter + new Vector3(
+                    UnityEngine.Random.Range(-migrationRange.x, migrationRange.x),
+                    UnityEngine.Random.Range(-migrationRange.y, migrationRange.y),
+                    UnityEngine.Random.Range(-migrationRange.z, migrationRange.z)
+                );
+
+                // 縄張りごと地形に埋まると、そこで抽選される目的地が軒並み無効になる
+                if (Physics.CheckSphere(candidate, waypointClearance, avoidanceMask, QueryTriggerInteraction.Ignore))
+                {
+                    continue;
+                }
+
+                return candidate;
+            }
+
+            return homeCenter;
         }
 
         // 近くの個体から離れる力を求める。毎フレームは探索せず、間隔を空けて結果を使い回す
@@ -794,6 +855,7 @@ namespace Blue.Entity.Common
         private static readonly Color ColorStuck = new Color(1.00f, 0.75f, 0.15f, 0.65f);
         private static readonly Color ColorChosen = new Color(0.45f, 1.00f, 0.95f, 1.00f);
         private static readonly Color ColorSeparation = new Color(0.80f, 0.45f, 1.00f, 0.30f);
+        private static readonly Color ColorMigration = new Color(0.40f, 0.90f, 0.70f, 0.25f);
 
         private const float TrailSampleInterval = 0.05f;
         private const float MarkerRadius = 0.08f;
@@ -870,6 +932,19 @@ namespace Blue.Entity.Common
             Gizmos.color = ColorRoamArea;
             Gizmos.DrawWireCube(center, roamArea * 2f);
             Gizmos.DrawLine(center - Vector3.up * 0.2f, center + Vector3.up * 0.2f);
+
+            if (!useMigration) return;
+
+            // 縄張りが動ける範囲と、いま向かっている先
+            Vector3 home = Application.isPlaying ? homeCenter : center;
+
+            Gizmos.color = ColorMigration;
+            Gizmos.DrawWireCube(home, migrationRange * 2f);
+
+            if (!Application.isPlaying) return;
+
+            Gizmos.DrawLine(center, migrationTarget);
+            Gizmos.DrawWireSphere(migrationTarget, MarkerRadius * 2f);
         }
 
         private void DrawTrail()
