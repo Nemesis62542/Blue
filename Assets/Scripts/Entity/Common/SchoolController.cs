@@ -1,425 +1,293 @@
-/****************************************		
-	Copyright 2015 Unluck Software	
- 	www.chemicalbliss.com
- 	
- 	Changelog
- 	v1.2
- 	IMPORTANT!	_posBuffer is now used for flock position, not controller position.
- 	Changed from _roamers Array To List
- 	Code cleanup
-	v1.21
-	Added grouping
-	Fixed gizmo bug
-	v1.3																																																																																																																		
+/****************************************
+	Original: Copyright 2015 Unluck Software / www.chemicalbliss.com
+	移動制御を BaseSwimmer へ移したため、生成・共有パラメータ・群れ全体の
+	集計だけを残す形に作り直している。
 *****************************************/
 
-using UnityEngine;
 using System.Collections.Generic;
-
+using Blue.Entity.Common;
+using Blue.Interface;
+using UnityEngine;
 
 public class SchoolController : MonoBehaviour
 {
-	
-	public SchoolChild[] _childPrefab;			// Assign prefab with SchoolChild script attached
-	public bool _groupChildToNewTransform;	// Parents fish transform to school transform
-	public Transform _groupTransform;			// New game object created for group
-	public string _groupName = "";				// Name of group (if no name, the school name will be used)
-	public bool _groupChildToSchool;			// Parents fish transform to school transform
-	public int _childAmount = 250;				// Number of objects
-	public float _spawnSphere = 3.0f;				// Range around the spawner waypoints will created //changed to box
-	public float _spawnSphereDepth = 3.0f;			
-	public float _spawnSphereHeight = 1.5f;		
-	public float _childSpeedMultipler = 2.0f;		// Adjust speed of entire school
-	public float _minSpeed = 6.0f;					// minimum random speed
-	public float _maxSpeed = 10.0f;				// maximum random speed
-	public AnimationCurve _speedCurveMultiplier = new AnimationCurve(new Keyframe(0.0f, 1.0f), new Keyframe(1.0f, 1.0f));
-	public float _minScale = .7f;				// minimum random size
-	public float _maxScale = 1.0f;					// maximum random size
-	public float _minDamping = 1.0f;				// Rotation tween damping, lower number = smooth/slow rotation (if this get stuck in a loop, increase this value)
-	public float _maxDamping = 2.0f;
-	public float _waypointDistance = 1.0f;			// How close this can get to waypoint before creating a new waypoint (also fixes stuck in a loop)
-	public float _minAnimationSpeed = 2.0f;
-	public float _maxAnimationSpeed = 4.0f;		
-	public float _randomPositionTimerMax = 10.0f;	// When _autoRandomPosition is enabled
-	public float _randomPositionTimerMin = 4.0f;	
-	public float _acceleration = .025f;			// How fast child speeds up
-	public float _brake = .01f;					// How fast child slows down 
-	public float _positionSphere = 25.0f;			// If _randomPositionTimer is bigger than zero the controller will be moved to a random position within this sphere
-	public float _positionSphereDepth = 5.0f;		// Overides height of sphere for more controll
-	public float _positionSphereHeight = 5.0f;		// Overides height of sphere for more controll
-	public bool _childTriggerPos;			// Runs the random position function when a child reaches the controller
-	public bool _forceChildWaypoints;		// Forces all children to change waypoints when this changes position
-	public bool _autoRandomPosition;			// Automaticly positions waypoint based on random values (_randomPositionTimerMin, _randomPositionTimerMax)
-	public float _forcedRandomDelay = 1.5f;		// Random delay added before forcing new waypoint
-	public float _schoolSpeed;					// Value multiplied to child speed
-	public List<SchoolChild> _roamers;
-	public Vector3 _posBuffer;
+	[Header("Spawn")]
+	public SchoolMember[] _childPrefab;
+	public int _childAmount = 250;
+	public bool _groupChildToSchool;
+	public bool _groupChildToNewTransform;
+	public Transform _groupTransform;
+	public string _groupName = "";
+
+	[Header("Individual")]
+	public float _minScale = .7f;
+	public float _maxScale = 1.0f;
+
+	// 各個体が中心のまわりで泳ぐ範囲。BaseSwimmer の roamArea として渡す
+	[Header("School Shape")]
+	public float _spawnSphere = 3.0f;
+	public float _spawnSphereHeight = 1.5f;
+	public float _spawnSphereDepth = 3.0f;
+
+	// 群れ全体の目標がこの範囲を移動する
+	[Header("School Movement")]
+	public float _positionSphere = 25.0f;
+	public float _positionSphereHeight = 5.0f;
+	public float _positionSphereDepth = 5.0f;
+	public bool _autoRandomPosition = true;
+	public float _randomPositionTimerMin = 4.0f;
+	public float _randomPositionTimerMax = 10.0f;
+	public float _centreMoveSpeed = 1.5f;
 	public Vector3 _posOffset;
-	
-	///AVOIDANCE
-	public bool _avoidance;				//Enable/disable avoidance
-	public float _avoidAngle = 0.35f; 		//Angle of the rays used to avoid obstacles left and right
-	public float _avoidDistance = 1.0f;		//How far avoid rays travel
-	public float _avoidSpeed = 75.0f;			//How fast this turns around when avoiding	
-	public float _stopDistance	= .5f;		//How close this can be to objects directly in front of it before stopping and backing up. This will also rotate slightly, to avoid "robotic" behaviour
-	public float _stopSpeedMultiplier = 2.0f;	//How fast to stop when within stopping distance
-	public LayerMask _avoidanceMask = (LayerMask)(-1);
-	
-	///PUSH
-	public bool _push;					//Enable/disable push
-	public float _pushDistance;				//How far away obstacles can be before starting to push away
-	public float _pushForce = 5.0f;			//How fast/hard to push away
 
-	///BOIDS ALGORITHM
-	public bool _boids = false;				//Enable/disable boids algorithm
-	public float _neighborDistance = 5.0f;		//Distance to search for neighboring fish
-	public float _separationDistance = 2.0f;	//Distance at which fish separate from each other
-	public float _separationWeight = 1.5f;		//Strength of separation force
-	public float _alignmentWeight = 1.0f;		//Strength of alignment force (matching velocity)
-	public float _cohesionWeight = 1.0f;		//Strength of cohesion force (moving to group center)
-	public LayerMask _fishLayer = -1;			//Layer mask for fish detection
+	[Header("Boids")]
+	public float _alignmentWeight = 0.6f;
+	public float _cohesionWeight = 0.8f;
 
-	///LEADER FOLLOW SYSTEM
-	public bool _leaderFollow = false;			//Enable/disable leader follow system
-	[Range(0.05f, 0.5f)]
-	public float _leaderRatio = 0.2f;			//Ratio of leaders in the school (5%-50%)
-	public float _followDistance = 8.0f;		//Distance to search for leaders
-	public float _followWeight = 2.0f;			//Strength of leader following force
-	public float _leaderChangeInterval = 10.0f;	//Interval for changing leaders (seconds)
-	private float _leaderChangeTimer = 0.0f;	//Timer for leader rotation
-	public List<SchoolChild> _leaders;			//List of current leaders
+	[Header("Threat")]
+	public bool _detectThreat = true;
+	public float _schoolThreatSize = 1.0f;
+	public float _schoolThreatThreshold = 2.0f;
+	public float _threatDetectionRadius = 10.0f;
+	public float _fleeWeight = 3.0f;
+	public int _threatDetectionInterval = 5;
 
-	///DYNAMIC DENSITY SYSTEM
-	public enum ThreatLevel
+	private readonly List<SchoolMember> members = new List<SchoolMember>();
+	private readonly Collider[] threatBuffer = new Collider[32];
+
+	private Vector3 schoolCentre;
+	private Vector3 centreTarget;
+	private Vector3 centroid;
+	private Vector3 averageForward;
+	private Vector3 threatPosition;
+	private bool hasThreat;
+	private float repositionTimer;
+	private int threatCounter;
+
+	/// <summary>群れの中心。各個体の縄張りの中心になる</summary>
+	public Vector3 SchoolCenter => schoolCentre;
+
+	/// <summary>実際に個体が集まっている位置の平均</summary>
+	public Vector3 Centroid => centroid;
+
+	/// <summary>個体の向きの平均</summary>
+	public Vector3 AverageForward => averageForward;
+
+	public bool HasThreat => hasThreat;
+	public Vector3 ThreatPosition => threatPosition;
+	public int MemberCount => members.Count;
+
+	private void Start()
 	{
-		None,		// Peaceful: dispersed
-		Low,		// Minor threat: normal
-		High		// Major threat: dense & fast
+		schoolCentre = transform.position + _posOffset;
+		centreTarget = schoolCentre;
+		centroid = schoolCentre;
+		repositionTimer = RandomRepositionTime();
+
+		Spawn(_childAmount);
 	}
 
-	public bool _dynamicDensity = false;			//Enable/disable dynamic density management
-	public ThreatLevel _currentThreatLevel = ThreatLevel.None;
-	public float _schoolThreatSize = 1.0f;			//Threat size of this school
-	public float _schoolThreatThreshold = 2.0f;		//Threats are entities larger than this (-1 = fear nothing)
-	public float _threatDetectionRadius = 10.0f;	//Detection range for threats
-	public float _transitionSpeed = 2.0f;			//Speed of parameter transitions
-	public float _fleeWeight = 3.0f;				//Strength of fleeing force from threats
-	public int _threatDetectionInterval = 5;		//Frames between threat detection (performance optimization)
+	private void Update()
+	{
+		if (members.Count == 0) return;
 
-	public Vector3 _threatPosition;					//Position of the closest threat
-	public bool _hasThreat = false;					//Whether there is an active threat
-	private int _threatDetectionCounter = 0;		//Counter for threat detection interval
-
-	[Header("Threat Level: None (Dispersed)")]
-	public float _noneSpeedMultiplier = 0.8f;
-	public float _noneSeparationWeight = 2.0f;
-	public float _noneCohesionWeight = 0.5f;
-	public float _noneSpawnSphereMultiplier = 1.5f;
-
-	[Header("Threat Level: Low (Normal)")]
-	public float _lowSpeedMultiplier = 1.0f;
-	public float _lowSeparationWeight = 1.5f;
-	public float _lowCohesionWeight = 1.0f;
-	public float _lowSpawnSphereMultiplier = 1.0f;
-
-	[Header("Threat Level: High (Dense & Fast)")]
-	public float _highSpeedMultiplier = 1.5f;
-	public float _highSeparationWeight = 0.5f;
-	public float _highCohesionWeight = 3.0f;
-	public float _highSpawnSphereMultiplier = 0.5f;
-
-	private float _targetSpeedMultiplier;
-	private float _targetSeparationWeight;
-	private float _targetCohesionWeight;
-	private float _targetSpawnSphereMultiplier;
-
-	private float _baseSpawnSphere;
-	private float _baseSeparationWeight;
-	private float _baseCohesionWeight;
-
-	//FRAME SKIP
-	public int _updateDivisor = 1;				//Skip update every N frames (Higher numbers might give choppy results, 3 - 4 on 60fps , 2 - 3 on 30 fps)
-	public float _newDelta;
-	public int _updateCounter;
-	public int _activeChildren;
-	
-	public void Start() {
-		_posBuffer = transform.position + _posOffset;
-		_schoolSpeed = Random.Range(1.0f , _childSpeedMultipler);
-		_leaders = new List<SchoolChild>();
-
-		// Save base values for dynamic density system
-		_baseSpawnSphere = _spawnSphere;
-		_baseSeparationWeight = _separationWeight;
-		_baseCohesionWeight = _cohesionWeight;
-
-		// Initialize dynamic density system
-		if (_dynamicDensity) {
-			SetThreatLevel(ThreatLevel.Low); // Start with normal state
-		}
-
-		AddFish(_childAmount);
-
-		// Initialize leaders if leader follow system is enabled
-		if (_leaderFollow) {
-			AssignLeaders();
-		}
-
-		Invoke(nameof(AutoRandomWaypointPosition), RandomWaypointTime());
+		UpdateCentre();
+		UpdateAggregate();
+		UpdateThreat();
 	}
-	
-	public void Update() {
-		if(_activeChildren > 0){
-			if(_updateDivisor > 1){
-				_updateCounter++;
-			    _updateCounter = _updateCounter % _updateDivisor;
-				_newDelta = Time.deltaTime*_updateDivisor;
-			}else{
-				_newDelta = Time.deltaTime;
-			}
 
-			// Update leader rotation
-			UpdateLeaderRotation();
-
-			// Update dynamic density system
-			if (_dynamicDensity) {
-				// Detect threats at intervals for performance
-				_threatDetectionCounter++;
-				if (_threatDetectionCounter >= _threatDetectionInterval) {
-					_threatDetectionCounter = 0;
-					DetectThreats();
-				}
-				UpdateDynamicParameters();
-			}
-		}
-	}
-	
-	public void InstantiateGroup(){
-		if(_groupTransform != null) return;
-		GameObject g = new GameObject();
-		_groupTransform = g.transform;
-		_groupTransform.position = transform.position;
-		if(_groupName != ""){
-			g.name = _groupName;
-			return;
-		}	
-		g.name = transform.name + " Fish Container";
-	}
-	
-	public void AddFish(int amount){
-		if(_groupChildToNewTransform)InstantiateGroup();	
-		for(int i=0;i<amount;i++){
-			int child = Random.Range(0,_childPrefab.Length);
-			SchoolChild obj = Instantiate(_childPrefab[child]);
-			obj.SetSpawner(this);
-		    _roamers.Add(obj);
-			AddChildToParent(obj.transform);
-		}	
-	}
-	
-	public void AddChildToParent(Transform obj){	
-	    if(_groupChildToSchool){
-			obj.parent = transform;
+	#region Spawn
+	public void Spawn(int amount)
+	{
+		if (_childPrefab == null || _childPrefab.Length == 0)
+		{
+			Debug.LogError($"[SchoolController] {name}: 生成するプレハブが設定されていません。", this);
 			return;
 		}
-		if(_groupChildToNewTransform){
-			obj.parent = _groupTransform;
-			return;
+
+		if (_groupChildToNewTransform) CreateGroupTransform();
+
+		for (int i = 0; i < amount; i++)
+		{
+			SchoolMember prefab = _childPrefab[Random.Range(0, _childPrefab.Length)];
+			if (prefab == null) continue;
+
+			SchoolMember member = Instantiate(prefab, RandomPointInSchool(), Random.rotation);
+			AttachToParent(member.transform);
+
+			// Register は OnEnable で走るが、Initialize より前なので所属が未設定になる。
+			// ここで確実に持たせてから、重複しないよう登録する
+			member.Initialize(this);
+			Register(member);
 		}
 	}
-	
-	public void RemoveFish(int amount){
-		SchoolChild dObj = _roamers[_roamers.Count - amount];
-		_roamers.RemoveAt(_roamers.Count - amount);
-		Destroy(dObj.gameObject);
+
+	private void CreateGroupTransform()
+	{
+		if (_groupTransform != null) return;
+
+		GameObject group = new GameObject(string.IsNullOrEmpty(_groupName) ? $"{name} Fish Container" : _groupName);
+		group.transform.position = transform.position;
+		_groupTransform = group.transform;
 	}
-	
-	//Set waypoint randomly inside box
-	public void SetRandomWaypointPosition() {
-		_schoolSpeed = Random.Range(1.0f , _childSpeedMultipler);
-		Vector3 t = Vector3.zero;
-		t.x = Random.Range(-_positionSphere, _positionSphere) + transform.position.x;
-		t.z = Random.Range(-_positionSphereDepth, _positionSphereDepth) + transform.position.z;
-		t.y = Random.Range(-_positionSphereHeight, _positionSphereHeight) + transform.position.y;
-		_posBuffer = t;	
-		if(_forceChildWaypoints){
-			for (int i = 0; i < _roamers.Count; i++)
+
+	private void AttachToParent(Transform child)
+	{
+		if (_groupChildToSchool) child.SetParent(transform);
+		else if (_groupChildToNewTransform && _groupTransform != null) child.SetParent(_groupTransform);
+	}
+
+	private Vector3 RandomPointInSchool()
+	{
+		return schoolCentre + new Vector3(
+			Random.Range(-_spawnSphere, _spawnSphere),
+			Random.Range(-_spawnSphereHeight, _spawnSphereHeight),
+			Random.Range(-_spawnSphereDepth, _spawnSphereDepth));
+	}
+
+	public void Register(SchoolMember member)
+	{
+		if (member == null || members.Contains(member)) return;
+
+		members.Add(member);
+	}
+
+	public void Unregister(SchoolMember member)
+	{
+		members.Remove(member);
+	}
+	#endregion
+
+	#region School movement
+	// 群れ全体の目標をゆっくり移し、各個体の縄張りの中心として配る
+	private void UpdateCentre()
+	{
+		if (_autoRandomPosition)
+		{
+			repositionTimer -= Time.deltaTime;
+
+			if (repositionTimer <= 0f)
 			{
-				if (_roamers[i] != null)
-				{
-					_roamers[i].Wander(Random.value * _forcedRandomDelay);
-				}
-				else
-				{
-					_roamers.RemoveAt(i);
-				}
-			}	
+				repositionTimer = RandomRepositionTime();
+				centreTarget = transform.position + _posOffset + new Vector3(
+					Random.Range(-_positionSphere, _positionSphere),
+					Random.Range(-_positionSphereHeight, _positionSphereHeight),
+					Random.Range(-_positionSphereDepth, _positionSphereDepth));
+			}
+		}
+
+		schoolCentre = Vector3.MoveTowards(schoolCentre, centreTarget, _centreMoveSpeed * Time.deltaTime);
+
+		Vector3 area = new Vector3(_spawnSphere, _spawnSphereHeight, _spawnSphereDepth);
+
+		for (int i = members.Count - 1; i >= 0; i--)
+		{
+			SchoolMember member = members[i];
+
+			if (member == null)
+			{
+				members.RemoveAt(i);
+				continue;
+			}
+
+			member.Swimmer.SetRoamCenter(schoolCentre);
+			member.Swimmer.SetRoamArea(area);
 		}
 	}
-	
-	public void AutoRandomWaypointPosition() {
-		if(_autoRandomPosition && _activeChildren > 0){
-			SetRandomWaypointPosition();
-		}
-		CancelInvoke(nameof(AutoRandomWaypointPosition));
-		Invoke(nameof(AutoRandomWaypointPosition), RandomWaypointTime());
-	}
-	
-	public float RandomWaypointTime(){
+
+	private float RandomRepositionTime()
+	{
 		return Random.Range(_randomPositionTimerMin, _randomPositionTimerMax);
 	}
+	#endregion
 
-	// Assign leaders randomly from all fish
-	public void AssignLeaders() {
-		if (_leaders == null) _leaders = new List<SchoolChild>();
-		_leaders.Clear();
+	#region Aggregate
+	// 結合と整列に使う値をここで 1 回だけ求める。
+	// 個体ごとに近傍探索すると匹数ぶんクエリが増えるため
+	private void UpdateAggregate()
+	{
+		Vector3 positionSum = Vector3.zero;
+		Vector3 forwardSum = Vector3.zero;
+		int count = 0;
 
-		int leaderCount = Mathf.Max(1, Mathf.RoundToInt(_roamers.Count * _leaderRatio));
-		List<SchoolChild> shuffled = new List<SchoolChild>(_roamers);
+		foreach (SchoolMember member in members)
+		{
+			if (member == null) continue;
 
-		// Fisher-Yates shuffle
-		for (int i = shuffled.Count - 1; i > 0; i--) {
-			int j = Random.Range(0, i + 1);
-			SchoolChild temp = shuffled[i];
-			shuffled[i] = shuffled[j];
-			shuffled[j] = temp;
+			positionSum += member.transform.position;
+			forwardSum += member.transform.forward;
+			count++;
 		}
 
-		// Assign first N fish as leaders
-		for (int i = 0; i < leaderCount && i < shuffled.Count; i++) {
-			if (shuffled[i] != null) {
-				shuffled[i].SetAsLeader(true);
-				_leaders.Add(shuffled[i]);
-			}
-		}
+		if (count == 0) return;
 
-		// Rest are followers
-		for (int i = leaderCount; i < shuffled.Count; i++) {
-			if (shuffled[i] != null) {
-				shuffled[i].SetAsLeader(false);
-			}
-		}
+		centroid = positionSum / count;
+		averageForward = forwardSum / count;
+
+		if (averageForward.sqrMagnitude > 0.0001f) averageForward.Normalize();
 	}
+	#endregion
 
-	// Update leader rotation timer
-	private void UpdateLeaderRotation() {
-		if (!_leaderFollow || _activeChildren == 0) return;
-
-		_leaderChangeTimer += Time.deltaTime;
-
-		if (_leaderChangeTimer >= _leaderChangeInterval) {
-			_leaderChangeTimer = 0.0f;
-			AssignLeaders();
-		}
-	}
-
-	// Set threat level and target parameters
-	public void SetThreatLevel(ThreatLevel level) {
-		if (_currentThreatLevel == level) return;
-
-		_currentThreatLevel = level;
-
-		// Set target values based on threat level
-		switch (level) {
-			case ThreatLevel.None:
-				_targetSpeedMultiplier = _noneSpeedMultiplier;
-				_targetSeparationWeight = _noneSeparationWeight;
-				_targetCohesionWeight = _noneCohesionWeight;
-				_targetSpawnSphereMultiplier = _noneSpawnSphereMultiplier;
-				break;
-			case ThreatLevel.Low:
-				_targetSpeedMultiplier = _lowSpeedMultiplier;
-				_targetSeparationWeight = _lowSeparationWeight;
-				_targetCohesionWeight = _lowCohesionWeight;
-				_targetSpawnSphereMultiplier = _lowSpawnSphereMultiplier;
-				break;
-			case ThreatLevel.High:
-				_targetSpeedMultiplier = _highSpeedMultiplier;
-				_targetSeparationWeight = _highSeparationWeight;
-				_targetCohesionWeight = _highCohesionWeight;
-				_targetSpawnSphereMultiplier = _highSpawnSphereMultiplier;
-				break;
-		}
-	}
-
-	// Detect threats using size-based comparison
-	private void DetectThreats() {
-		if (!_dynamicDensity) return;
-
-		// If fear nothing setting, skip detection
-		if (_schoolThreatThreshold < 0) {
-			SetThreatLevel(ThreatLevel.None);
-			_hasThreat = false;
+	#region Threat
+	private void UpdateThreat()
+	{
+		if (!_detectThreat || _schoolThreatThreshold < 0f)
+		{
+			hasThreat = false;
 			return;
 		}
 
-		Collider[] colliders = Physics.OverlapSphere(
-			_posBuffer,
-			_threatDetectionRadius
-		);
+		threatCounter++;
+		if (threatCounter < _threatDetectionInterval) return;
 
-		float closestThreatDistanceSqr = float.MaxValue;
-		bool foundThreat = false;
-		Vector3 closestThreatPosition = Vector3.zero;
+		threatCounter = 0;
 
-		foreach (Collider collider in colliders) {
-			// Only check objects with ILivingEntity
-			if (!collider.TryGetComponent<Blue.Interface.ILivingEntity>(out Blue.Interface.ILivingEntity entity)) continue;
+		int count = Physics.OverlapSphereNonAlloc(centroid, _threatDetectionRadius, threatBuffer,
+			~0, QueryTriggerInteraction.Ignore);
 
-			// Only consider entities larger than threshold as threats
+		float nearestSqr = float.MaxValue;
+		hasThreat = false;
+
+		for (int i = 0; i < count; i++)
+		{
+			// 分割されたコライダーでも所有者へ解決する
+			if (!EntityHit.TryResolve(threatBuffer[i], out ILivingEntity entity)) continue;
 			if (entity.Size <= _schoolThreatThreshold) continue;
 
-			// Use sqrMagnitude to avoid expensive Sqrt operation
-			float distanceSqr = (collider.transform.position - _posBuffer).sqrMagnitude;
-			if (distanceSqr < closestThreatDistanceSqr) {
-				closestThreatDistanceSqr = distanceSqr;
-				closestThreatPosition = collider.transform.position;
-				foundThreat = true;
-			}
-		}
+			Vector3 position = threatBuffer[i].transform.position;
+			float distanceSqr = (position - centroid).sqrMagnitude;
 
-		if (foundThreat) {
-			_hasThreat = true;
-			_threatPosition = closestThreatPosition;
+			if (distanceSqr >= nearestSqr) continue;
 
-			// Set threat level based on distance (using squared distances for performance)
-			float highThresholdSqr = (_threatDetectionRadius * 0.3f) * (_threatDetectionRadius * 0.3f);
-			float lowThresholdSqr = (_threatDetectionRadius * 0.7f) * (_threatDetectionRadius * 0.7f);
-
-			if (closestThreatDistanceSqr < highThresholdSqr) {
-				SetThreatLevel(ThreatLevel.High);  // Very close
-			} else if (closestThreatDistanceSqr < lowThresholdSqr) {
-				SetThreatLevel(ThreatLevel.Low);   // Somewhat close
-			} else {
-				SetThreatLevel(ThreatLevel.None);  // Far away
-			}
-		} else {
-			SetThreatLevel(ThreatLevel.None);
-			_hasThreat = false;
+			nearestSqr = distanceSqr;
+			threatPosition = position;
+			hasThreat = true;
 		}
 	}
+	#endregion
 
-	// Smoothly transition parameters to target values
-	private void UpdateDynamicParameters() {
-		if (!_dynamicDensity) return;
+	private void OnDrawGizmosSelected()
+	{
+		Vector3 centre = Application.isPlaying ? schoolCentre : transform.position + _posOffset;
 
-		float t = _transitionSpeed * Time.deltaTime;
+		// 個体が泳ぐ範囲
+		Gizmos.color = Color.cyan;
+		Gizmos.DrawWireCube(centre, new Vector3(_spawnSphere, _spawnSphereHeight, _spawnSphereDepth) * 2f);
 
-		// Lerp to target values
-		_childSpeedMultipler = Mathf.Lerp(_childSpeedMultipler, _targetSpeedMultiplier, t);
-		_separationWeight = Mathf.Lerp(_separationWeight, _targetSeparationWeight, t);
-		_cohesionWeight = Mathf.Lerp(_cohesionWeight, _targetCohesionWeight, t);
+		// 群れの中心が動ける範囲
+		Gizmos.color = new Color(0.3f, 0.5f, 1f, 0.5f);
+		Gizmos.DrawWireCube(transform.position + _posOffset,
+			new Vector3(_positionSphere, _positionSphereHeight, _positionSphereDepth) * 2f);
 
-		// Dynamically adjust spawn sphere range
-		float targetSpawnSphere = _baseSpawnSphere * _targetSpawnSphereMultiplier;
-		_spawnSphere = Mathf.Lerp(_spawnSphere, targetSpawnSphere, t);
-	}
+		if (!Application.isPlaying) return;
 
-	public void OnDrawGizmos() {
-		if(!Application.isPlaying && _posBuffer != transform.position+ _posOffset) _posBuffer = transform.position + _posOffset;
-	   	Gizmos.color = Color.blue;
-		Gizmos.DrawWireCube (_posBuffer, new Vector3(_spawnSphere*2, _spawnSphereHeight*2 ,_spawnSphereDepth*2));
-	    Gizmos.color = Color.cyan;
-	    Gizmos.DrawWireCube (transform.position, new Vector3((_positionSphere*2)+_spawnSphere*2, (_positionSphereHeight*2)+_spawnSphereHeight*2 ,(_positionSphereDepth*2)+_spawnSphereDepth*2));
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(centroid, 0.4f);
+		Gizmos.DrawRay(centroid, averageForward * 2f);
+
+		if (!hasThreat) return;
+
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine(centroid, threatPosition);
 	}
 }

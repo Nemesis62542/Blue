@@ -338,6 +338,15 @@ namespace Blue.Entity.Common
         /// <summary>
         /// 縄張りの中心を設定する
         /// </summary>
+        /// <summary>
+        /// 縄張りの広がりを設定する
+        /// </summary>
+        // 群れのように、外側が形を決めて全員へ配る使い方をするため公開している
+        public void SetRoamArea(Vector3 area)
+        {
+            roamArea = area;
+        }
+
         public void SetRoamCenter(Vector3 center)
         {
             roamCenter = center;
