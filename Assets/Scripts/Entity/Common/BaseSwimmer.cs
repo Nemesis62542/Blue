@@ -30,6 +30,7 @@ namespace Blue.Entity.Common
         [SerializeField, Range(0f, 0.9f)] private float turnVariation = 0.4f;
         [SerializeField] private float accelerationRate = 1.0f;
         [SerializeField] private float decelerationRate = 0.4f; // 加速より遅くして惰性を出す
+        [SerializeField, Range(1f, 4f)] private float lowSpeedTurnBonus = 1.5f;
 
         [Header("Avoidance Settings")]
         [SerializeField] private bool useAvoidance = true;
@@ -281,6 +282,16 @@ namespace Blue.Entity.Common
             SetMode(SwimMode.Idle);
         }
 
+        // 速いほど大きく回り、遅いほど小回りが利く。
+        // 減速側ではなく低速側に上乗せする形にしてあるので、全速時の旋回性能は
+        // rotationSpeed のまま変わらない。周回の安全条件を悪化させないため
+        private float GetTurnRate()
+        {
+            float speedRatio = moveSpeed > Mathf.Epsilon ? Mathf.Clamp01(currentSpeed / moveSpeed) : 0f;
+
+            return currentTurnSpeed * Mathf.Lerp(lowSpeedTurnBonus, 1f, speedRatio);
+        }
+
         // 最も曲がれない組み合わせ（最大速度 × 最遅旋回）での旋回半径。
         // 到達判定がこれを下回ると、その差の帯に入ったとき目標の周りを回り続ける
         private float WorstCaseTurnRadius()
@@ -429,7 +440,7 @@ namespace Blue.Entity.Common
             Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up)
                                         * Quaternion.Euler(0f, 0f, UpdateBank(smoothedHeading));
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation,
-                SmoothingFactor(currentTurnSpeed, Time.deltaTime));
+                SmoothingFactor(GetTurnRate(), Time.deltaTime));
 
             // 加速と減速でレートを分ける。減速を遅くすると惰性が出る
             float goalSpeed = targetSpeed * speedFactor * speedScale;
