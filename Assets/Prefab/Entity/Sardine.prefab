@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 11.00777
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.009
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.1157365
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_LocalRotation.w
@@ -63,6 +63,14 @@ PrefabInstance:
     - target: {fileID: -5569988501944410693, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: -3081994679161391779, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3081994679161391779, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2641955852382473295, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_Layer
@@ -124,10 +132,18 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 16
       objectReference: {fileID: 0}
+    - target: {fileID: 2664098864995057252, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: efad3c6bf2e324647aa91a628b35965f, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      propertyPath: m_CullingMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5945620190058138965, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -158,9 +174,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 630366693248861759}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 3132390381221870316}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       insertIndex: -1
@@ -168,30 +181,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6045110964322779317}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8278091426349568703}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9074039352754460322}
   m_SourcePrefab: {fileID: 100100000, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
---- !u!4 &1186156147288127747 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
-  m_PrefabInstance: {fileID: 1728445225002360552}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1962938419427500985 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
   m_PrefabInstance: {fileID: 1728445225002360552}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &630366693248861759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1962938419427500985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01b67c8c535019d47ba387e88bd5adcd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scanner: {fileID: 1186156147288127747}
 --- !u!114 &3132390381221870316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,6 +241,88 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2, y: 0.3, z: 1.2}
   m_Center: {x: 0, y: 0.25, z: 0}
+--- !u!114 &8278091426349568703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962938419427500985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe30b2726165f854ea9bffd7cbb3cf68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.BaseSwimmer
+  moveSpeed: 5
+  rotationSpeed: 2
+  turnSmoothing: 4
+  waypointDistance: 5.5
+  maxPitchAngle: 60
+  maintainCruise: 1
+  wanderStrength: 0.15
+  wanderFrequency: 0.3
+  maxBankAngle: 25
+  maxPitchOffset: 12
+  bankResponse: 3
+  speedVariation: 0.8
+  turnVariation: 0.5
+  accelerationRate: 1
+  decelerationRate: 0.4
+  lowSpeedTurnBonus: 1.5
+  useAvoidance: 1
+  avoidDistance: 1
+  avoidProbeRadius: 0.25
+  avoidanceMask:
+    serializedVersion: 2
+    m_Bits: 320
+  avoidAlignmentWeight: 0.5
+  avoidHysteresis: 0.25
+  avoidMinSpeedFactor: 0.25
+  queryInterval: 16
+  pushDistance: 1
+  pushForce: 2
+  useSeparation: 1
+  separationRadius: 0.5
+  separationWeight: 1
+  separationMask:
+    serializedVersion: 2
+    m_Bits: 128
+  separationInterval: 0.1
+  roamCenterFromSpawnPosition: 1
+  roamCenter: {x: 0, y: 0, z: 0}
+  roamArea: {x: 5, y: 2, z: 5}
+  useMigration: 0
+  migrationRange: {x: 20, y: 5, z: 20}
+  migrationSpeed: 0.5
+  migrationIntervalRange: {x: 15, y: 30}
+  waypointAttempts: 12
+  waypointClearance: 0.5
+  requireClearPath: 1
+  stuckToleranceGrowth: 0.5
+  roamHeadingLimit: 120
+  showGizmos: 1
+  alwaysShowGizmos: 0
+  showRoamArea: 1
+  showWaypoint: 1
+  showReachability: 1
+  showAvoidanceRays: 1
+  showSeparation: 1
+  showTrail: 1
+  showLabels: 1
+  trailSeconds: 12
+  labelHeightOffset: 0.6
+--- !u!114 &9074039352754460322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962938419427500985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eacdbbf74ef9e1f4b8881e9a590a3c70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Entity.Common.SchoolMember
 --- !u!137 &3676181991406002316 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2664098864995057252, guid: 2153a738256e65240814bc58e6e9f427, type: 3}
