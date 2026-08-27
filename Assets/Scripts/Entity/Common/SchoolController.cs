@@ -51,9 +51,12 @@ public class SchoolController : MonoBehaviour
 	public float _threatDetectionRadius = 10.0f;
 	public float _fleeWeight = 3.0f;
 	public int _threatDetectionInterval = 5;
+	public LayerMask _threatMask = ~0;
 
 	private readonly List<SchoolMember> members = new List<SchoolMember>();
-	private readonly Collider[] threatBuffer = new Collider[32];
+	private const int MaxThreatBuffer = 512;
+
+	private Collider[] threatBuffer = new Collider[64];
 
 	private Vector3 schoolCentre;
 	private Vector3 centreTarget;
@@ -242,8 +245,7 @@ public class SchoolController : MonoBehaviour
 
 		threatCounter = 0;
 
-		int count = Physics.OverlapSphereNonAlloc(centroid, _threatDetectionRadius, threatBuffer,
-			~0, QueryTriggerInteraction.Ignore);
+		int count = QueryThreatCandidates();
 
 		float nearestSqr = float.MaxValue;
 		hasThreat = false;
@@ -252,6 +254,11 @@ public class SchoolController : MonoBehaviour
 		{
 			// 分割されたコライダーでも所有者へ解決する
 			if (!EntityHit.TryResolve(threatBuffer[i], out ILivingEntity entity)) continue;
+
+			// 仲間は脅威にならない。大きさの比較だけに頼ると、
+			// _schoolThreatSize を閾値より大きくした瞬間に自分自身から逃げ出す
+			if (entity is SchoolMember member && member.School == this) continue;
+
 			if (entity.Size <= _schoolThreatThreshold) continue;
 
 			Vector3 position = threatBuffer[i].transform.position;
@@ -262,6 +269,29 @@ public class SchoolController : MonoBehaviour
 			nearestSqr = distanceSqr;
 			threatPosition = position;
 			hasThreat = true;
+		}
+	}
+
+	// バッファが埋まると結果は切り捨てられる。群れは検出範囲の中に数百のコライダーを
+	// 持つので、仲間だけでバッファが埋まって脅威が一度も入らない。
+	// 絞り込みはヒットを受け取った後にしかできないため、埋まったら広げて撃ち直す
+	private int QueryThreatCandidates()
+	{
+		while (true)
+		{
+			int count = Physics.OverlapSphereNonAlloc(centroid, _threatDetectionRadius, threatBuffer,
+				_threatMask, QueryTriggerInteraction.Ignore);
+
+			if (count < threatBuffer.Length) return count;
+
+			if (threatBuffer.Length >= MaxThreatBuffer)
+			{
+				Debug.LogWarning($"[SchoolController] {name}: 脅威検出のバッファ({MaxThreatBuffer})が埋まりました。" +
+				                 "検出範囲を狭めるか、_threatMask で仲間のレイヤーを除いてください。", this);
+				return count;
+			}
+
+			threatBuffer = new Collider[threatBuffer.Length * 2];
 		}
 	}
 	#endregion
