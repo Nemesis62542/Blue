@@ -237,7 +237,7 @@ MonoBehaviour:
   avoidProbeRadius: 0.25
   avoidanceMask:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 448
   avoidAlignmentWeight: 0.5
   avoidHysteresis: 0.25
   avoidMinSpeedFactor: 0.25
