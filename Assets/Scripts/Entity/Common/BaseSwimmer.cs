@@ -42,6 +42,10 @@ namespace Blue.Entity.Common
         [SerializeField, Range(0f, 1f)] private float avoidHysteresis = 0.25f;
         [SerializeField, Range(0f, 1f)] private float avoidMinSpeedFactor = 0.25f;
 
+        // 探索を何フレームに 1 回にするか。移動と回転は毎フレーム動くので、
+        // 増やしても動きは滑らかなまま。反応が遅れるだけ
+        [SerializeField, Range(1, 16)] private int queryInterval = 1;
+
         [Header("Push Settings")]
         [SerializeField] private float pushDistance = 1.0f;
         [SerializeField] private float pushForce = 2.0f;
@@ -126,6 +130,11 @@ namespace Blue.Entity.Common
         private float migrationTimer;
         private float forwardHitDistance = float.PositiveInfinity;
         private bool forwardProbeValid;
+        private int queryPhase;
+        private int queryCounter;
+        private bool queryDue = true;
+        private bool avoidActive;
+        private float cachedSpeedFactor = 1f;
 
         /// <summary>
         /// 現在の駆動状態
@@ -201,6 +210,8 @@ namespace Blue.Entity.Common
             smoothedHeading = MotionForward;
             currentTurnSpeed = targetTurnSpeed;
 
+            queryPhase = UnityEngine.Random.Range(0, 16);
+
             CacheOwnColliders();
 
             // 行動を明示されていない個体は徘徊させる
@@ -209,6 +220,11 @@ namespace Blue.Entity.Common
 
         protected virtual void Update()
         {
+            // 個体ごとに位相をずらし、フレームあたりのクエリ数を平準化する。
+            // 全員が同じフレームで探索すると、間引いても山が残る
+            queryCounter++;
+            queryDue = queryInterval <= 1 || (queryCounter + queryPhase) % queryInterval == 0;
+
             // 前方プローブは回避が撃つ。撃たれなかったフレームは押し戻し側が自前で撃つ
             forwardProbeValid = false;
 
@@ -756,6 +772,14 @@ namespace Blue.Entity.Common
             speedFactor = 1f;
             if (!useAvoidance) return desired;
 
+            // 探索しないフレームは前回の判断を使い回す。障害物は数フレームで
+            // 消えたり現れたりしないので、遅れても破綻しない
+            if (!queryDue)
+            {
+                speedFactor = cachedSpeedFactor;
+                return avoidActive ? lastAvoidDirection : desired;
+            }
+
             Vector3 position = transform.position;
 
             // 前方が空いていれば探索しない。通常遊泳時のコストを 1 クエリに抑えるための門番
@@ -768,6 +792,8 @@ namespace Blue.Entity.Common
             if (!blocked)
             {
                 lastAvoidDirection = Vector3.zero;
+                avoidActive = false;
+                cachedSpeedFactor = 1f;
                 return desired;
             }
 
@@ -800,6 +826,8 @@ namespace Blue.Entity.Common
             }
 
             lastAvoidDirection = bestDirection;
+            avoidActive = true;
+            cachedSpeedFactor = speedFactor;
             return bestDirection;
         }
 
