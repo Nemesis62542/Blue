@@ -151,6 +151,21 @@ namespace Blue.Entity
             ReleaseThreat();
         }
 
+        // 逃走が終わってもまだ相手が範囲内に居る場合に、威嚇からやり直す
+        private void ResumeIntimidate()
+        {
+            // 捕獲などで相手が消えていれば追跡をやめる
+            if (!(threateningEntity is MonoBehaviour behaviour) || behaviour == null)
+            {
+                ReleaseThreat();
+                return;
+            }
+
+            SetState(CuttleFishModel.CuttleFishState.Intimidate);
+            view.SetAnimatorIntimidate(true);
+            swimmer.SetBehaviour(new FaceTargetBehaviour(behaviour.transform, rotateAwayFromThreat));
+        }
+
         private void ReleaseThreat()
         {
             threateningEntity = null;
@@ -181,15 +196,20 @@ namespace Blue.Entity
                 escapeSpeedScale,
                 () =>
                 {
-                    SetState(CuttleFishModel.CuttleFishState.Dim);
                     isSpitting = false;
                     intimidateTimer = 0f;
 
-                    // 逃げ切る前に相手が範囲外へ出ていると OnTriggerExit が走らないため、
-                    // ここでも脅威を解除しておかないと二度と威嚇できなくなる
-                    threateningEntity = null;
-                    threatColliderCount = 0;
+                    // 逃げ切れていれば OnTriggerExit が脅威を解除済み。
+                    // まだ範囲内に居座られている場合、Unity は一度出るまで
+                    // OnTriggerEnter を再発行しないので、ここで威嚇へ戻さないと
+                    // 目の前の相手を無視し続けることになる
+                    if (threateningEntity != null)
+                    {
+                        ResumeIntimidate();
+                        return;
+                    }
 
+                    SetState(CuttleFishModel.CuttleFishState.Dim);
                     EnterIdleCycle();
                 }));
 
