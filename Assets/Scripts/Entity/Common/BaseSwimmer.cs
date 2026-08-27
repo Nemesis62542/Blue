@@ -21,6 +21,7 @@ namespace Blue.Entity.Common
         [SerializeField, Range(0f, 1f)] private float wanderStrength = 0.15f;
         [SerializeField] private float wanderFrequency = 0.3f;
         [SerializeField, Range(0f, 80f)] private float maxBankAngle = 25f;
+        [SerializeField, Range(0f, 45f)] private float maxPitchOffset = 12f;
         [SerializeField] private float bankResponse = 3.0f;
 
         // moveSpeed / rotationSpeed を上限として、目的地ごとに実際の値を引き直す。
@@ -110,6 +111,8 @@ namespace Blue.Entity.Common
         private SwimMode mode = SwimMode.Idle;
         private int destinationVersion;
         private float currentBank;
+        private float currentPitchOffset;
+        private Quaternion motionRotation = Quaternion.identity;
         private float wanderSeed;
         private bool roamCenterOverridden;
         private Vector3 steeringAccumulator;
@@ -136,6 +139,10 @@ namespace Blue.Entity.Common
         /// 縄張りの中心
         /// </summary>
         public Vector3 RoamCenter => roamCenter;
+
+        // 見た目に乗せる傾き（バンク・機首上げ下げ）を含まない、移動に使う向き。
+        // transform.forward を使うと、姿勢のための傾きが進行方向へ混ざってしまう
+        private Vector3 MotionForward => motionRotation * Vector3.forward;
 
         /// <summary>
         /// 移動状態が変化したときに通知する。遊泳アニメの切り替えに使う
@@ -178,6 +185,8 @@ namespace Blue.Entity.Common
                 roamCenter = transform.position;
             }
 
+            motionRotation = transform.rotation;
+
             // 回遊の基準。roamCenter は動くが、こちらは動かさない
             homeCenter = roamCenter;
             migrationTarget = roamCenter;
@@ -187,7 +196,7 @@ namespace Blue.Entity.Common
 
             RerollMotionParameters();
 
-            smoothedHeading = transform.forward;
+            smoothedHeading = MotionForward;
             currentTurnSpeed = targetTurnSpeed;
 
             CacheOwnColliders();
@@ -375,15 +384,19 @@ namespace Blue.Entity.Common
 
         private void UpdateFace()
         {
-            // その場で向きを変えるだけなので水平に戻す
-            currentBank = Mathf.Lerp(currentBank, 0f, bankResponse * Time.deltaTime);
+            // その場で向きを変えるだけなので、傾きは水平へ戻す
+            float response = bankResponse * Time.deltaTime;
+            currentBank = Mathf.Lerp(currentBank, 0f, response);
+            currentPitchOffset = Mathf.Lerp(currentPitchOffset, 0f, response);
 
             smoothedHeading = SmoothDirection(smoothedHeading, ClampPitch(faceDirection), turnSmoothing);
 
             // 意図して相手に向き直る動作なので、旋回性能は抽選値ではなく上限を使う
             Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation,
+            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
                 SmoothingFactor(rotationSpeed, Time.deltaTime));
+
+            transform.rotation = motionRotation * Quaternion.Euler(currentPitchOffset, 0f, currentBank);
         }
 
         // フレームレートに依存しない指数平滑の係数。rate * deltaTime を直に渡すと
@@ -419,7 +432,7 @@ namespace Blue.Entity.Common
             }
 
             Vector3 desired = destination - transform.position;
-            desired = desired.sqrMagnitude > 0.0001f ? desired.normalized : transform.forward;
+            desired = desired.sqrMagnitude > 0.0001f ? desired.normalized : MotionForward;
 
             // 障害物より先にゆらぎと操舵力を乗せる。回避はその結果を見たうえで上書きできる
             desired = ApplyWander(desired);
@@ -437,17 +450,20 @@ namespace Blue.Entity.Common
             currentTurnSpeed = Mathf.MoveTowards(currentTurnSpeed, targetTurnSpeed,
                 rotationSpeed * turnSmoothing * Time.deltaTime);
 
-            Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up)
-                                        * Quaternion.Euler(0f, 0f, UpdateBank(smoothedHeading));
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation,
+            // 進行方向は motionRotation が持ち、見せかけの傾きは transform だけに乗せる
+            Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up);
+            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
                 SmoothingFactor(GetTurnRate(), Time.deltaTime));
+
+            transform.rotation = motionRotation * Quaternion.Euler(
+                UpdatePitchOffset(smoothedHeading), 0f, UpdateBank(smoothedHeading));
 
             // 加速と減速でレートを分ける。減速を遅くすると惰性が出る
             float goalSpeed = targetSpeed * speedFactor * speedScale;
             float rate = goalSpeed > currentSpeed ? accelerationRate : decelerationRate;
             currentSpeed = Mathf.MoveTowards(currentSpeed, goalSpeed, moveSpeed * rate * Time.deltaTime);
 
-            transform.position += transform.forward * currentSpeed * Time.deltaTime;
+            transform.position += MotionForward * currentSpeed * Time.deltaTime;
         }
 
         // 縄張りの中心を少しずつ移す。中心が固定だと、どれだけ動きを作り込んでも
@@ -559,13 +575,27 @@ namespace Blue.Entity.Common
             return (direction + offset * (wanderStrength * 2f)).normalized;
         }
 
+        // 昇り降りの分だけ余分に機首を上げ下げする。経路と体の向きをわずかにずらすことで、
+        // 上下移動が「進行方向を向いているだけ」ではなく姿勢として見える。
+        // transform にしか乗せないので、進行方向そのものには影響しない
+        private float UpdatePitchOffset(Vector3 heading)
+        {
+            if (maxPitchOffset <= 0f) return 0f;
+
+            // 上昇時は機首上げ ＝ ローカル X 軸まわりの負回転
+            float target = -Mathf.Clamp(heading.y, -1f, 1f) * maxPitchOffset;
+            currentPitchOffset = Mathf.Lerp(currentPitchOffset, target, bankResponse * Time.deltaTime);
+
+            return currentPitchOffset;
+        }
+
         // 旋回方向へ機体を傾ける。水平面での向きのズレを傾き量に写す。
         // 前方軸まわりの回転なので進行方向そのものには影響しない
         private float UpdateBank(Vector3 heading)
         {
             if (maxBankAngle <= 0f) return 0f;
 
-            Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
+            Vector3 flatForward = Vector3.ProjectOnPlane(MotionForward, Vector3.up);
             Vector3 flatHeading = Vector3.ProjectOnPlane(heading, Vector3.up);
 
             float targetBank = 0f;
@@ -588,7 +618,7 @@ namespace Blue.Entity.Common
         private Vector3 ClampPitch(Vector3 direction)
         {
             Vector3 flat = new Vector3(direction.x, 0f, direction.z);
-            if (flat.sqrMagnitude < 0.0001f) return transform.forward;
+            if (flat.sqrMagnitude < 0.0001f) return MotionForward;
 
             float maxRise = flat.magnitude * Mathf.Tan(maxPitchAngle * Mathf.Deg2Rad);
             float rise = Mathf.Clamp(direction.y, -maxRise, maxRise);
@@ -651,7 +681,7 @@ namespace Blue.Entity.Common
                 );
 
                 if (headingLimit < 180f &&
-                    Vector3.Angle(transform.forward, candidate - origin) > headingLimit)
+                    Vector3.Angle(MotionForward, candidate - origin) > headingLimit)
                 {
                     continue;
                 }
@@ -682,14 +712,14 @@ namespace Blue.Entity.Common
         private Vector3 FindFallbackWaypoint(Vector3 origin)
         {
             float reach = Mathf.Max(waypointDistance * 2f, 0.01f);
-            Vector3 candidate = ClampToRoamArea(origin + transform.forward * reach);
+            Vector3 candidate = ClampToRoamArea(origin + MotionForward * reach);
 
             // 範囲の端で外を向いていると、丸めた結果が到達判定内に落ちて毎フレーム
             // 抽選し直す状態になりうる。その場合は範囲の内側へ向け直す
             if (Vector3.Distance(origin, candidate) >= reach * 0.5f) return candidate;
 
             Vector3 inward = roamCenter - origin;
-            if (inward.sqrMagnitude < 0.0001f) inward = transform.forward;
+            if (inward.sqrMagnitude < 0.0001f) inward = MotionForward;
 
             return ClampToRoamArea(origin + inward.normalized * reach);
         }
@@ -715,7 +745,7 @@ namespace Blue.Entity.Common
             Vector3 position = transform.position;
 
             // 前方が空いていれば探索しない。通常遊泳時のコストを 1 クエリに抑えるための門番
-            if (!Probe(position, transform.forward, avoidDistance, out RaycastHit blocker))
+            if (!Probe(position, MotionForward, avoidDistance, out RaycastHit blocker))
             {
                 lastAvoidDirection = Vector3.zero;
                 return desired;
@@ -757,7 +787,7 @@ namespace Blue.Entity.Common
         {
             if (index < ProbeDirections.Length)
             {
-                return transform.rotation * ProbeDirections[index];
+                return motionRotation * ProbeDirections[index];
             }
 
             // 衝突面から導出する候補。壁は「跳ね返る」のではなく「沿って滑る」のが自然
@@ -834,7 +864,7 @@ namespace Blue.Entity.Common
 
         private void TryPushBack()
         {
-            Vector3 forward = transform.forward;
+            Vector3 forward = MotionForward;
 
             if (!Probe(transform.position, forward, pushDistance, out RaycastHit hit))
             {
@@ -1045,11 +1075,11 @@ namespace Blue.Entity.Common
         {
             // 押し戻しは回避とは独立に毎フレーム走るので、回避が無効でも表示する
             Gizmos.color = ColorPush;
-            Gizmos.DrawRay(position, transform.forward * pushDistance);
+            Gizmos.DrawRay(position, MotionForward * pushDistance);
 
             if (!useAvoidance) return;
 
-            Vector3 forward = transform.forward;
+            Vector3 forward = MotionForward;
 
             // 扇状スキャンを起動するかを決める門番プローブ
             bool blocked = Probe(position, forward, avoidDistance, out RaycastHit blocker);
@@ -1143,7 +1173,7 @@ namespace Blue.Entity.Common
 
                 if (lastAvoidDirection.sqrMagnitude > 0.0001f)
                 {
-                    float deviation = Vector3.Angle(transform.forward, lastAvoidDirection);
+                    float deviation = Vector3.Angle(MotionForward, lastAvoidDirection);
                     text += $"\n<color=#70FFF0>回避中 偏角 {deviation:F0}°</color>";
                 }
 
