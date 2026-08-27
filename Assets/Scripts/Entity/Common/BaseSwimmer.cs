@@ -228,7 +228,7 @@ namespace Blue.Entity.Common
             queryCounter++;
             queryDue = queryInterval <= 1 || (queryCounter + queryPhase) % queryInterval == 0;
 
-            // 前方プローブは回避が撃つ。撃たれなかったフレームは押し戻し側が自前で撃つ
+            // 回避がこのフレームに前方を測ったか。測っていなければ押し戻し側が補う
             forwardProbeValid = false;
 
             UpdateMigration();
@@ -863,20 +863,20 @@ namespace Blue.Entity.Common
         // 押し戻しの距離が回避の探索距離を超える設定のときだけ、別途撃つ
         private bool TryGetForwardDistance(Vector3 forward, out float distance)
         {
-            if (forwardProbeValid && pushDistance <= avoidDistance)
+            // 回避がこのフレームに測っていない、かつ回避の測定では足りない場合だけ自前で撃つ。
+            // 間引かれたフレームでは前回の値を使う。ここで毎回撃つと間引きが無効になる
+            bool needsOwnProbe = !forwardProbeValid && (!useAvoidance || pushDistance > avoidDistance);
+
+            if (needsOwnProbe && queryDue)
             {
-                distance = forwardHitDistance;
-                return !float.IsPositiveInfinity(distance);
+                forwardHitDistance = Probe(transform.position, forward, pushDistance, out RaycastHit hit)
+                    ? hit.distance
+                    : float.PositiveInfinity;
             }
 
-            if (Probe(transform.position, forward, pushDistance, out RaycastHit hit))
-            {
-                distance = hit.distance;
-                return true;
-            }
+            distance = forwardHitDistance;
 
-            distance = float.PositiveInfinity;
-            return false;
+            return !float.IsPositiveInfinity(distance);
         }
 
         // 自分のコライダーを除いた最寄りのヒットを返す。
