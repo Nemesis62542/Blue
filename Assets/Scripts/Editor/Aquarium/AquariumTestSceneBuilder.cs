@@ -62,8 +62,9 @@ namespace Blue.Editor
             RemoveLegacyObjects();
             CreateGround(room_size);
             EnsurePlayerInput();
-            BuildAquariumObjects(floor, tanks, room_size);
+            AquariumSceneBootstrap bootstrap = BuildAquariumObjects(floor, tanks, room_size);
             MovePlayerToViewpoint(room_size);
+            BuildEditMode(bootstrap, tanks, room_size);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -335,7 +336,7 @@ namespace Blue.Editor
             return count;
         }
 
-        private static void BuildAquariumObjects(AquariumFloorData floor, List<TankPieceData> tanks, Vector2Int room_size)
+        private static AquariumSceneBootstrap BuildAquariumObjects(AquariumFloorData floor, List<TankPieceData> tanks, Vector2Int room_size)
         {
             GameObject owner = new GameObject("Aquarium");
             GameObject pieces_root = new GameObject("Pieces");
@@ -380,6 +381,72 @@ namespace Blue.Editor
             placer_object.ApplyModifiedProperties();
 
             Debug.Log($"水槽を {tanks.Count} 台ぶん配置指定しました（セル 0〜{cell_x} / 部屋は {room_size.x}x{room_size.y}）");
+
+            return bootstrap;
+        }
+
+        /// <summary>
+        /// 俯瞰の編集モード一式を組み、見学との切り替えを繋ぐ
+        /// </summary>
+        private static void BuildEditMode(AquariumSceneBootstrap bootstrap, List<TankPieceData> tanks, Vector2Int room_size)
+        {
+            if (bootstrap == null) return;
+
+            GameObject edit_rig = new GameObject("EditRig");
+
+            GameObject camera_owner = new GameObject("EditCamera");
+            camera_owner.transform.SetParent(edit_rig.transform);
+            camera_owner.AddComponent<Camera>();
+
+            // 見学側のプレイヤーごと無効になるので、こちらにも用意しないと音が止まる
+            camera_owner.AddComponent<AudioListener>();
+
+            AquariumEditCamera edit_camera = camera_owner.AddComponent<AquariumEditCamera>();
+
+            // 下見はカメラの子にしない。カメラと一緒に動いたように見えて紛らわしい
+            GameObject ghost_owner = new GameObject("PlacementGhost");
+            ghost_owner.transform.SetParent(edit_rig.transform);
+            PlacementGhost ghost = ghost_owner.AddComponent<PlacementGhost>();
+
+            AquariumEditController controller = edit_rig.AddComponent<AquariumEditController>();
+
+            Vector3 room_center = new Vector3(
+                room_size.x * AquariumGrid.CELL_SIZE * 0.5f, 0f, room_size.y * AquariumGrid.CELL_SIZE * 0.5f);
+
+            SerializedObject camera_object = new SerializedObject(edit_camera);
+            camera_object.FindProperty("initialFocus").vector3Value = room_center;
+            camera_object.FindProperty("initialHeight").floatValue = Mathf.Max(room_size.x, room_size.y) * 0.6f;
+            camera_object.ApplyModifiedProperties();
+
+            SerializedObject controller_object = new SerializedObject(controller);
+            controller_object.FindProperty("bootstrap").objectReferenceValue = bootstrap;
+            controller_object.FindProperty("editCamera").objectReferenceValue = edit_camera;
+            controller_object.FindProperty("view").objectReferenceValue = camera_owner.GetComponent<Camera>();
+            controller_object.FindProperty("ghost").objectReferenceValue = ghost;
+
+            SerializedProperty palette = controller_object.FindProperty("palette");
+            palette.arraySize = tanks.Count;
+            for (int i = 0; i < tanks.Count; i++)
+            {
+                palette.GetArrayElementAtIndex(i).objectReferenceValue = tanks[i];
+            }
+
+            controller_object.ApplyModifiedProperties();
+
+            AquariumModeController mode = bootstrap.gameObject.AddComponent<AquariumModeController>();
+            CharacterMovementController player = UnityEngine.Object.FindFirstObjectByType<CharacterMovementController>();
+
+            SerializedObject mode_object = new SerializedObject(mode);
+            mode_object.FindProperty("bootstrap").objectReferenceValue = bootstrap;
+            mode_object.FindProperty("viewRig").objectReferenceValue = player != null ? player.gameObject : null;
+            mode_object.FindProperty("editRig").objectReferenceValue = edit_rig;
+            mode_object.FindProperty("editController").objectReferenceValue = controller;
+            mode_object.ApplyModifiedProperties();
+
+            // 開始時は見学。Start で切り替わるが、シーン上でも合わせておく
+            edit_rig.SetActive(false);
+
+            Debug.Log("編集モードを組みました（Tab で切り替え）");
         }
 
         /// <summary>

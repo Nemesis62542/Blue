@@ -113,6 +113,20 @@
 
 `TankView` は `BaseSwimmer.SetRoamCenter/SetRoamArea/SetMigrationEnabled` に水槽の内寸を渡して閉じ込める。群れは `SchoolController` が毎フレーム個体へ縄張りを配るため、生成前に `_positionSphere` 系と `_spawnSphere` 系を内寸から割り当てる。
 
+### 編集モード
+
+俯瞰でレイアウトを決める。設置可否の判断は持たず、`AquariumLayoutModel.CanPlace()` の結果を色と文言に変えるだけ。
+
+| クラス名 | 役割 | 主なメソッド | 関連クラス |
+|---------|------|--------------|------------|
+| AquariumModeController | 見学↔編集の切り替え。編集を抜けるときに保存する | Toggle(), SetMode() | AquariumSceneBootstrap |
+| AquariumEditController | 入力をモデルへの設置・撤去・回転に落とす | （Update内） | AquariumLayoutModel, PlacementGhost |
+| AquariumEditCamera | 床の一点を注視する俯瞰カメラ | Frame(), Pan(), Zoom() | - |
+| PlacementGhost | 設置前の下見表示。可否を色で示す | SetPiece(), UpdatePlacement() | AquariumPieceData |
+| AquariumEditInput | 編集モードの入力（暫定・旧Input） | - | - |
+
+`AquariumEditInput` は暫定。Aquarium の InputActionMap には `Move` / `Look` しか無く、設置・撤去・回転にあたるアクションが無いため旧 Input で読んでいる。差し替えるときはこのクラスだけを直す。
+
 ### ランタイム
 
 | クラス名 | 役割 | 主なメソッド | 関連クラス |
