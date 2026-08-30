@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Blue.Entity;
 using Blue.Item;
+using UnityEngine;
 
 namespace Blue.Aquarium
 {
@@ -14,6 +15,13 @@ namespace Blue.Aquarium
 
         public AquariumLayoutModel Layout => layout;
         public ExhibitModel Exhibits => exhibits;
+
+        /// <summary>
+        /// 所持数の出どころ。null なら数を制限しない
+        /// </summary>
+        // 展示しても所持数は減らない。1匹しか持っていない生物を
+        // 何台もの水槽に並べられてしまうのを防ぐための上限としてだけ使う
+        public IEntityStock Stock { get; set; }
 
         public AquariumModel(AquariumFloorData floor_data)
         {
@@ -36,7 +44,48 @@ namespace Blue.Aquarium
 
             if (placed.Piece is not TankPieceData tank) return ExhibitRejection.NotATank;
 
-            return ExhibitRule.EvaluateEntity(tank, exhibits.GetEntities(instance_id), entity);
+            ExhibitRejection rejection = ExhibitRule.EvaluateEntity(tank, exhibits.GetEntities(instance_id), entity);
+            if (rejection != ExhibitRejection.None) return rejection;
+
+            // 所持数は水槽1台ぶんではなく館全体で見る。1匹を各水槽へ複製できてしまうため
+            if (Stock != null && CountExhibited(entity) >= Stock.GetOwnedCount(entity))
+            {
+                return ExhibitRejection.StockExhausted;
+            }
+
+            return ExhibitRejection.None;
+        }
+
+        /// <summary>
+        /// その生物を館全体で何匹展示しているか
+        /// </summary>
+        public int CountExhibited(EntityData entity)
+        {
+            if (entity == null) return 0;
+
+            int count = 0;
+
+            foreach (string instance_id in exhibits.EnumerateTankInstanceIDs())
+            {
+                IReadOnlyList<EntityData> contents = exhibits.GetEntities(instance_id);
+
+                for (int i = 0; i < contents.Count; i++)
+                {
+                    if (contents[i] == entity) count++;
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// あと何匹展示できるか
+        /// </summary>
+        public int GetRemainingStock(EntityData entity)
+        {
+            if (Stock == null) return int.MaxValue;
+
+            return Mathf.Max(0, Stock.GetOwnedCount(entity) - CountExhibited(entity));
         }
 
         /// <summary>
@@ -113,18 +162,7 @@ namespace Blue.Aquarium
         /// </summary>
         public bool IsEntityExhibited(EntityData entity)
         {
-            if (entity == null) return false;
-
-            foreach (string instance_id in exhibits.EnumerateTankInstanceIDs())
-            {
-                IReadOnlyList<EntityData> contents = exhibits.GetEntities(instance_id);
-                for (int i = 0; i < contents.Count; i++)
-                {
-                    if (contents[i] == entity) return true;
-                }
-            }
-
-            return false;
+            return CountExhibited(entity) > 0;
         }
 
         /// <summary>

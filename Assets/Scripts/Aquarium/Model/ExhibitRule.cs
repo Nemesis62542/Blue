@@ -96,6 +96,28 @@ namespace Blue.Aquarium
 
             return ExhibitRejection.None;
         }
+
+        /// <summary>
+        /// 断られた理由を画面に出す文言にする
+        /// </summary>
+        public static string Describe(ExhibitRejection rejection)
+        {
+            return rejection switch
+            {
+                ExhibitRejection.None => string.Empty,
+                ExhibitRejection.NotATank => "生物を入れられる設置物ではありません",
+                ExhibitRejection.NotAPedestal => "アイテムを飾れる設置物ではありません",
+                ExhibitRejection.InvalidExhibit => "展示するものが選ばれていません",
+                ExhibitRejection.HabitationMismatch => "この水槽の生息域では飼えません",
+                ExhibitRejection.TooLarge => "この水槽には大きすぎます",
+                ExhibitRejection.SchoolNotSupported => "この水槽は群れに対応していません",
+                ExhibitRejection.ItemTypeMismatch => "この展示台には飾れない種類です",
+                ExhibitRejection.CapacityFull => "水槽に空きがありません",
+                ExhibitRejection.PieceNotFound => "対象の設置物が見つかりません",
+                ExhibitRejection.StockExhausted => "持っている分をすべて展示しています",
+                _ => rejection.ToString(),
+            };
+        }
     }
 
     /// <summary>
@@ -113,5 +135,6 @@ namespace Blue.Aquarium
         ItemTypeMismatch,    // アイテムの種類が合わない
         CapacityFull,        // 空きがない
         PieceNotFound,       // 対象の設置物が存在しない
+        StockExhausted,      // 持っている数を全て展示済み
     }
 }

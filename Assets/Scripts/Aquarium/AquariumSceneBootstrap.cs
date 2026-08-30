@@ -23,7 +23,8 @@ namespace Blue.Aquarium
                 return;
             }
 
-            Model = AquariumSaveConverter.LoadAquarium(floor);
+            // 展示しても所持数は減らないが、持っている数までしか同時に展示できない
+            Model = AquariumSaveConverter.LoadAquarium(floor, new CapturedEntityStock());
 
             if (builder == null)
             {

@@ -93,10 +93,14 @@
 | PlacedPiece | グリッドに設置済みの設置物1つ分 | EnumerateCells(), GetWorldPosition() | GridPieceData |
 | PlacedDecor | 自由配置された装飾1つ分 | MoveTo() | DecorPieceData |
 | ExhibitModel | どの設置物に何を展示しているかを保持 | GetEntities(), GetItems(), AddEntity(), AddItem() | - |
-| ExhibitRule | 展示可否の判定を一手に引き受ける（静的） | EvaluateEntity(), EvaluateItem(), GetCost() | TankPieceData, PedestalPieceData |
+| ExhibitRule | 展示可否の判定を一手に引き受ける（静的） | EvaluateEntity(), EvaluateItem(), GetCost(), Describe() | TankPieceData, PedestalPieceData |
+| IEntityStock | 生物を何匹持っているかを答える | GetOwnedCount() | - |
+| CapturedEntityStock | 捕獲済みの生物を所持数とみなす | GetOwnedCount() | SaveDataConverter |
 | AquariumGrid | セルとワールド座標の変換、回転の計算（静的） | CellToWorld(), WorldToCell(), EnumerateCells() | - |
 
 判定を足すときは `ExhibitRule` / `AquariumLayoutModel.CanPlace()` に集約する。UIのグレーアウトも同じ判定結果（`ExhibitRejection` / `PlacementRejection`）を根拠にする。
+
+展示しても所持数は減らない。ただし館全体で同時に展示できる数は所持数までで、超える場合は `ExhibitRejection.StockExhausted` を返す。出し入れは自由にしたいが、1匹の生物を何台もの水槽へ並べられるのは避けるため。上限の判定は `AquariumModel.CanExhibitEntity()` が水槽単体の条件を通したあとに行う。
 
 ### ビュー（シーン）
 

@@ -20,6 +20,8 @@ namespace Blue.Aquarium
         // まだ何も捕まえていないセーブデータでは展示が空になり、水槽の見た目しか確かめられない
         [SerializeField] private bool useAllEntitiesWhenNoCapture = true;
 
+        private bool usingFallbackEntities;
+
         private void Start()
         {
             if (bootstrap == null || bootstrap.Model == null)
@@ -78,6 +80,10 @@ namespace Blue.Aquarium
                 return;
             }
 
+            // 捕獲していない生物を並べているので所持数の上限が必ず 0 になる。
+            // 動作確認のあいだだけ上限を外す
+            if (usingFallbackEntities) model.Stock = null;
+
             // 常に先頭の水槽へ入れると1台に全部溜まるので、受け入れられる水槽へ順番に配る
             int next_tank = 0;
 
@@ -110,6 +116,7 @@ namespace Blue.Aquarium
             if (!useAllEntitiesWhenNoCapture) return new List<EntityData>();
 
             List<EntityData> all = new List<EntityData>();
+            usingFallbackEntities = true;
 
             foreach (EntityData entity in EntityDataCache.GetAllEntities())
             {

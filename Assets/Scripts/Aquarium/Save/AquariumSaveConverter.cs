@@ -102,9 +102,9 @@ namespace Blue.Aquarium
         /// <summary>
         /// AquariumSaveDataをAquariumModelに変換
         /// </summary>
-        public static AquariumModel ConvertFromSaveData(AquariumSaveData save_data, AquariumFloorData floor_data)
+        public static AquariumModel ConvertFromSaveData(AquariumSaveData save_data, AquariumFloorData floor_data, IEntityStock stock = null)
         {
-            AquariumModel model = new AquariumModel(floor_data);
+            AquariumModel model = new AquariumModel(floor_data) { Stock = stock };
 
             if (save_data == null) return model;
 
@@ -222,14 +222,16 @@ namespace Blue.Aquarium
         /// <summary>
         /// 水族館を読み込み
         /// </summary>
-        public static AquariumModel LoadAquarium(AquariumFloorData floor_data)
+        public static AquariumModel LoadAquarium(AquariumFloorData floor_data, IEntityStock stock = null)
         {
             SaveData save_data = SaveManager.CurrentSaveData;
 
             // 水族館の実装より前のセーブデータには項目そのものが無い
             save_data.aquarium ??= new AquariumSaveData();
 
-            return ConvertFromSaveData(save_data.aquarium, floor_data);
+            // 所持数は復元の前に渡す。所持を超えて保存されていた場合、
+            // 読み込んだ時点で上限まで戻したい
+            return ConvertFromSaveData(save_data.aquarium, floor_data, stock);
         }
     }
 }
