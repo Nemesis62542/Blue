@@ -17,6 +17,9 @@ namespace Blue.Aquarium
         [SerializeField] private DebugPlacement[] placements;
         [SerializeField] private bool exhibitCapturedEntities = true;
 
+        // まだ何も捕まえていないセーブデータでは展示が空になり、水槽の見た目しか確かめられない
+        [SerializeField] private bool useAllEntitiesWhenNoCapture = true;
+
         private void Start()
         {
             if (bootstrap == null || bootstrap.Model == null)
@@ -68,8 +71,15 @@ namespace Blue.Aquarium
 
         private void ExhibitCaptured(AquariumModel model)
         {
-            List<EntityData> entities = SaveDataConverter.LoadCapturedEntitiesList();
-            if (entities == null || entities.Count == 0) return;
+            List<EntityData> entities = CollectEntities();
+            if (entities.Count == 0)
+            {
+                Debug.LogWarning("[AquariumDebugPlacer] 展示できる生物がありません", this);
+                return;
+            }
+
+            // 常に先頭の水槽へ入れると1台に全部溜まるので、受け入れられる水槽へ順番に配る
+            int next_tank = 0;
 
             foreach (EntityData entity in entities)
             {
@@ -82,8 +92,36 @@ namespace Blue.Aquarium
                     continue;
                 }
 
-                model.TryExhibitEntity(tanks[0].InstanceID, entity, out _);
+                PlacedPiece target = tanks[next_tank % tanks.Count];
+                next_tank++;
+
+                if (!model.TryExhibitEntity(target.InstanceID, entity, out ExhibitRejection rejection))
+                {
+                    Debug.LogWarning($"[AquariumDebugPlacer] 展示できませんでした: {entity.Name} ({rejection})", this);
+                }
             }
+        }
+
+        private List<EntityData> CollectEntities()
+        {
+            List<EntityData> captured = SaveDataConverter.LoadCapturedEntitiesList();
+            if (captured != null && captured.Count > 0) return captured;
+
+            if (!useAllEntitiesWhenNoCapture) return new List<EntityData>();
+
+            List<EntityData> all = new List<EntityData>();
+
+            foreach (EntityData entity in EntityDataCache.GetAllEntities())
+            {
+                // プレイヤーのように展示対象でないものが混ざるので、実体を持つものだけ拾う
+                if (entity == null || (entity.Object == null && entity.School == null)) continue;
+
+                all.Add(entity);
+            }
+
+            Debug.Log($"[AquariumDebugPlacer] 捕獲済みの生物がないため、登録済みの {all.Count} 種を展示します");
+
+            return all;
         }
 
         /// <summary>
