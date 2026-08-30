@@ -119,7 +119,6 @@ namespace Blue.Entity.Common
         private Quaternion motionRotation = Quaternion.identity;
         private float wanderSeed;
         private bool roamCenterOverridden;
-        private bool degenerateRotationReported;
         private Vector3 steeringAccumulator;
         private Vector3 separationForce;
         private float separationTimer;
@@ -153,28 +152,8 @@ namespace Blue.Entity.Common
         public Vector3 RoamCenter => roamCenter;
 
         // 見た目に乗せる傾き（バンク・機首上げ下げ）を含まない、移動に使う向き。
-        // transform.forward を使うと、姿勢のための傾きが進行方向へ混ざってしまう。
-        //
-        // 退化した回転（ゼロ・NaN）からはゼロベクトルや NaN が出る。これが
-        // Physics の SphereCast へ渡ると IsNormalized の Assertion で落ちるうえ、
-        // ClampPitch がこの値をそのまま返す経路を持つため、放っておくと全体へ伝播する。
-        // 進行方向は毎フレーム必要なので、ここで必ず使える値に落として返す
-        private Vector3 MotionForward
-        {
-            get
-            {
-                Vector3 forward = motionRotation * Vector3.forward;
-
-                // 単位長から外れていれば退化。NaN はどちらの比較も偽になるのでここで落ちる
-                if (forward.sqrMagnitude > 0.9f && forward.sqrMagnitude < 1.1f) return forward;
-
-                ReportDegenerateRotation();
-
-                Vector3 fallback = transform.forward;
-
-                return fallback.sqrMagnitude > 0.0001f ? fallback.normalized : Vector3.forward;
-            }
-        }
+        // transform.forward を使うと、姿勢のための傾きが進行方向へ混ざってしまう
+        private Vector3 MotionForward => motionRotation * Vector3.forward;
 
         /// <summary>
         /// 移動状態が変化したときに通知する。遊泳アニメの切り替えに使う
@@ -486,36 +465,8 @@ namespace Blue.Entity.Common
 
             Quaternion targetRotation = Quaternion.LookRotation(heading, Vector3.up);
 
-            // 退化した回転からは Slerp で戻れない。向きが決まった最初のフレームで捨てて入れ直す
-            if (!IsUsableRotation(motionRotation))
-            {
-                motionRotation = targetRotation;
-                return;
-            }
-
             motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
                 SmoothingFactor(rate, Time.deltaTime));
-        }
-
-        private static bool IsUsableRotation(Quaternion rotation)
-        {
-            float square = rotation.x * rotation.x + rotation.y * rotation.y
-                + rotation.z * rotation.z + rotation.w * rotation.w;
-
-            return square > 0.9f && square < 1.1f;
-        }
-
-        // 退化した回転がどこから入るか掴めていないため、個体ごとに一度だけ素性を出す。
-        // 毎フレーム出すとログが埋まって他が読めなくなる
-        private void ReportDegenerateRotation()
-        {
-            if (degenerateRotationReported) return;
-
-            degenerateRotationReported = true;
-
-            Debug.LogWarning($"[BaseSwimmer] 回転が退化しました: {name} " +
-                $"motionRotation={motionRotation} transform.rotation={transform.rotation} " +
-                $"lossyScale={transform.lossyScale} parent={(transform.parent != null ? transform.parent.name : "なし")}", this);
         }
 
         private void UpdateMove()
@@ -961,7 +912,8 @@ namespace Blue.Entity.Common
             nearest = default;
 
             // 向きの正規化はここで保証する。呼び出し 4 箇所のうち 3 箇所は motionRotation から
-            // 向きを作るため、回転が崩れると候補が揃って壊れ、Physics が Assertion で落ちる。
+            // 向きを作るため、単位長からのわずかなずれが候補全体に乗り、
+            // SphereCast が IsNormalized の Assertion を鳴らす。
             // 呼び出し側それぞれで守るより、engine へ渡す唯一の場所で守るほうが漏れない
             if (!(direction.sqrMagnitude > 0.0001f)) return false;
 
