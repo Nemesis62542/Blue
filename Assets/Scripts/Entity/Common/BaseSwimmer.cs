@@ -360,9 +360,6 @@ namespace Blue.Entity.Common
         }
 
         /// <summary>
-        /// 縄張りの中心を設定する
-        /// </summary>
-        /// <summary>
         /// 縄張りの広がりを設定する
         /// </summary>
         // 群れのように、外側が形を決めて全員へ配る使い方をするため公開している
@@ -371,6 +368,9 @@ namespace Blue.Entity.Common
             roamArea = area;
         }
 
+        /// <summary>
+        /// 縄張りの中心を設定する
+        /// </summary>
         public void SetRoamCenter(Vector3 center)
         {
             roamCenter = center;
@@ -379,6 +379,16 @@ namespace Blue.Entity.Common
             // 回遊の基準ごと移す。指定された位置を中心に泳ぎ回ってほしいはずなので
             homeCenter = center;
             migrationTarget = center;
+        }
+
+        /// <summary>
+        /// 回遊の有無を切り替える
+        /// </summary>
+        // 水槽のように縄張りの外へ出られては困る場所へ置くとき、スポーン側から切るための口。
+        // 回遊は roamCenter ごと動かすため、範囲を指定するだけでは閉じ込められない
+        public void SetMigrationEnabled(bool is_enabled)
+        {
+            useMigration = is_enabled;
         }
 
         private void SetMode(SwimMode next)
