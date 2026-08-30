@@ -435,9 +435,7 @@ namespace Blue.Entity.Common
             smoothedHeading = SmoothDirection(smoothedHeading, ClampPitch(faceDirection), turnSmoothing);
 
             // 意図して相手に向き直る動作なので、旋回性能は抽選値ではなく上限を使う
-            Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up);
-            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
-                SmoothingFactor(rotationSpeed, Time.deltaTime));
+            SteerMotionRotation(smoothedHeading, rotationSpeed);
 
             transform.rotation = motionRotation * Quaternion.Euler(currentPitchOffset, 0f, currentBank);
         }
@@ -454,6 +452,20 @@ namespace Blue.Entity.Common
             if (current.sqrMagnitude < 0.0001f) return target;
 
             return Vector3.Slerp(current, target, SmoothingFactor(rate, Time.deltaTime)).normalized;
+        }
+
+        // 進行方向を姿勢へ落とす唯一の口。
+        // ゼロベクトルを渡された LookRotation は退化した回転を返し、それが Slerp で
+        // 以後ずっと残るため、MotionForward がゼロのまま SphereCast の Assertion を鳴らし続ける。
+        // 向きが決まらないフレームは回さずに前回の姿勢を保つ
+        private void SteerMotionRotation(Vector3 heading, float rate)
+        {
+            if (heading.sqrMagnitude < 0.0001f) return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(heading, Vector3.up);
+
+            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
+                SmoothingFactor(rate, Time.deltaTime));
         }
 
         private void UpdateMove()
@@ -494,9 +506,7 @@ namespace Blue.Entity.Common
                 rotationSpeed * turnSmoothing * Time.deltaTime);
 
             // 進行方向は motionRotation が持ち、見せかけの傾きは transform だけに乗せる
-            Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up);
-            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
-                SmoothingFactor(GetTurnRate(), Time.deltaTime));
+            SteerMotionRotation(smoothedHeading, GetTurnRate());
 
             transform.rotation = motionRotation * Quaternion.Euler(
                 UpdatePitchOffset(smoothedHeading), 0f, UpdateBank(smoothedHeading));
@@ -615,7 +625,11 @@ namespace Blue.Entity.Common
 
             Vector3 offset = transform.right * yaw + transform.up * pitch;
 
-            return (direction + offset * (wanderStrength * 2f)).normalized;
+            // ゆらぎが進行方向を打ち消すと normalized がゼロを返す。
+            // ゼロが姿勢まで流れると LookRotation が退化した回転を作るため、元の向きを残す
+            Vector3 wandered = direction + offset * (wanderStrength * 2f);
+
+            return wandered.sqrMagnitude > 0.0001f ? wandered.normalized : direction;
         }
 
         // 昇り降りの分だけ余分に機首を上げ下げする。経路と体の向きをわずかにずらすことで、
