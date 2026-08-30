@@ -1,3 +1,4 @@
+using Blue.Aquarium;
 using Blue.Entity;
 using Blue.Item;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Blue.Game
     {
         [SerializeField] private ItemDataRegistry itemDataRegistry;
         [SerializeField] private EntityDataRegistry entityDataRegistry;
+        [SerializeField] private AquariumPieceRegistry aquariumPieceRegistry;
 
         private void Awake()
         {
@@ -22,6 +24,11 @@ namespace Blue.Game
             if (entityDataRegistry != null)
             {
                 EntityDataCache.SetRegistry(entityDataRegistry);
+            }
+
+            if (aquariumPieceRegistry != null)
+            {
+                AquariumPieceCache.SetRegistry(aquariumPieceRegistry);
             }
         }
     }
