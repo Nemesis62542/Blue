@@ -1,3 +1,4 @@
+using Blue.Aquarium;
 using Blue.Entity;
 using Blue.Item;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Blue.Editor
     {
         private const string ENTITY_REGISTRY_PATH = "Assets/Resources/EntityDataRegistry.asset";
         private const string ITEM_REGISTRY_PATH = "Assets/Resources/ItemDataRegistry.asset";
+        private const string AQUARIUM_PIECE_REGISTRY_PATH = "Assets/Resources/AquariumPieceRegistry.asset";
 
         /// <summary>
         /// 全てのレジストリを更新
@@ -22,6 +24,7 @@ namespace Blue.Editor
         {
             UpdateEntityDataRegistry();
             UpdateItemDataRegistry();
+            UpdateAquariumPieceRegistry();
             Debug.Log("All data registries updated successfully!");
         }
 
@@ -129,6 +132,59 @@ namespace Blue.Editor
             AssetDatabase.SaveAssets();
 
             Debug.Log($"ItemDataRegistry updated with {guids.Length} items at {ITEM_REGISTRY_PATH}");
+        }
+
+        /// <summary>
+        /// AquariumPieceRegistryを更新
+        /// </summary>
+        [MenuItem("Blue/Update AquariumPiece Registry")]
+        public static void UpdateAquariumPieceRegistry()
+        {
+            // Resourcesフォルダが存在するか確認
+            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+            {
+                AssetDatabase.CreateFolder("Assets", "Resources");
+            }
+
+            // レジストリを取得または作成
+            AquariumPieceRegistry registry = AssetDatabase.LoadAssetAtPath<AquariumPieceRegistry>(AQUARIUM_PIECE_REGISTRY_PATH);
+            if (registry == null)
+            {
+                registry = ScriptableObject.CreateInstance<AquariumPieceRegistry>();
+                AssetDatabase.CreateAsset(registry, AQUARIUM_PIECE_REGISTRY_PATH);
+            }
+
+            // SerializedObjectを使ってプライベートフィールドにアクセス
+            SerializedObject serialized_object = new SerializedObject(registry);
+            SerializedProperty pieces_property = serialized_object.FindProperty("pieces");
+
+            // リストをクリア
+            pieces_property.ClearArray();
+
+            // 全てのAquariumPieceDataを検索して追加
+            string[] guids = AssetDatabase.FindAssets("t:AquariumPieceData");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                AquariumPieceData piece = AssetDatabase.LoadAssetAtPath<AquariumPieceData>(path);
+
+                if (piece != null)
+                {
+                    // GUIDをキャッシュに保存するためにPieceIDプロパティにアクセス
+                    _ = piece.PieceID;
+
+                    // レジストリに追加
+                    int index = pieces_property.arraySize;
+                    pieces_property.InsertArrayElementAtIndex(index);
+                    pieces_property.GetArrayElementAtIndex(index).objectReferenceValue = piece;
+                }
+            }
+
+            serialized_object.ApplyModifiedProperties();
+            EditorUtility.SetDirty(registry);
+            AssetDatabase.SaveAssets();
+
+            Debug.Log($"AquariumPieceRegistry updated with {guids.Length} pieces at {AQUARIUM_PIECE_REGISTRY_PATH}");
         }
 
         /// <summary>

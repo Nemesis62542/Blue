@@ -66,6 +66,61 @@
 | StageSourceTextureImporter | Source/ のテクスチャのインポート設定を強制 | 自動（AssetPostprocessor） |
 
 
+## Aquarium系（水族館）
+
+レイアウトと展示内容の正本は `AquariumModel`（純C#）が持ち、シーン上のオブジェクトはその写像として生成する。設置物をシーンに手置きしない。
+
+### 設定アセット
+
+| クラス名 | 役割 | 主なフィールド | 定義ファイル |
+|---------|------|----------------|-------------|
+| AquariumPieceData | 設置できるもの全ての定義の基底 | icon, prefab, PieceID(GUID) | AquariumPieceData.cs |
+| GridPieceData | セルを占有する設置物の基底 | footprint, walkable | GridPieceData.cs |
+| TankPieceData | 水槽。収容条件と遊泳ボリューム | supportedHabitations, maxDisplaySize, capacity, allowsSchool, swimArea | TankPieceData.cs |
+| PedestalPieceData | 収集アイテムの展示台 | slotCount, acceptedTypes | PedestalPieceData.cs |
+| PathPieceData | 通路 | （GridPieceDataのみ） | PathPieceData.cs |
+| DecorPieceData | 自由配置の装飾 | placeableInsideTank | DecorPieceData.cs |
+| AquariumFloorData | 間取り。設置可能セルを部屋単位で定義 | rooms | AquariumFloorData.cs |
+| AquariumRoomDefinition | 部屋1つ分の範囲と解放条件 | roomID, origin, size, unlockedFromStart | **AquariumFloorData.cs** |
+| AquariumPieceRegistry | 全AquariumPieceDataへの参照（ビルド版のGUID解決用） | pieces | AquariumPieceRegistry.cs |
+
+### モデル（シーン非依存）
+
+| クラス名 | 役割 | 主なメソッド | 関連クラス |
+|---------|------|--------------|------------|
+| AquariumModel | レイアウトと展示を束ねる正本 | TryExhibitEntity(), TryExhibitItem(), FindTanksAccepting() | AquariumLayoutModel, ExhibitModel |
+| AquariumLayoutModel | 設置物の配置とセル占有の管理 | CanPlace(), TryPlace(), TryMove(), RemovePiece(), UnlockRoom() | PlacedPiece, PlacedDecor |
+| PlacedPiece | グリッドに設置済みの設置物1つ分 | EnumerateCells(), GetWorldPosition() | GridPieceData |
+| PlacedDecor | 自由配置された装飾1つ分 | MoveTo() | DecorPieceData |
+| ExhibitModel | どの設置物に何を展示しているかを保持 | GetEntities(), GetItems(), AddEntity(), AddItem() | - |
+| ExhibitRule | 展示可否の判定を一手に引き受ける（静的） | EvaluateEntity(), EvaluateItem(), GetCost() | TankPieceData, PedestalPieceData |
+| AquariumGrid | セルとワールド座標の変換、回転の計算（静的） | CellToWorld(), WorldToCell(), EnumerateCells() | - |
+
+判定を足すときは `ExhibitRule` / `AquariumLayoutModel.CanPlace()` に集約する。UIのグレーアウトも同じ判定結果（`ExhibitRejection` / `PlacementRejection`）を根拠にする。
+
+### ビュー（シーン）
+
+モデル→シーンの一方向。設置物をシーンに手置きせず、必ず `AquariumBuilder` が生成する。
+
+| クラス名 | 役割 | 主なメソッド | 関連クラス |
+|---------|------|--------------|------------|
+| AquariumSceneBootstrap | シーンの入口。セーブからモデルを起こす | Save() | AquariumSaveConverter, AquariumBuilder |
+| AquariumBuilder | モデルの内容をシーンに生成・破棄する | Bind(), Unbind() | AquariumModel, AquariumPieceView |
+| AquariumPieceView | 生成された設置物1つ分の基底 | Bind(), ClearContents() | PlacedPiece |
+| TankView | 展示中の生物を生成し、遊泳範囲を内寸に合わせる | RefreshContents() | BaseSwimmer, SchoolController |
+| PedestalView | 飾っているアイテムのモデルを並べる | RefreshContents() | ItemData |
+| AquariumDebugPlacer | 編集UIができるまでの動作確認用の設置 | - | AquariumSceneBootstrap |
+
+`TankView` は `BaseSwimmer.SetRoamCenter/SetRoamArea/SetMigrationEnabled` に水槽の内寸を渡して閉じ込める。群れは `SchoolController` が毎フレーム個体へ縄張りを配るため、生成前に `_positionSphere` 系と `_spawnSphere` 系を内寸から割り当てる。
+
+### ランタイム
+
+| クラス名 | 役割 | 主なメソッド | 関連クラス |
+|---------|------|--------------|------------|
+| AquariumPieceCache | GUIDからAquariumPieceDataを引く（静的） | GetPieceByGUID(), GetGUID() | AquariumPieceRegistry |
+| AquariumSaveConverter | AquariumModelとセーブデータの相互変換（静的） | SaveAquarium(), LoadAquarium() | SaveManager, AquariumSaveData |
+
+
 ## Sound系
 
 | クラス名 | 役割 | 主なフィールド | 主なメソッド | 関連クラス |
