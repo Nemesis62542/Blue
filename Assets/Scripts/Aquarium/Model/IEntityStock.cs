@@ -12,6 +12,11 @@ namespace Blue.Aquarium
     public interface IEntityStock
     {
         int GetOwnedCount(EntityData entity);
+
+        /// <summary>
+        /// 1匹でも持っている生物を挙げる。展示UIの候補一覧に使う
+        /// </summary>
+        IEnumerable<EntityData> EnumerateOwned();
     }
 
     /// <summary>
@@ -36,6 +41,11 @@ namespace Blue.Aquarium
             if (entity == null) return 0;
 
             return captured.TryGetValue(entity, out int count) ? count : 0;
+        }
+
+        public IEnumerable<EntityData> EnumerateOwned()
+        {
+            return captured.Keys;
         }
     }
 }

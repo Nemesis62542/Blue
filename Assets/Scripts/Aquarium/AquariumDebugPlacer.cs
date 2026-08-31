@@ -17,10 +17,8 @@ namespace Blue.Aquarium
         [SerializeField] private DebugPlacement[] placements;
         [SerializeField] private bool exhibitCapturedEntities = true;
 
-        // まだ何も捕まえていないセーブデータでは展示が空になり、水槽の見た目しか確かめられない
-        [SerializeField] private bool useAllEntitiesWhenNoCapture = true;
-
-        private bool usingFallbackEntities;
+        // 所持していることにする生物は DebugEntityStockProvider が決める。
+        // ここでは所持しているものを水槽へ配るだけ
 
         private void Start()
         {
@@ -73,16 +71,12 @@ namespace Blue.Aquarium
 
         private void ExhibitCaptured(AquariumModel model)
         {
-            List<EntityData> entities = CollectEntities();
+            List<EntityData> entities = CollectEntities(model);
             if (entities.Count == 0)
             {
                 Debug.LogWarning("[AquariumDebugPlacer] 展示できる生物がありません", this);
                 return;
             }
-
-            // 捕獲していない生物を並べているので所持数の上限が必ず 0 になる。
-            // 動作確認のあいだだけ上限を外す
-            if (usingFallbackEntities) model.Stock = null;
 
             // 常に先頭の水槽へ入れると1台に全部溜まるので、受け入れられる水槽へ順番に配る
             int next_tank = 0;
@@ -108,27 +102,13 @@ namespace Blue.Aquarium
             }
         }
 
-        private List<EntityData> CollectEntities()
+        // 展示する候補は所持数の出どころに合わせる。ここで別の一覧を作ると、
+        // 「置けたのに一覧に出ない」「一覧に出るのに置けない」というズレが生まれる
+        private static List<EntityData> CollectEntities(AquariumModel model)
         {
-            List<EntityData> captured = SaveDataConverter.LoadCapturedEntitiesList();
-            if (captured != null && captured.Count > 0) return captured;
+            if (model.Stock == null) return new List<EntityData>();
 
-            if (!useAllEntitiesWhenNoCapture) return new List<EntityData>();
-
-            List<EntityData> all = new List<EntityData>();
-            usingFallbackEntities = true;
-
-            foreach (EntityData entity in EntityDataCache.GetAllEntities())
-            {
-                // プレイヤーのように展示対象でないものが混ざるので、実体を持つものだけ拾う
-                if (entity == null || (entity.Object == null && entity.School == null)) continue;
-
-                all.Add(entity);
-            }
-
-            Debug.Log($"[AquariumDebugPlacer] 捕獲済みの生物がないため、登録済みの {all.Count} 種を展示します");
-
-            return all;
+            return new List<EntityData>(model.Stock.EnumerateOwned());
         }
 
         /// <summary>

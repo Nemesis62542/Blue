@@ -10,6 +10,9 @@ namespace Blue.Aquarium
         [SerializeField] private AquariumFloorData floor;
         [SerializeField] private AquariumBuilder builder;
 
+        // 未設定なら捕獲記録をそのまま所持数として使う。動作確認用に差し替えられる
+        [SerializeField] private EntityStockProvider stockProvider;
+
         /// <summary>
         /// このシーンが扱う水族館。編集UIや展示UIはここから受け取る
         /// </summary>
@@ -23,8 +26,11 @@ namespace Blue.Aquarium
                 return;
             }
 
-            // 展示しても所持数は減らないが、持っている数までしか同時に展示できない
-            Model = AquariumSaveConverter.LoadAquarium(floor, new CapturedEntityStock());
+            // 展示しても所持数は減らないが、持っている数までしか同時に展示できない。
+            // 復元もこの上限で判定されるので、所持数は読み込みより前に決めておく
+            IEntityStock stock = stockProvider != null ? stockProvider.CreateStock() : new CapturedEntityStock();
+
+            Model = AquariumSaveConverter.LoadAquarium(floor, stock);
 
             if (builder == null)
             {
