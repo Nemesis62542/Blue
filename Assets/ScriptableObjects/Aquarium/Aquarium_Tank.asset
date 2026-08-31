@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937172a0a21710b4293183d468b19e2a, type: 3}
+  m_Name: Aquarium_Tank
+  m_EditorClassIdentifier: Assembly-CSharp::Blue.Aquarium.TankPieceData
+  name: Aquarium
+  description: "\u52D5\u4F5C\u78BA\u8A8D\u7528\u306B\u81EA\u52D5\u751F\u6210\u3057\u305F\u6C34\u69FD"
+  icon: {fileID: 0}
+  prefab: {fileID: 2560156893275295298, guid: 29cf507a4ebdadb4dae1e165804b9755, type: 3}
+  cachedGUID: d68226c4266c9ed4ea516a6c9a2505a8
+  footprint: {x: 5, y: 6}
+  walkable: 0
+  supportedHabitations: 0100000002000000
+  maxDisplaySize: 9.92
+  capacity: 999
+  allowsSchool: 1
+  schoolDisplayCount: 20
+  swimAreaCenter: {x: 0.55000013, y: 0.05000019, z: 0}
+  swimAreaSize: {x: 2.48, y: 2.48, z: 3.28}
+  viewOffset: {x: 0.55000013, y: 0.05000019, z: -4.12}

@@ -360,9 +360,6 @@ namespace Blue.Entity.Common
         }
 
         /// <summary>
-        /// 縄張りの中心を設定する
-        /// </summary>
-        /// <summary>
         /// 縄張りの広がりを設定する
         /// </summary>
         // 群れのように、外側が形を決めて全員へ配る使い方をするため公開している
@@ -371,6 +368,9 @@ namespace Blue.Entity.Common
             roamArea = area;
         }
 
+        /// <summary>
+        /// 縄張りの中心を設定する
+        /// </summary>
         public void SetRoamCenter(Vector3 center)
         {
             roamCenter = center;
@@ -379,6 +379,16 @@ namespace Blue.Entity.Common
             // 回遊の基準ごと移す。指定された位置を中心に泳ぎ回ってほしいはずなので
             homeCenter = center;
             migrationTarget = center;
+        }
+
+        /// <summary>
+        /// 回遊の有無を切り替える
+        /// </summary>
+        // 水槽のように縄張りの外へ出られては困る場所へ置くとき、スポーン側から切るための口。
+        // 回遊は roamCenter ごと動かすため、範囲を指定するだけでは閉じ込められない
+        public void SetMigrationEnabled(bool is_enabled)
+        {
+            useMigration = is_enabled;
         }
 
         private void SetMode(SwimMode next)
@@ -425,9 +435,7 @@ namespace Blue.Entity.Common
             smoothedHeading = SmoothDirection(smoothedHeading, ClampPitch(faceDirection), turnSmoothing);
 
             // 意図して相手に向き直る動作なので、旋回性能は抽選値ではなく上限を使う
-            Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up);
-            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
-                SmoothingFactor(rotationSpeed, Time.deltaTime));
+            SteerMotionRotation(smoothedHeading, rotationSpeed);
 
             transform.rotation = motionRotation * Quaternion.Euler(currentPitchOffset, 0f, currentBank);
         }
@@ -444,6 +452,21 @@ namespace Blue.Entity.Common
             if (current.sqrMagnitude < 0.0001f) return target;
 
             return Vector3.Slerp(current, target, SmoothingFactor(rate, Time.deltaTime)).normalized;
+        }
+
+        // 進行方向を姿勢へ落とす唯一の口。
+        // ゼロベクトルを渡された LookRotation は退化した回転を返し、それが Slerp で
+        // 以後ずっと残るため、MotionForward がゼロのまま SphereCast の Assertion を鳴らし続ける。
+        // 向きが決まらないフレームは回さずに前回の姿勢を保つ
+        private void SteerMotionRotation(Vector3 heading, float rate)
+        {
+            // NaN を弾くため、範囲の外にあることではなく中にあることを条件にする
+            if (!(heading.sqrMagnitude > 0.0001f)) return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(heading, Vector3.up);
+
+            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
+                SmoothingFactor(rate, Time.deltaTime));
         }
 
         private void UpdateMove()
@@ -484,9 +507,7 @@ namespace Blue.Entity.Common
                 rotationSpeed * turnSmoothing * Time.deltaTime);
 
             // 進行方向は motionRotation が持ち、見せかけの傾きは transform だけに乗せる
-            Quaternion targetRotation = Quaternion.LookRotation(smoothedHeading, Vector3.up);
-            motionRotation = Quaternion.Slerp(motionRotation, targetRotation,
-                SmoothingFactor(GetTurnRate(), Time.deltaTime));
+            SteerMotionRotation(smoothedHeading, GetTurnRate());
 
             transform.rotation = motionRotation * Quaternion.Euler(
                 UpdatePitchOffset(smoothedHeading), 0f, UpdateBank(smoothedHeading));
@@ -605,7 +626,11 @@ namespace Blue.Entity.Common
 
             Vector3 offset = transform.right * yaw + transform.up * pitch;
 
-            return (direction + offset * (wanderStrength * 2f)).normalized;
+            // ゆらぎが進行方向を打ち消すと normalized がゼロを返す。
+            // ゼロが姿勢まで流れると LookRotation が退化した回転を作るため、元の向きを残す
+            Vector3 wandered = direction + offset * (wanderStrength * 2f);
+
+            return wandered.sqrMagnitude > 0.0001f ? wandered.normalized : direction;
         }
 
         // 昇り降りの分だけ余分に機首を上げ下げする。経路と体の向きをわずかにずらすことで、
@@ -884,10 +909,17 @@ namespace Blue.Entity.Common
         // 素直に撃つと常に「正面が塞がっている」と判定されて減速し続ける
         private bool Probe(Vector3 origin, Vector3 direction, float distance, out RaycastHit nearest)
         {
-            int count = Physics.SphereCastNonAlloc(origin, avoidProbeRadius, direction, probeBuffer,
+            nearest = default;
+
+            // 向きの正規化はここで保証する。呼び出し 4 箇所のうち 3 箇所は motionRotation から
+            // 向きを作るため、単位長からのわずかなずれが候補全体に乗り、
+            // SphereCast が IsNormalized の Assertion を鳴らす。
+            // 呼び出し側それぞれで守るより、engine へ渡す唯一の場所で守るほうが漏れない
+            if (!(direction.sqrMagnitude > 0.0001f)) return false;
+
+            int count = Physics.SphereCastNonAlloc(origin, avoidProbeRadius, direction.normalized, probeBuffer,
                 distance, avoidanceMask, QueryTriggerInteraction.Ignore);
 
-            nearest = default;
             bool found = false;
 
             for (int i = 0; i < count; i++)

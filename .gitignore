@@ -117,3 +117,21 @@ crashlytics-build.properties
 # フォルダ名は DiggerMaster が置かれたシーン名から決まる。
 /[Aa]ssets/DiggerData/Scenes/testStage/
 /[Aa]ssets/DiggerData/Scenes/testStage.meta
+
+# ---------------------------------------------------------------------------
+# 水族館の動作確認用シーンと、その生成物
+# ---------------------------------------------------------------------------
+# Blue > Aquarium > Setup Test Scene が Aquarium.unity から作り直す。
+# コミットするとビルダーを変えるたびに古くなり、コードとシーンが
+# 食い違ったまま気づけない。クローン後は一度メニューを実行すること。
+# 水槽の TankPieceData は手で調整する前提なので ignore しない。
+/[Aa]ssets/Scenes/AquariumTest.unity
+/[Aa]ssets/Scenes/AquariumTest.unity.meta
+/[Aa]ssets/ScriptableObjects/Aquarium/TestFloor.asset
+/[Aa]ssets/ScriptableObjects/Aquarium/TestFloor.asset.meta
+/[Aa]ssets/ScriptableObjects/Aquarium/TestPath.asset
+/[Aa]ssets/ScriptableObjects/Aquarium/TestPath.asset.meta
+/[Aa]ssets/Prefab/Aquarium/Path/
+/[Aa]ssets/Prefab/Aquarium/Path.meta
+/[Aa]ssets/Prefab/UI/ExhibitEntry.prefab
+/[Aa]ssets/Prefab/UI/ExhibitEntry.prefab.meta
