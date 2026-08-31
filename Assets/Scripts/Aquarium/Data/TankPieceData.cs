@@ -35,6 +35,13 @@ namespace Blue.Aquarium
         /// </summary>
         public Vector3 SwimAreaExtents => swimAreaSize * 0.5f;
 
+        [Header("中を見せる位置")]
+        // 展示を編集するときにカメラを置く、水槽の原点からの相対位置。
+        // ローカル -Z をガラス面（正面）とする規約。合わない水槽はここで個別に直す
+        [SerializeField] private Vector3 viewOffset = new Vector3(0f, 1f, -4f);
+
+        public Vector3 ViewOffset => viewOffset;
+
         /// <summary>
         /// 指定された生息域に対応しているか
         /// </summary>

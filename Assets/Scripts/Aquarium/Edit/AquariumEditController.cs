@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Blue.Aquarium
 {
     /// <summary>
-    /// 俯瞰からの設置・撤去・回転。入力をモデルへの操作に落とす
+    /// 編集モードの操作。選択と設置を切り替えて扱う
     /// </summary>
     // 設置できるかどうかは AquariumLayoutModel.CanPlace が唯一の判断元。
     // ここでは判定を持たず、返ってきた理由を下見の色と UI へ流すだけにする
@@ -24,6 +24,7 @@ namespace Blue.Aquarium
         private int selectedIndex;
         private int rotationStep;
         private Vector2Int cursorCell;
+        private Vector2Int pointedCell;
         private bool hasCursor;
 
         /// <summary>
@@ -31,6 +32,13 @@ namespace Blue.Aquarium
         /// </summary>
         public GridPieceData SelectedPiece =>
             palette.Count > 0 ? palette[Mathf.Clamp(selectedIndex, 0, palette.Count - 1)] : null;
+
+        /// <summary>
+        /// 選択と設置のどちらの構えか
+        /// </summary>
+        // 常に下見が張り付いていると、置いてあるものが隠れて見えない。
+        // 設置物を選んだときだけ設置の構えに入り、右クリックで選択へ戻す
+        public AquariumEditTool Tool { get; private set; } = AquariumEditTool.Select;
 
         /// <summary>
         /// カーソル位置に置けるか。置けない場合はその理由
@@ -47,6 +55,17 @@ namespace Blue.Aquarium
         /// </summary>
         public event Action OnStateChanged;
 
+        /// <summary>
+        /// 設置済みのものが選ばれたときに通知する。展示画面を開く入口
+        /// </summary>
+        public event Action<PlacedPiece> OnPieceInspected;
+
+        /// <summary>
+        /// 入力を受け付けないようにする。画面を重ねているあいだに使う
+        /// </summary>
+        // 止めないと、UI を押したクリックが背後の設置にも通ってしまう
+        public bool IsSuspended { get; set; }
+
         public AquariumEditInput Input => input;
 
         private AquariumModel Model => bootstrap != null ? bootstrap.Model : null;
@@ -59,7 +78,7 @@ namespace Blue.Aquarium
         private void OnEnable()
         {
             rotationStep = 0;
-            RefreshGhostPiece();
+            SetTool(AquariumEditTool.Select);
         }
 
         private void OnDisable()
@@ -71,9 +90,17 @@ namespace Blue.Aquarium
         {
             if (Model == null || view == null) return;
 
+            if (IsSuspended)
+            {
+                if (ghost != null) ghost.SetVisible(false);
+                return;
+            }
+
             HandleCamera();
             HandlePalette();
-            HandleRotate();
+            HandleToolSwitch();
+
+            if (Tool == AquariumEditTool.Place) HandleRotate();
 
             IsRemoving = input.RemoveHeld;
 
@@ -92,15 +119,31 @@ namespace Blue.Aquarium
         private void HandlePalette()
         {
             if (palette.Count == 0) return;
-
-            int previous = selectedIndex;
+            if (!input.NextPiece && !input.PreviousPiece) return;
 
             if (input.NextPiece) selectedIndex = (selectedIndex + 1) % palette.Count;
             if (input.PreviousPiece) selectedIndex = (selectedIndex - 1 + palette.Count) % palette.Count;
 
-            if (selectedIndex == previous) return;
+            // 設置物を選んだ操作は「置きたい」という意思表示なので、そのまま設置の構えに入る
+            SetTool(AquariumEditTool.Place);
+        }
 
-            RefreshGhostPiece();
+        private void HandleToolSwitch()
+        {
+            // 右クリックは構えの取り消し。選択へ戻る
+            if (input.Cancel && Tool != AquariumEditTool.Select) SetTool(AquariumEditTool.Select);
+        }
+
+        private void SetTool(AquariumEditTool tool)
+        {
+            Tool = tool;
+
+            if (ghost != null)
+            {
+                ghost.SetPiece(tool == AquariumEditTool.Place ? SelectedPiece : null);
+                ghost.SetVisible(false);
+            }
+
             OnStateChanged?.Invoke();
         }
 
@@ -112,27 +155,21 @@ namespace Blue.Aquarium
             OnStateChanged?.Invoke();
         }
 
-        private void RefreshGhostPiece()
-        {
-            if (ghost != null) ghost.SetPiece(SelectedPiece);
-        }
-
         private void UpdateCursor()
         {
+            hasCursor = TryGetCursorCell(out pointedCell);
+
             GridPieceData piece = SelectedPiece;
+            bool shows_ghost = hasCursor && piece != null && Tool == AquariumEditTool.Place && !IsRemoving;
 
-            hasCursor = TryGetCursorCell(out Vector2Int pointed);
-
-            if (!hasCursor || piece == null || IsRemoving)
+            if (!shows_ghost)
             {
-                // 撤去中は下見を出さない。置く物の形が残っていると、
-                // どれを消すのかが読み取れなくなる
                 if (ghost != null) ghost.SetVisible(false);
                 CurrentRejection = PlacementRejection.InvalidPiece;
                 return;
             }
 
-            cursorCell = CenterOnCursor(pointed, piece, rotationStep);
+            cursorCell = CenterOnCursor(pointedCell, piece, rotationStep);
             CurrentRejection = Model.Layout.CanPlace(piece, cursorCell, rotationStep);
 
             if (ghost == null) return;
@@ -156,7 +193,21 @@ namespace Blue.Aquarium
                 return;
             }
 
+            if (Tool == AquariumEditTool.Select)
+            {
+                InspectAtCursor();
+                return;
+            }
+
             PlaceAtCursor();
+        }
+
+        private void InspectAtCursor()
+        {
+            PlacedPiece target = Model.Layout.GetPieceAt(pointedCell);
+            if (target == null) return;
+
+            OnPieceInspected?.Invoke(target);
         }
 
         private void PlaceAtCursor()
@@ -177,9 +228,7 @@ namespace Blue.Aquarium
 
         private void RemoveAtCursor()
         {
-            if (!TryGetCursorCell(out Vector2Int pointed)) return;
-
-            PlacedPiece target = Model.Layout.GetPieceAt(pointed);
+            PlacedPiece target = Model.Layout.GetPieceAt(pointedCell);
             if (target == null) return;
 
             Model.Layout.RemovePiece(target.InstanceID);
@@ -225,5 +274,14 @@ namespace Blue.Aquarium
                 _ => rejection.ToString(),
             };
         }
+    }
+
+    /// <summary>
+    /// 編集モードの構え
+    /// </summary>
+    public enum AquariumEditTool
+    {
+        Select, // 置いてあるものを選ぶ
+        Place,  // 選んだ設置物を置く
     }
 }

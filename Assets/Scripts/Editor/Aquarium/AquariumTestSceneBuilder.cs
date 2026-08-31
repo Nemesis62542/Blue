@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Blue.Aquarium;
+using Unity.Cinemachine;
 using Blue.Entity;
 using Blue.Game;
 using Blue.Input;
@@ -33,6 +34,9 @@ namespace Blue.Editor
         // 内寸1単位あたり、どれだけの DisplaySize までを許すか。
         // 既存の EntityData は 0〜40 と幅があり、実測に基づく値ではないので暫定
         private const float DISPLAY_SIZE_PER_UNIT = 4f;
+
+        // 素の Camera の既定値。仮想カメラでも同じ見え方に揃える
+        private const float CAMERA_FIELD_OF_VIEW = 60f;
 
         [MenuItem("Blue/Aquarium/Setup Test Scene")]
         public static void SetupTestScene()
@@ -182,6 +186,12 @@ namespace Blue.Editor
             serialized_object.FindProperty("allowsSchool").boolValue = true;
             serialized_object.FindProperty("schoolDisplayCount").intValue = 20;
 
+            // 中を見せるカメラの位置。ローカル -Z を正面とし、
+            // 半分の奥行きに加えて内寸のぶん引くと、画角60度でおおよそ収まる
+            float view_distance = swim_size.z * 0.5f + Mathf.Max(swim_size.x, swim_size.y);
+            serialized_object.FindProperty("viewOffset").vector3Value =
+                bounds.center + new Vector3(0f, 0f, -view_distance);
+
             serialized_object.FindProperty("swimAreaCenter").vector3Value = bounds.center;
             serialized_object.FindProperty("swimAreaSize").vector3Value = bounds.size * SWIM_AREA_MARGIN;
 
@@ -296,7 +306,15 @@ namespace Blue.Editor
 
                 if (!overwrite) return false;
 
-                AssetDatabase.DeleteAsset(TEST_SCENE_PATH);
+                // 開いたままのシーンファイルは差し替えられない。空のシーンへ退避してから消す。
+                // これを怠ると削除も複製も失敗し、アセットだけ新しくなってシーンは古いまま残る
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+                if (!AssetDatabase.DeleteAsset(TEST_SCENE_PATH))
+                {
+                    Debug.LogError($"古いテストシーンを削除できませんでした: {TEST_SCENE_PATH}");
+                    return false;
+                }
             }
 
             // 元のシーンは開かずに複製する。開いてから保存すると Aquarium.unity を壊しかねない
@@ -343,6 +361,10 @@ namespace Blue.Editor
             pieces_root.transform.SetParent(owner.transform);
 
             AquariumBuilder builder = owner.AddComponent<AquariumBuilder>();
+
+            // 所持数の差し替えは読み込みより前に効く必要があるので、Bootstrap より先に付ける
+            DebugEntityStockProvider stock_provider = owner.AddComponent<DebugEntityStockProvider>();
+
             AquariumSceneBootstrap bootstrap = owner.AddComponent<AquariumSceneBootstrap>();
             AquariumDebugPlacer placer = owner.AddComponent<AquariumDebugPlacer>();
 
@@ -353,6 +375,7 @@ namespace Blue.Editor
             SerializedObject bootstrap_object = new SerializedObject(bootstrap);
             bootstrap_object.FindProperty("floor").objectReferenceValue = floor;
             bootstrap_object.FindProperty("builder").objectReferenceValue = builder;
+            bootstrap_object.FindProperty("stockProvider").objectReferenceValue = stock_provider;
             bootstrap_object.ApplyModifiedProperties();
 
             SerializedObject placer_object = new SerializedObject(placer);
@@ -394,14 +417,29 @@ namespace Blue.Editor
 
             GameObject edit_rig = new GameObject("EditRig");
 
+            // 実カメラは Brain だけを持ち、位置は仮想カメラが決める。
+            // ここで実カメラを直接動かすと Brain と奪い合って壊れる
             GameObject camera_owner = new GameObject("EditCamera");
             camera_owner.transform.SetParent(edit_rig.transform);
-            camera_owner.AddComponent<Camera>();
+            Camera camera = camera_owner.AddComponent<Camera>();
+            camera_owner.AddComponent<CinemachineBrain>();
 
             // 見学側のプレイヤーごと無効になるので、こちらにも用意しないと音が止まる
             camera_owner.AddComponent<AudioListener>();
 
-            AquariumEditCamera edit_camera = camera_owner.AddComponent<AquariumEditCamera>();
+            GameObject overview_owner = new GameObject("OverviewCamera");
+            overview_owner.transform.SetParent(edit_rig.transform);
+            CinemachineCamera overview = overview_owner.AddComponent<CinemachineCamera>();
+            overview.Priority = 20;
+            SetFieldOfView(overview);
+
+            GameObject focus_owner = new GameObject("FocusCamera");
+            focus_owner.transform.SetParent(edit_rig.transform);
+            CinemachineCamera focus = focus_owner.AddComponent<CinemachineCamera>();
+            focus.Priority = 0;
+            SetFieldOfView(focus);
+
+            AquariumEditCamera edit_camera = overview_owner.AddComponent<AquariumEditCamera>();
 
             // 下見はカメラの子にしない。カメラと一緒に動いたように見えて紛らわしい
             GameObject ghost_owner = new GameObject("PlacementGhost");
@@ -421,7 +459,8 @@ namespace Blue.Editor
             SerializedObject controller_object = new SerializedObject(controller);
             controller_object.FindProperty("bootstrap").objectReferenceValue = bootstrap;
             controller_object.FindProperty("editCamera").objectReferenceValue = edit_camera;
-            controller_object.FindProperty("view").objectReferenceValue = camera_owner.GetComponent<Camera>();
+            // 画面座標からセルを求めるのは実カメラの役目。仮想カメラは描画に関与しない
+            controller_object.FindProperty("view").objectReferenceValue = camera;
             controller_object.FindProperty("ghost").objectReferenceValue = ghost;
 
             SerializedProperty palette = controller_object.FindProperty("palette");
@@ -443,10 +482,19 @@ namespace Blue.Editor
             mode_object.FindProperty("editController").objectReferenceValue = controller;
             mode_object.ApplyModifiedProperties();
 
+            AquariumCameraDirector director = edit_rig.AddComponent<AquariumCameraDirector>();
+
+            SerializedObject director_object = new SerializedObject(director);
+            director_object.FindProperty("overviewCamera").objectReferenceValue = overview;
+            director_object.FindProperty("focusCamera").objectReferenceValue = focus;
+            director_object.ApplyModifiedProperties();
+
+            AquariumExhibitScreenBuilder.Build(bootstrap, controller, director);
+
             // 開始時は見学。Start で切り替わるが、シーン上でも合わせておく
             edit_rig.SetActive(false);
 
-            Debug.Log("編集モードを組みました（Tab で切り替え）");
+            Debug.Log("編集モードを組みました（Tab で切り替え／右クリックで水槽の中身）");
         }
 
         /// <summary>
@@ -476,6 +524,15 @@ namespace Blue.Editor
 
             GameObject owner = new GameObject("PlayerInput");
             owner.AddComponent<PlayerInputBootstrap>();
+        }
+
+        // 実カメラの画角は仮想カメラの Lens が上書きする。
+        // CinemachineCamera の既定は 40 で、素の Camera の 60 より狭い
+        private static void SetFieldOfView(CinemachineCamera virtual_camera)
+        {
+            LensSettings lens = virtual_camera.Lens;
+            lens.FieldOfView = CAMERA_FIELD_OF_VIEW;
+            virtual_camera.Lens = lens;
         }
 
         private static void MovePlayerToViewpoint(Vector2Int room_size)

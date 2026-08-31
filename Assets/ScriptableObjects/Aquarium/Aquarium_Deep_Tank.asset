@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "\u52D5\u4F5C\u78BA\u8A8D\u7528\u306B\u81EA\u52D5\u751F\u6210\u3057\u305F\u6C34\u69FD"
   icon: {fileID: 0}
   prefab: {fileID: 6418890015626838629, guid: 1334c05c6efbdfd4bbbdbaac7691af42, type: 3}
-  cachedGUID: 
+  cachedGUID: 8e1bb080ea188324d9df879813233c62
   footprint: {x: 5, y: 9}
   walkable: 0
   supportedHabitations: 0100000002000000
@@ -26,3 +26,4 @@ MonoBehaviour:
   schoolDisplayCount: 20
   swimAreaCenter: {x: 0.5500002, y: 0.05000019, z: 0}
   swimAreaSize: {x: 2.48, y: 2.48, z: 5.68}
+  viewOffset: {x: 0.5500002, y: 0.05000019, z: -5.3199997}
