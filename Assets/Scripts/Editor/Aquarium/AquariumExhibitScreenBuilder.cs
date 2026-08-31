@@ -38,7 +38,7 @@ namespace Blue.Editor
         /// <summary>
         /// 展示画面を組み、編集モードと繋いだコントローラを返す
         /// </summary>
-        public static ExhibitScreenController Build(AquariumSceneBootstrap bootstrap, AquariumEditController edit_controller, AquariumCameraDirector camera_director)
+        public static ExhibitScreenController Build(AquariumSceneBootstrap bootstrap, AquariumEditController edit_controller, AquariumCameraDirector camera_director, AquariumModeController mode_controller)
         {
             ExhibitEntryPanel entry_prefab = BuildEntryPrefab();
 
@@ -90,6 +90,7 @@ namespace Blue.Editor
             controller_object.FindProperty("view").objectReferenceValue = view;
             controller_object.FindProperty("editController").objectReferenceValue = edit_controller;
             controller_object.FindProperty("cameraDirector").objectReferenceValue = camera_director;
+            controller_object.FindProperty("modeController").objectReferenceValue = mode_controller;
             controller_object.ApplyModifiedProperties();
 
             return controller;

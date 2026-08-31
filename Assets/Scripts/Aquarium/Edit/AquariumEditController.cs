@@ -78,6 +78,11 @@ namespace Blue.Aquarium
         private void OnEnable()
         {
             rotationStep = 0;
+
+            // 画面を開いたまま編集を抜けた場合に備えて必ず戻す。
+            // 残ったままだと、次に編集へ入ったとき操作を一切受け付けない
+            IsSuspended = false;
+
             SetTool(AquariumEditTool.Select);
         }
 

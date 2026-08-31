@@ -547,6 +547,7 @@ namespace Blue.Editor
             controller_object.ApplyModifiedProperties();
 
             AquariumModeController mode = bootstrap.gameObject.AddComponent<AquariumModeController>();
+            AquariumExitController exit = bootstrap.gameObject.AddComponent<AquariumExitController>();
             CharacterMovementController player = UnityEngine.Object.FindFirstObjectByType<CharacterMovementController>();
 
             SerializedObject mode_object = new SerializedObject(mode);
@@ -556,6 +557,10 @@ namespace Blue.Editor
             mode_object.FindProperty("editController").objectReferenceValue = controller;
             mode_object.ApplyModifiedProperties();
 
+            SerializedObject exit_object = new SerializedObject(exit);
+            exit_object.FindProperty("modeController").objectReferenceValue = mode;
+            exit_object.ApplyModifiedProperties();
+
             AquariumCameraDirector director = edit_rig.AddComponent<AquariumCameraDirector>();
 
             SerializedObject director_object = new SerializedObject(director);
@@ -563,7 +568,7 @@ namespace Blue.Editor
             director_object.FindProperty("focusCamera").objectReferenceValue = focus;
             director_object.ApplyModifiedProperties();
 
-            AquariumExhibitScreenBuilder.Build(bootstrap, controller, director);
+            AquariumExhibitScreenBuilder.Build(bootstrap, controller, director, mode);
 
             // 開始時は見学。Start で切り替わるが、シーン上でも合わせておく
             edit_rig.SetActive(false);

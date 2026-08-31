@@ -13,6 +13,7 @@ namespace Blue.UI.Exhibit
         [SerializeField] private ExhibitScreenView view;
         [SerializeField] private AquariumEditController editController;
         [SerializeField] private AquariumCameraDirector cameraDirector;
+        [SerializeField] private AquariumModeController modeController;
 
         private ExhibitScreenModel model;
 
@@ -34,11 +35,20 @@ namespace Blue.UI.Exhibit
         private void OnEnable()
         {
             if (editController != null) editController.OnPieceInspected += HandlePieceInspected;
+            if (modeController != null) modeController.OnModeChanged += HandleModeChanged;
         }
 
         private void OnDisable()
         {
             if (editController != null) editController.OnPieceInspected -= HandlePieceInspected;
+            if (modeController != null) modeController.OnModeChanged -= HandleModeChanged;
+        }
+
+        // この画面は編集モードのオブジェクトの外にあるので、editRig を無効にしても閉じない。
+        // 開いたまま見学へ抜けると、カーソルが消えた状態でパネルだけが残る
+        private void HandleModeChanged(AquariumMode mode)
+        {
+            if (mode != AquariumMode.Edit && IsOpen) Close();
         }
 
         private void HandlePieceInspected(PlacedPiece piece)

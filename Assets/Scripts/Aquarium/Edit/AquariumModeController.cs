@@ -1,3 +1,4 @@
+using System;
 using Blue.Input;
 using UnityEngine;
 
@@ -20,6 +21,13 @@ namespace Blue.Aquarium
         [SerializeField] private AquariumMode startMode = AquariumMode.View;
 
         public AquariumMode Mode { get; private set; } = AquariumMode.View;
+
+        /// <summary>
+        /// モードが変わったときに通知する
+        /// </summary>
+        // 編集モードの外に置いた画面は editRig を無効にしても閉じない。
+        // 自分から閉じてもらうために知らせる
+        public event Action<AquariumMode> OnModeChanged;
 
         private void Start()
         {
@@ -63,6 +71,8 @@ namespace Blue.Aquarium
 
             ApplyCursor(is_edit);
             ApplyInputMap(is_edit);
+
+            OnModeChanged?.Invoke(mode);
         }
 
         private static void ApplyCursor(bool is_edit)
