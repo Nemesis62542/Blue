@@ -18,3 +18,5 @@ MonoBehaviour:
     origin: {x: 0, y: 0}
     size: {x: 43, y: 24}
     unlockedFromStart: 1
+    entrances:
+    - {x: 21, y: 0}

@@ -60,6 +60,8 @@ namespace Blue.Aquarium
             if (floor == null || floor.FindRoom(room_id) == null) return false;
             if (!unlockedRooms.Add(room_id)) return false;
 
+            MarkPathDirty();
+
             OnRoomUnlocked?.Invoke(room_id);
             return true;
         }
@@ -184,6 +186,8 @@ namespace Blue.Aquarium
 
         private void OccupyCells(PlacedPiece placed)
         {
+            MarkPathDirty();
+
             foreach (Vector2Int cell in placed.EnumerateCells())
             {
                 occupancy[cell] = placed;
@@ -192,6 +196,8 @@ namespace Blue.Aquarium
 
         private void ReleaseCells(PlacedPiece placed)
         {
+            MarkPathDirty();
+
             foreach (Vector2Int cell in placed.EnumerateCells())
             {
                 if (occupancy.TryGetValue(cell, out PlacedPiece current) && current == placed)
@@ -258,6 +264,116 @@ namespace Blue.Aquarium
 
                 OnDecorRemoved?.Invoke(decor);
             }
+        }
+
+        // ---------------- 通路 ----------------
+
+        // 入口から歩いて辿り着ける通路セル。設置や部屋の解放で変わるので、
+        // 変化を知らせて必要になった時点で引き直す
+        private readonly HashSet<Vector2Int> connectedPath = new HashSet<Vector2Int>();
+        private readonly Queue<Vector2Int> pathFrontier = new Queue<Vector2Int>();
+        private bool pathDirty = true;
+
+        private static readonly Vector2Int[] Neighbours =
+        {
+            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+        };
+
+        /// <summary>
+        /// そのセルを歩けるか
+        /// </summary>
+        // 空きセルは通路にしない。床の上をどこでも歩けることにすると、
+        // 全ての水槽が自動的に通路に面してしまい、導線を引く意味が無くなる
+        public bool IsWalkable(Vector2Int cell)
+        {
+            PlacedPiece piece = GetPieceAt(cell);
+
+            return piece != null && piece.Piece.Walkable;
+        }
+
+        /// <summary>
+        /// 入口から歩いて辿り着けるセルか
+        /// </summary>
+        public bool IsPathConnected(Vector2Int cell)
+        {
+            EnsurePath();
+
+            return connectedPath.Contains(cell);
+        }
+
+        /// <summary>
+        /// その設置物が、入口から繋がった通路に面しているか
+        /// </summary>
+        // 見に行けない場所に置かれた水槽を知らせるための判定。
+        // 設置そのものは断らない（導線の失敗は作り直せばよい）
+        public bool IsFacingPath(PlacedPiece placed)
+        {
+            if (placed == null) return false;
+
+            return IsFacingPath(placed.Cell, placed.Piece.Footprint, placed.RotationStep);
+        }
+
+        /// <summary>
+        /// そこに置いたとして、入口から繋がった通路に面するか
+        /// </summary>
+        // 置く前に知りたいので、設置済みかどうかに関わらず占有セルから判定する
+        public bool IsFacingPath(Vector2Int cell, Vector2Int footprint, int rotation_step)
+        {
+            EnsurePath();
+
+            foreach (Vector2Int occupied in AquariumGrid.EnumerateCells(cell, footprint, rotation_step))
+            {
+                foreach (Vector2Int offset in Neighbours)
+                {
+                    if (connectedPath.Contains(occupied + offset)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void EnsurePath()
+        {
+            if (!pathDirty) return;
+
+            pathDirty = false;
+            connectedPath.Clear();
+            pathFrontier.Clear();
+
+            if (floor == null) return;
+
+            // 入口そのものは通路が置かれていなくても起点として扱う。
+            // 入口に通路を置き忘れただけで全てが未接続になると、原因が分かりにくい
+            foreach (AquariumRoomDefinition room in floor.Rooms)
+            {
+                if (!unlockedRooms.Contains(room.RoomID)) continue;
+
+                foreach (Vector2Int entrance in room.Entrances)
+                {
+                    if (connectedPath.Add(entrance)) pathFrontier.Enqueue(entrance);
+                }
+            }
+
+            while (pathFrontier.Count > 0)
+            {
+                Vector2Int cell = pathFrontier.Dequeue();
+
+                foreach (Vector2Int offset in Neighbours)
+                {
+                    Vector2Int next = cell + offset;
+
+                    if (connectedPath.Contains(next)) continue;
+                    if (!IsCellPlaceable(next) || !IsWalkable(next)) continue;
+
+                    connectedPath.Add(next);
+                    pathFrontier.Enqueue(next);
+                }
+            }
+        }
+
+        private void MarkPathDirty()
+        {
+            pathDirty = true;
         }
 
         /// <summary>

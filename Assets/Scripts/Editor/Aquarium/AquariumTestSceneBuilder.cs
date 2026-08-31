@@ -25,6 +25,8 @@ namespace Blue.Editor
         private const string TANK_PREFAB_FOLDER = "Assets/Prefab/Aquarium";
         private const string ASSET_FOLDER = "Assets/ScriptableObjects/Aquarium";
         private const string FLOOR_ASSET_PATH = ASSET_FOLDER + "/TestFloor.asset";
+        private const string PATH_ASSET_PATH = ASSET_FOLDER + "/TestPath.asset";
+        private const string PATH_PREFAB_PATH = "Assets/Prefab/Aquarium/Path/PathTile.prefab";
         private const string ROOM_ID = "TestRoom";
         private const int ROOM_MARGIN = 2; // 部屋の縁と水槽の間に空けるセル数
 
@@ -68,7 +70,7 @@ namespace Blue.Editor
             EnsurePlayerInput();
             AquariumSceneBootstrap bootstrap = BuildAquariumObjects(floor, tanks, room_size);
             MovePlayerToViewpoint(room_size);
-            BuildEditMode(bootstrap, tanks, room_size);
+            BuildEditMode(bootstrap, tanks, CreatePathAsset(), room_size);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -89,6 +91,11 @@ namespace Blue.Editor
             foreach (string guid in guids)
             {
                 string prefab_path = AssetDatabase.GUIDToAssetPath(guid);
+
+                // FindAssets は再帰的に拾う。通路タイルなど、水槽以外を入れた
+                // サブフォルダまで水槽として扱わないよう直下だけに限る
+                if (Path.GetDirectoryName(prefab_path).Replace('\\', '/') != TANK_PREFAB_FOLDER) continue;
+
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefab_path);
                 if (prefab == null) continue;
 
@@ -103,6 +110,56 @@ namespace Blue.Editor
 
             AssetDatabase.SaveAssets();
             return created;
+        }
+
+        /// <summary>
+        /// 通路を1種類だけ用意する。無いと警告を出しても直す手段が無い
+        /// </summary>
+        private static PathPieceData CreatePathAsset()
+        {
+            EnsureFolder(ASSET_FOLDER);
+
+            PathPieceData path = AssetDatabase.LoadAssetAtPath<PathPieceData>(PATH_ASSET_PATH);
+            if (path != null) return path;
+
+            GameObject prefab = CreatePathPrefab();
+
+            path = ScriptableObject.CreateInstance<PathPieceData>();
+            AssetDatabase.CreateAsset(path, PATH_ASSET_PATH);
+
+            SerializedObject serialized_object = new SerializedObject(path);
+            serialized_object.FindProperty("name").stringValue = "通路";
+            serialized_object.FindProperty("description").stringValue = "動作確認用に自動生成した通路";
+            serialized_object.FindProperty("prefab").objectReferenceValue = prefab;
+            serialized_object.FindProperty("footprint").vector2IntValue = Vector2Int.one;
+            serialized_object.FindProperty("walkable").boolValue = true;
+            serialized_object.ApplyModifiedProperties();
+
+            EditorUtility.SetDirty(path);
+            AssetDatabase.SaveAssets();
+
+            return AssetDatabase.LoadAssetAtPath<PathPieceData>(PATH_ASSET_PATH);
+        }
+
+        private static GameObject CreatePathPrefab()
+        {
+            EnsureFolder("Assets/Prefab/Aquarium/Path");
+
+            GameObject root = new GameObject("PathTile");
+
+            GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            tile.name = "Tile";
+            tile.transform.SetParent(root.transform);
+            tile.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+            tile.transform.localScale = new Vector3(0.96f, 0.1f, 0.96f);
+
+            // 床は TestGround が持っているので、通路のコライダーは邪魔にしかならない
+            UnityEngine.Object.DestroyImmediate(tile.GetComponent<Collider>());
+
+            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PATH_PREFAB_PATH);
+            UnityEngine.Object.DestroyImmediate(root);
+
+            return prefab;
         }
 
         private static List<TankPieceData> LoadTanks(List<string> asset_paths)
@@ -144,16 +201,22 @@ namespace Blue.Editor
             }
         }
 
+        // 一度作ったアセットは手で直すものとして扱い、二度と上書きしない。
+        // 毎回すべての項目を書き直すと、モデルに合わせて調整した遊泳範囲や
+        // 見る位置が、次にこのメニューを回した時点で消える
         private static string CreateTankAsset(GameObject prefab)
         {
             string asset_path = $"{ASSET_FOLDER}/{prefab.name}_Tank.asset";
 
-            TankPieceData tank = AssetDatabase.LoadAssetAtPath<TankPieceData>(asset_path);
-            if (tank == null)
+            if (AssetDatabase.LoadAssetAtPath<TankPieceData>(asset_path) != null)
             {
-                tank = ScriptableObject.CreateInstance<TankPieceData>();
-                AssetDatabase.CreateAsset(tank, asset_path);
+                return asset_path;
             }
+
+            TankPieceData tank = ScriptableObject.CreateInstance<TankPieceData>();
+            AssetDatabase.CreateAsset(tank, asset_path);
+
+            Debug.Log($"水槽アセットを新規作成しました（以後は手で調整してください）: {asset_path}");
 
             Bounds bounds = FindSwimBounds(prefab);
 
@@ -279,6 +342,11 @@ namespace Blue.Editor
             room.FindPropertyRelative("origin").vector2IntValue = Vector2Int.zero;
             room.FindPropertyRelative("size").vector2IntValue = room_size;
             room.FindPropertyRelative("unlockedFromStart").boolValue = true;
+
+            // 入口が無いと通路をいくら置いても繋がらない。手前の辺の中央に置く
+            SerializedProperty entrances = room.FindPropertyRelative("entrances");
+            entrances.arraySize = 1;
+            entrances.GetArrayElementAtIndex(0).vector2IntValue = new Vector2Int(room_size.x / 2, 0);
 
             serialized_object.ApplyModifiedProperties();
             EditorUtility.SetDirty(floor);
@@ -411,7 +479,7 @@ namespace Blue.Editor
         /// <summary>
         /// 俯瞰の編集モード一式を組み、見学との切り替えを繋ぐ
         /// </summary>
-        private static void BuildEditMode(AquariumSceneBootstrap bootstrap, List<TankPieceData> tanks, Vector2Int room_size)
+        private static void BuildEditMode(AquariumSceneBootstrap bootstrap, List<TankPieceData> tanks, PathPieceData path, Vector2Int room_size)
         {
             if (bootstrap == null) return;
 
@@ -463,11 +531,17 @@ namespace Blue.Editor
             controller_object.FindProperty("view").objectReferenceValue = camera;
             controller_object.FindProperty("ghost").objectReferenceValue = ghost;
 
+            // 通路を先頭にする。導線を引いてから水槽を並べる順序が自然で、
+            // 通路が無いまま水槽を置いて全部が警告色になるのを避けられる
+            List<GridPieceData> pieces = new List<GridPieceData>();
+            if (path != null) pieces.Add(path);
+            pieces.AddRange(tanks);
+
             SerializedProperty palette = controller_object.FindProperty("palette");
-            palette.arraySize = tanks.Count;
-            for (int i = 0; i < tanks.Count; i++)
+            palette.arraySize = pieces.Count;
+            for (int i = 0; i < pieces.Count; i++)
             {
-                palette.GetArrayElementAtIndex(i).objectReferenceValue = tanks[i];
+                palette.GetArrayElementAtIndex(i).objectReferenceValue = pieces[i];
             }
 
             controller_object.ApplyModifiedProperties();

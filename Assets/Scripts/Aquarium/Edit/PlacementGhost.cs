@@ -15,13 +15,14 @@ namespace Blue.Aquarium
         private static readonly int ColorID = Shader.PropertyToID("_Color");
 
         [SerializeField] private Color validColor = new Color(0.4f, 1f, 0.5f);
+        [SerializeField] private Color warningColor = new Color(1f, 0.85f, 0.35f);
         [SerializeField] private Color invalidColor = new Color(1f, 0.35f, 0.35f);
 
         private readonly List<Renderer> renderers = new List<Renderer>();
         private MaterialPropertyBlock propertyBlock;
         private AquariumPieceData currentPiece;
         private GameObject instance;
-        private bool lastValid;
+        private PlacementFeedback lastFeedback;
         private bool hasColor;
 
         /// <summary>
@@ -43,17 +44,23 @@ namespace Blue.Aquarium
         /// <summary>
         /// 置き場所と可否を反映する
         /// </summary>
-        public void UpdatePlacement(Vector3 position, Quaternion rotation, bool is_valid)
+        public void UpdatePlacement(Vector3 position, Quaternion rotation, PlacementFeedback feedback)
         {
             if (instance == null) return;
 
             instance.transform.SetPositionAndRotation(position, rotation);
 
-            if (hasColor && lastValid == is_valid) return;
+            if (hasColor && lastFeedback == feedback) return;
 
-            lastValid = is_valid;
+            lastFeedback = feedback;
             hasColor = true;
-            ApplyColor(is_valid ? validColor : invalidColor);
+
+            ApplyColor(feedback switch
+            {
+                PlacementFeedback.Blocked => invalidColor,
+                PlacementFeedback.NotOnPath => warningColor,
+                _ => validColor,
+            });
         }
 
         private void Rebuild()
@@ -119,5 +126,15 @@ namespace Blue.Aquarium
         {
             if (instance != null) Destroy(instance);
         }
+    }
+
+    /// <summary>
+    /// 下見で示す状態
+    /// </summary>
+    public enum PlacementFeedback
+    {
+        Ready,     // そのまま置ける
+        NotOnPath, // 置けるが、繋がった通路に面していない
+        Blocked,   // 置けない
     }
 }

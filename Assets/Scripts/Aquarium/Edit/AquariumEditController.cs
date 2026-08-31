@@ -179,8 +179,26 @@ namespace Blue.Aquarium
             ghost.UpdatePlacement(
                 AquariumGrid.CellToWorld(cursorCell, piece.Footprint, rotationStep),
                 AquariumGrid.StepToRotation(rotationStep),
-                CurrentRejection == PlacementRejection.None
+                EvaluateFeedback(piece)
             );
+        }
+
+        // 通路に面していなくても設置は断らない。見に行けないことを色で知らせるだけ
+        private PlacementFeedback EvaluateFeedback(GridPieceData piece)
+        {
+            if (CurrentRejection != PlacementRejection.None) return PlacementFeedback.Blocked;
+
+            // 通路そのものや装飾に「通路に面していない」は無意味なので、展示するものだけ見る
+            if (!IsExhibitPiece(piece)) return PlacementFeedback.Ready;
+
+            return Model.Layout.IsFacingPath(cursorCell, piece.Footprint, rotationStep)
+                ? PlacementFeedback.Ready
+                : PlacementFeedback.NotOnPath;
+        }
+
+        private static bool IsExhibitPiece(GridPieceData piece)
+        {
+            return piece is TankPieceData or PedestalPieceData;
         }
 
         private void HandleCommit()

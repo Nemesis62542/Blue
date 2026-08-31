@@ -35,11 +35,16 @@ namespace Blue.Aquarium
         [SerializeField] private Vector2Int size = new Vector2Int(8, 8); // セル数(X,Z)
         [SerializeField] private bool unlockedFromStart;         // 最初から解放されているか
 
+        // 来館者が入ってくるセル。ここを起点に通路の繋がりを辿る。
+        // 起点が無いと、通路をいくら置いても「どこから来るのか」が決まらない
+        [SerializeField] private Vector2Int[] entrances = new Vector2Int[0];
+
         public string RoomID => roomID;
         public string Name => name;
         public Vector2Int Origin => origin;
         public Vector2Int Size => size;
         public bool UnlockedFromStart => unlockedFromStart;
+        public IReadOnlyList<Vector2Int> Entrances => entrances;
 
         /// <summary>
         /// 指定セルがこの部屋に含まれるか
