@@ -115,6 +115,8 @@
 | PedestalView | 飾っているアイテムのモデルを並べる | RefreshContents() | ItemData |
 | AquariumDebugPlacer | 編集UIができるまでの動作確認用の設置 | - | AquariumSceneBootstrap |
 
+動作確認用シーン（`AquariumTest.unity`）とその生成物は `Blue > Aquarium > Setup Test Scene` が作る。**これらはコミットしない。** コミットするとビルダーを変えるたびに古くなり、コードとシーンが食い違ったまま気づけないため。クローン後は一度メニューを実行する。水槽の `TankPieceData` は手で調整する前提なので、一度作られたら上書きされず、コミット対象に含める。
+
 `TankView` は `BaseSwimmer.SetRoamCenter/SetRoamArea/SetMigrationEnabled` に水槽の内寸を渡して閉じ込める。群れは `SchoolController` が毎フレーム個体へ縄張りを配るため、生成前に `_positionSphere` 系と `_spawnSphere` 系を内寸から割り当てる。
 
 ### 編集モード
